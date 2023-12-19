@@ -9,4 +9,8 @@ public class TrueOrFalseAnswer extends Answer{
         super(grade);
         this.answers = answers;
     }
+
+    public List<TOFQAnswer> getAnswers(){
+        return this.answers;
+    }
 }   

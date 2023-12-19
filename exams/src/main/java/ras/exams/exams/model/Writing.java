@@ -13,4 +13,16 @@ public class Writing extends Question{
         this.minimumLimit = min;
         this.maximumLimit = max;
     }
+
+    public String getCriteria(){
+        return this.criteria;
+    }
+
+    public int getMinimumLimit(){
+        return this.minimumLimit;
+    }
+
+    public int getMaximumLimit(){
+        return this.maximumLimit;
+    }
 }

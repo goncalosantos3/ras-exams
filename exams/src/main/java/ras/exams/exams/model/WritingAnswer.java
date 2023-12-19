@@ -9,4 +9,12 @@ public class WritingAnswer extends Answer{
         this.text = text;
         this.question = q;
     }
+
+    public String getText(){
+        return this.text;
+    }
+
+    public Question getQuestion(){
+        return this.question;
+    }
 }

@@ -10,4 +10,8 @@ public class TrueOrFalse extends Question{
         super(id, question, qn);
         this.questions = questions;
     }
+
+    public List<TOFQ> getQuestions(){
+        return this.questions;
+    }
 }
