@@ -13,11 +13,15 @@ public class Exam {
     private List<ExamVersion> versions;
     private Map<UUID,ExamAnswer> answers;
 
-    public Exam(UUID id, ExamHeader header){
+    public Exam(@JsonProperty("id") UUID id,@JsonProperty("header") ExamHeader header){
         this.id = id;
         this.enrolled = new ArrayList<>();
         this.header = header;
         this.versions = new ArrayList<>();
         this.answers = new HashMap<>();
+    }
+
+    public UUID getID(){
+        return this.id;
     }
 }

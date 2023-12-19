@@ -5,9 +5,21 @@ public class ChoiceAnswer {
     private int grade;
     private Question question;
 
-    public ChoiceAnswer(boolean selected, int grade, Question q){
+    public ChoiceAnswer(@JsonProperty("selected") boolean selected,@JsonProperty("grade") int grade,@JsonProperty("q") Question q){
         this.selected = selected;
         this.grade = grade;
         this.question = q;
+    }
+
+    public boolean getSelected(){
+        return this.selected;
+    }
+
+    public int getGrade(){
+        return this.grade;
+    }
+
+    public Question getQuestion(){
+        return this.question;
     }
 }

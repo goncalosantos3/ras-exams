@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 public class ExamsService {
     // Referência para o DAO de exames
     private Map<UUID, Exam> exams; 
-
+    
+    public ExamsService(Map<UUID,Exam> exams){
+        this.examsDAO = exams
+    }
     public ExamsService(){
         // Acho que aqui o que temos que fazer é receber uma referência para o DAO de exames
         // para no início de cada execução da aplicação ele consultar a base de dados 
