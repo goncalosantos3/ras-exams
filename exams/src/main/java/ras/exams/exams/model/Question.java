@@ -12,4 +12,16 @@ public abstract class Question {
         this.question = question;
         this.questionNumber = qn;
     }
+
+    public UUID getQuestionId(){
+        return this.questionId;
+    }
+
+    public String getQuestion(){
+        return this.question;
+    }
+
+    public int getQuestionNumber(){
+        return this.questionNumber;
+    }
 }

@@ -17,4 +17,16 @@ public class ExamAnswer {
         this.grade = grade;
         this.answers = answers;
     }
+
+    public UUID getExamAnswerId(){
+        return this.examAnswerId;
+    }
+
+    public int getGrade(){
+        return this.grade;
+    }
+
+    public List<Answer> getAnswers(){
+        return this.answers;
+    }
 }

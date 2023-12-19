@@ -24,4 +24,22 @@ public class Exam {
     public UUID getID(){
         return this.id;
     }
+
+    public List<String> getEnrolled(){
+        return this.enrolled;
+    }
+
+    public ExamHeader getHeader(){
+        return this.header;
+    }
+
+    public List<ExamVersion> getVersions(){
+        return this.versions;
+    }
+
+    public Map<UUID,ExamAnswer> getAnswers(){
+        return this.answers;
+    }
+
+
 }

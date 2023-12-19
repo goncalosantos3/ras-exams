@@ -10,4 +10,16 @@ public class TOFQAnswer {
         this.answer = answer;
         this.question = q;
     }
+
+    public int getGrade(){
+        return this.grade;
+    }
+
+    public boolean getAnswer(){
+        return this.answer;
+    }
+
+    public Question getQuestion(){
+        return this.question;
+    }
 }

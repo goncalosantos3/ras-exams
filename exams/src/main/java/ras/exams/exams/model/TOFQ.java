@@ -12,4 +12,20 @@ public class TOFQ {
         this.score = score;
         this.optionNumber = optionNumber;
     }
+
+    public String getDescription(){
+        return this.description;
+    }
+
+    public boolean getCorrection(){
+        return this.correction;
+    }
+
+    public int getScore(){
+        return this.score;
+    }
+
+    public int getOptionNumber(){
+        return this.optionNumber;
+    }
 }

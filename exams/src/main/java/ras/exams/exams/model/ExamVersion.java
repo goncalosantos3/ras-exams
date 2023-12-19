@@ -10,4 +10,12 @@ public class ExamVersion {
     public ExamVersion(UUID id){
         this.versionId = id;
     }
+
+    public UUID getVersionId(){
+        return this.versionId;
+    }
+
+    public List<Question> getQuestions(){
+        return this.questions;
+    }
 }

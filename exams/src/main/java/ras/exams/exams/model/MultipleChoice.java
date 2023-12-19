@@ -10,4 +10,8 @@ public class MultipleChoice extends Question{
         super(id, question, qn);
         this.choices = choices;
     }
+
+    public List<Choice> getChoices(){
+        return this.choices;
+    }
 }

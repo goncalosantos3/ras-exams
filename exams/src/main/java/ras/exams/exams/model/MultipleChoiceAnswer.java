@@ -9,4 +9,8 @@ public class MultipleChoiceAnswer extends Answer{
         super(grade);
         this.answers = answers;
     }
+
+    public List<ChoiceAnswer> getAnswers(){
+        return this.answers;
+    }
 }

@@ -20,4 +20,20 @@ public class ExamHeader {
         this.examAdmissionTime = examAdmissionTime;
         this.examScheduleIDs = schedule;
     }
+
+    public String getExamName(){
+        return this.examName;
+    }
+
+    public String getExamUC(){
+        return this.examUC;
+    }
+
+    public String getExamAdmissionTime(){
+        return this.examAdmissionTime;
+    }
+
+    public List<String> getExamScheduleIDs(){
+        return this.examScheduleIDs;
+    }
 }
