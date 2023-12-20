@@ -8,11 +8,11 @@ public class ExamAnswer {
     private int grade;  
     private List<Answer> answers;
 
-    public ExamAnswer(UUID id){
+    public ExamAnswer(@JsonProperty("id") UUID id){
         this.examAnswerId = id;
     }
 
-    public ExamAnswer(UUID id, int grade, List<Answer> answers){
+    public ExamAnswer(@JsonProperty("id") UUID id,@JsonProperty("grade") int grade,@JsonProperty("answers") List<Answer> answers){
         this.examAnswerId = id; 
         this.grade = grade;
         this.answers = answers;

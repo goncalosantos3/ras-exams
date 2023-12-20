@@ -5,7 +5,7 @@ public class TOFQAnswer {
     private boolean answer;
     private Question question;
 
-    public TOFQAnswer(int grade, boolean answer, Question q){   
+    public TOFQAnswer(@JsonProperty("grade")int grade,@JsonProperty("answer") boolean answer,@JsonProperty("q") Question q){   
         this.grade = grade;
         this.answer = answer;
         this.question = q;

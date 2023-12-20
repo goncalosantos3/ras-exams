@@ -4,7 +4,7 @@ public class WritingAnswer extends Answer{
     private String text;
     private Question question;
 
-    public WritingAnswer(int grade, String text, Question q){
+    public WritingAnswer(@JsonProperty("grade") int grade,@JsonProperty("text") String text,@JsonProperty("q") Question q){
         super(grade);
         this.text = text;
         this.question = q;

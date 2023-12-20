@@ -8,13 +8,13 @@ public class ExamHeader {
     private String examAdmissionTime;
     private List<String> examScheduleIDs;
     
-    public ExamHeader(String examName, String examUC, String examAdmissionTime){
+    public ExamHeader(@JsonProperty("examName")String examName,@JsonProperty("examUC") String examUC,@JsonProperty("examAdmissionTime") String examAdmissionTime){
         this.examName = examName;
         this.examUC = examUC;
         this.examAdmissionTime = examAdmissionTime;
     }
 
-    public ExamHeader(String examName, String examUC, String examAdmissionTime, List<String> schedule){
+    public ExamHeader(@JsonProperty("examName")String examName,@JsonProperty("examUC") String examUC,@JsonProperty("examAdmissionTime") String examAdmissionTime,@JsonProperty("schedule") List<String> schedule){
         this.examName = examName;
         this.examUC = examUC;
         this.examAdmissionTime = examAdmissionTime;

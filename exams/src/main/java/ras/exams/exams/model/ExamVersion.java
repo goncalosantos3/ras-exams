@@ -7,7 +7,7 @@ public class ExamVersion {
     private final UUID versionId;
     private List<Question> questions;
 
-    public ExamVersion(UUID id){
+    public ExamVersion(@JsonProperty("id") UUID id){
         this.versionId = id;
     }
 

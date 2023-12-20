@@ -7,7 +7,7 @@ public abstract class Question {
     private String question;
     private int questionNumber;
 
-    public Question(UUID id, String question, int qn){
+    public Question(@JsonProperty("id")UUID id,@JsonProperty("question") String question,@JsonProperty("qn") int qn){
         this.questionId = id;
         this.question = question;
         this.questionNumber = qn;

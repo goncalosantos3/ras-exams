@@ -5,7 +5,7 @@ import java.util.List;
 public class TrueOrFalseAnswer extends Answer{
     private List<TOFQAnswer> answers;
     
-    public TrueOrFalseAnswer(int grade, List<TOFQAnswer> answers){
+    public TrueOrFalseAnswer(@JsonProperty("grade") int grade,@JsonProperty("answers") List<TOFQAnswer> answers){
         super(grade);
         this.answers = answers;
     }

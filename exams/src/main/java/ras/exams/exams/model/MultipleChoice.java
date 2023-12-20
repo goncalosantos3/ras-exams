@@ -6,7 +6,7 @@ import java.util.UUID;
 public class MultipleChoice extends Question{
     private List<Choice> choices;
 
-    public MultipleChoice(UUID id, String question, int qn, List<Choice> choices){
+    public MultipleChoice(@JsonProperty("id") UUID id, @JsonProperty("question") String question,@JsonProperty("qn") int qn,@JsonProperty("choices") List<Choice> choices){
         super(id, question, qn);
         this.choices = choices;
     }

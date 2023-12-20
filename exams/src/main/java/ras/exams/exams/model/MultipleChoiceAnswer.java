@@ -5,7 +5,7 @@ import java.util.List;
 public class MultipleChoiceAnswer extends Answer{
     private List<ChoiceAnswer> answers;
 
-    public MultipleChoiceAnswer(int grade, List<ChoiceAnswer> answers){
+    public MultipleChoiceAnswer(@JsonProperty("grade")int grade,@JsonProperty("answers") List<ChoiceAnswer> answers){
         super(grade);
         this.answers = answers;
     }

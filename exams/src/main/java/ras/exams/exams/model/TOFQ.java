@@ -6,7 +6,7 @@ public class TOFQ {
     private int score;
     private int optionNumber;
 
-    public TOFQ(String desc, boolean correc, int score, int optionNumber){
+    public TOFQ(@JsonProperty("desc") String desc,@JsonProperty("correc") boolean correc,@JsonProperty("score") int score,@JsonProperty("optionNumber") int optionNumber){
         this.description = desc;
         this.correction = correc;
         this.score = score;
