@@ -3,6 +3,8 @@ package ras.exams.exams.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TrueOrFalse extends Question{
     List<TOFQ> questions;
 

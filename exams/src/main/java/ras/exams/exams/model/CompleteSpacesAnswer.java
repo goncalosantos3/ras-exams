@@ -1,5 +1,7 @@
 package ras.exams.exams.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CompleteSpacesAnswer extends Answer{
     private String text;
     private Question question;

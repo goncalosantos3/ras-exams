@@ -1,5 +1,7 @@
 package ras.exams.exams.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public abstract class Answer {
     private int grade;
 

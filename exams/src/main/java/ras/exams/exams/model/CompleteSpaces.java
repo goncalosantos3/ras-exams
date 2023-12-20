@@ -2,6 +2,8 @@ package ras.exams.exams.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CompleteSpaces extends Question{ 
     private String text;  
     

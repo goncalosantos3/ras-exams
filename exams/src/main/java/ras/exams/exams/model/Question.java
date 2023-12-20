@@ -2,6 +2,8 @@ package ras.exams.exams.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public abstract class Question {
     private final UUID questionId;
     private String question;

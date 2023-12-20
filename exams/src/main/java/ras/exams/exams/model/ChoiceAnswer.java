@@ -1,5 +1,7 @@
 package ras.exams.exams.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ChoiceAnswer {
     private boolean selected;
     private int grade;

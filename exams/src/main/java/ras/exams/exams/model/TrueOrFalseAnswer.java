@@ -2,6 +2,8 @@ package ras.exams.exams.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TrueOrFalseAnswer extends Answer{
     private List<TOFQAnswer> answers;
     
