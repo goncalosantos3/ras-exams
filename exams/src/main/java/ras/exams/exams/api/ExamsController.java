@@ -1,9 +1,11 @@
 package ras.exams.exams.api;
 
+import ras.exams.exams.model.CompleteSpaces;
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.MultipleChoice;
 import ras.exams.exams.model.TOFQ;
+import ras.exams.exams.model.Writing;
 import ras.exams.exams.service.ExamsService;
 
 import java.util.List;
@@ -87,6 +89,76 @@ public class ExamsController {
         // examService.createTrueorFalseQuestion(examName,trueOrFalseQuestion)
         return 200;
     }
+
+    // Rota - GET /exams/QuestionTrueorFalse/{examName}/{versionNumber}/{questionNumber}
+    @GetMapping("exams/QuestionTrueorFalse")
+    public void getQuestionTrueorFalse(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber){
+        // Tem de devolver a question True or False - TOFQ
+        // return examService.getQuestionTrueorFalse(examName,versionNumber,questionNumber)
+    }
+
+    // Rota - PUT /exams/QuestionTrueorFalse/{examName}/{versionNumber}/{questionNumber}
+    @PutMapping("exams/QuestionTrueorFalse")
+    public void updateQuestionTrueorFalse(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody TOFQ trueOrFalseQuestion){
+        // Tem de devolver a question True or False atualizada - TOFQ
+        // return examService.updateQuestionTrueorFalse(examName,versionNumber,questionNumber,trueOrFalseQuestion)
+    }
+
+    // Rota - POST /exams/QuestionWriting?examName=xxx
+    @PostMapping("exams/QuestionWriting")
+    public int createWritingQuestion(@RequestParam("examName") String examName,@RequestBody Writing writingQuestion){
+        // return examService.createWritingQuestion(examName,writingQuestion)
+        // Tem de dar return a um inteiro dizendo se a questão foi criada com sucesso ou não
+        return 200;
+    }
+
+    // Rota - GET /exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}
+    @GetMapping("exams/QuestionWriting")
+    public void getWritingQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber){
+        // Tem de dar return a questão de escrita pedida - Writing
+        // return examService.getWritingQuestion(examName,versionNumber,questionNumber)
+    }
+
+    // Rota - PUT /exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}
+    @PutMapping("exams/QuestionTrueorFalse")
+    public void updateWritingQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody Writing writingQuestion){
+        // Tem de dar return a questão de escrita corretamente atualizada - Writing
+        // return examService.updateWritingQuestion(examName,versionNumber,questionNumber,writingQuestion)
+    }
+
+    // Rota - POST /exams/QuestionCompleteSpaces?examName=xxx
+    @PostMapping("exams/QuestionCompleteSpaces")
+    public int createCompleteSpacesQuestion(@RequestParam("examName") String examName,@RequestBody CompleteSpaces completeSpacesQuestion){
+        // return examService.createCompleteSpacesQuestion(examName,completeSpacesQuestion)
+        return 200;
+    }
+
+    // Rota - GET /exams/QuestionCompleteSpaces/{examName}/{versionNumber}/{questionNumber}
+    @GetMapping("exams/QuestionCompleteSpaces")
+    public void getCompleteSpacesQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber){
+
+    }
+
+    // Rota - PUT /exams/QuestionCompleteSpaces/{examName}/{versionNumber}/{questionNumber}
+    @PutMapping("exams/QuestionCompleteSpaces")
+    public void updateCompleteSpacesQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody CompleteSpaces completeSpacesQuestion){
+
+    }
+
+    // Rota - GET /exams/getCorrection/{examName}/{numberStudent}/{questionNumber}
+    @GetMapping("exams/getCorrection")
+    public void getQuestionCorrectionStudent(@PathVariable String examName, @PathVariable String studentNumber, @PathVariable String questionNumber){
+
+    }
+
+    // Rota - GET /getExams
+    @GetMapping("getExams")
+    public void getExams(){
+
+    }
+
+    // Rota - 
+    
     
 
     
