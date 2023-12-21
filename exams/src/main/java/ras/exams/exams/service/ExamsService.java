@@ -1,6 +1,6 @@
 package ras.exams.exams.service;
 
-import ras.exams.exams.dao.ExamDao;
+import ras.exams.exams.data.ExamDao;
 import ras.exams.exams.model.Exam;
 
 

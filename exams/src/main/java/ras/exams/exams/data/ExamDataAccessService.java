@@ -1,4 +1,4 @@
-package ras.exams.exams.dao;
+package ras.exams.exams.data;
 import ras.exams.exams.model.Exam;
 import java.util.*;
 

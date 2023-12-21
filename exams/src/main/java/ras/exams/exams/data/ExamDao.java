@@ -1,6 +1,8 @@
-package ras.exams.exams.dao;
+package ras.exams.exams.data;
 import ras.exams.exams.model.Exam;
 import java.util.UUID;
+
+import java.sql.*;
 
 public interface ExamDao {
     int insertExam (UUID id, Exam exam);

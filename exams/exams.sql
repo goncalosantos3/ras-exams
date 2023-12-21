@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
   `examHeaderID` BINARY(16) NOT NULL,
   `examAdmissionTime` TIME NULL DEFAULT NULL,
   `examUC` VARCHAR(45) NULL,
-  `examID` INT NULL DEFAULT NULL,
+  `examID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`examHeaderID`),
   INDEX `examID_idx` (`examID` ASC) VISIBLE,
   CONSTRAINT `examIDheader`
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`question` (
   `questionID` BINARY(16) NOT NULL,
   `questionType` VARCHAR(45) NULL DEFAULT NULL,
   `question` VARCHAR(200) NULL DEFAULT NULL,
-  `versionID` INT NULL DEFAULT NULL,
+  `versionID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`questionID`),
   INDEX `version_idx` (`versionID` ASC) VISIBLE,
   CONSTRAINT `version`
@@ -179,6 +179,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `ras_exams`.`multiplechoicequestion` (
   `questionID` BINARY(16) NOT NULL,
   `choiceID` BINARY(16) NOT NULL,
+  `choiceNumber` INT NOT NULL,
   `text` VARCHAR(256) NULL DEFAULT NULL,
   `correction` TINYINT NULL DEFAULT NULL,
   `score` INT NULL DEFAULT NULL,
@@ -197,7 +198,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `ras_exams`.`answermultiplechoice` (
   `examAnswerID` BINARY(16) NOT NULL,
   `questionID` BINARY(16) NOT NULL,
-  `choiceID` VARCHAR(45) NOT NULL,
+  `choiceID` BINARY(16) NOT NULL,
   `selected` TINYINT NULL DEFAULT NULL,
   `grade` INT NULL DEFAULT NULL,
   PRIMARY KEY (`examAnswerID`, `questionID`, `choiceID`),
