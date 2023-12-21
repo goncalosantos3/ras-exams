@@ -2,6 +2,8 @@ package ras.exams.exams.api;
 
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamHeader;
+import ras.exams.exams.model.MultipleChoice;
+import ras.exams.exams.model.TOFQ;
 import ras.exams.exams.service.ExamsService;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 public class ExamsController {
@@ -55,6 +59,35 @@ public class ExamsController {
     }
     
     // Rota - POST /exams/QuestionMultipleChoice?examName=xxxx
+    @PostMapping("exams/QuestionMultipleChoice")
+    public int createQuestionMultipleChoice(@RequestParam("examName") String examName, @RequestBody MultipleChoice multipleChoice) {
+        // Tem de devolver um inteiro, indicando se a questão de escolha múltipla foi adicionada ou não
+        // examService.createQuestionMultipleChoice(examName,multipleChoice)
+        return 200;
+    }
+    
+    // Rota - GET /exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}
+    @GetMapping("exams/QuestionMultipleChoice")
+    public void getQuestionMultipleChoice(@PathVariable String examName,@PathVariable String versionNumber,@PathVariable String questionNumber) {
+        // Tem de devolver uma questão de escolha múltipla - MultipleChoice 
+        // return examService.getQuestionMultipleChoice(examName,versionNumber,questionNumber)
+    }
+    
+    // Rota - PUT /exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}
+    @PutMapping("exams/QuestionMultipleCoice")
+    public void updateQuestionMultipleChoice(@PathVariable String examName,@PathVariable String versionNumber,@PathVariable String questionNumber,@RequestBody MultipleChoice multipleChoice) {
+        // Tem de devolver uma questão de escolha múltipla - MultipleChoice
+        // return examService.updateQuestionMultipleChoice(examName,versionNumber,questionNumber,multipleChoice)
+    }
+
+    // Rota - POST /exams/QuestionTrueorFalse?examName=xxxx
+    @PostMapping("exams/QuestionTrueorFalse")
+    public int createTrueorFalseQuestion(@RequestParam("examName") String examName,@RequestBody TOFQ trueOrFalseQuestion) {
+        // Tem de devolver um inteiro, indicando se a questão V/F foi adicionada ou não
+        // examService.createTrueorFalseQuestion(examName,trueOrFalseQuestion)
+        return 200;
+    }
+    
 
     
 }
