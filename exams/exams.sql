@@ -5,22 +5,10 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
--- -----------------------------------------------------
--- Schema ras_exams
--- -----------------------------------------------------
-
--- -----------------------------------------------------
 -- Schema ras_exams
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `ras_exams` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `mydb` ;
+USE `ras_exams` ;
 
 -- -----------------------------------------------------
 -- Table `ras_exams`.`exam`
@@ -52,9 +40,9 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`examschedules`
+-- Table `ras_exams`.`examschedules`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`examschedules` (
+CREATE TABLE IF NOT EXISTS `ras_exams`.`examschedules` (
   `scheduleID` BINARY(16) NOT NULL,
   `examHeaderID` BINARY(16) NOT NULL,
   PRIMARY KEY (`scheduleID`, `examHeaderID`),
@@ -66,7 +54,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`examschedules` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-USE `ras_exams` ;
 
 -- -----------------------------------------------------
 -- Table `ras_exams`.`examversion`
@@ -90,7 +77,8 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`question` (
   `questionID` BINARY(16) NOT NULL,
-  `questionType` VARCHAR(45) NULL DEFAULT NULL,
+  `questionNumber` INT NOT NULL,
+  `questionType` CHAR(1) NULL DEFAULT NULL,
   `question` VARCHAR(200) NULL DEFAULT NULL,
   `versionID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`questionID`),
@@ -178,12 +166,11 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`multiplechoicequestion` (
   `questionID` BINARY(16) NOT NULL,
-  `choiceID` BINARY(16) NOT NULL,
   `choiceNumber` INT NOT NULL,
-  `text` VARCHAR(256) NULL DEFAULT NULL,
+  `description` VARCHAR(256) NULL DEFAULT NULL,
   `correction` TINYINT NULL DEFAULT NULL,
   `score` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`questionID`, `choiceID`),
+  PRIMARY KEY (`questionID`, `choiceNumber`),
   CONSTRAINT `questionIDmc`
     FOREIGN KEY (`questionID`)
     REFERENCES `ras_exams`.`question` (`questionID`))
@@ -198,14 +185,14 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `ras_exams`.`answermultiplechoice` (
   `examAnswerID` BINARY(16) NOT NULL,
   `questionID` BINARY(16) NOT NULL,
-  `choiceID` BINARY(16) NOT NULL,
+  `choiceNumber` INT NOT NULL,
   `selected` TINYINT NULL DEFAULT NULL,
   `grade` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`examAnswerID`, `questionID`, `choiceID`),
-  INDEX `answerMultipleChoice_idx` (`questionID` ASC, `choiceID` ASC) VISIBLE,
+  PRIMARY KEY (`examAnswerID`, `questionID`, `choiceNumber`),
+  INDEX `answerMultipleChoice_idx` (`questionID` ASC, `choiceNumber` ASC) VISIBLE,
   CONSTRAINT `answerMultipleChoice`
-    FOREIGN KEY (`questionID` , `choiceID`)
-    REFERENCES `ras_exams`.`multiplechoicequestion` (`questionID` , `choiceID`),
+    FOREIGN KEY (`questionID` , `choiceNumber`)
+    REFERENCES `ras_exams`.`multiplechoicequestion` (`questionID` , `choiceNumber`),
   CONSTRAINT `examAnswerMC`
     FOREIGN KEY (`examAnswerID`)
     REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))

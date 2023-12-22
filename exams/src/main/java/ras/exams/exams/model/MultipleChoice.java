@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MultipleChoice extends Question{
     private List<Choice> choices;
 
-    public MultipleChoice(@JsonProperty("id") UUID id, @JsonProperty("question") String question,@JsonProperty("qn") int qn,@JsonProperty("choices") List<Choice> choices){
-        super(id, question, qn);
+    public MultipleChoice(@JsonProperty("id") UUID id, @JsonProperty("question") String question,@JsonProperty("qn") int qn, @JsonProperty("versionID") UUID versionID,@JsonProperty("choices") List<Choice> choices){
+        super(id, question, qn, 'M', versionID);
         this.choices = choices;
     }
 

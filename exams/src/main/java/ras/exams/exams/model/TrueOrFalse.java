@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TrueOrFalse extends Question{
     List<TOFQ> questions;
 
-    public TrueOrFalse(@JsonProperty("id") UUID id,@JsonProperty("question") String question,@JsonProperty("qn") int qn,@JsonProperty("questions") List<TOFQ> questions){
-        super(id, question, qn);
+    public TrueOrFalse(@JsonProperty("id") UUID id,@JsonProperty("question") String question,@JsonProperty("qn") int qn, @JsonProperty("versionID") UUID versionID,@JsonProperty("questions") List<TOFQ> questions){
+        super(id, question, qn, 'T', versionID);
         this.questions = questions;
     }
 

@@ -9,8 +9,8 @@ public class Writing extends Question{
     private int minimumLimit;
     private int maximumLimit;
 
-    public Writing(@JsonProperty("id") UUID id,@JsonProperty("question") String question,@JsonProperty("qn") int qn,@JsonProperty("criteria") String criteria,@JsonProperty("min") int min,@JsonProperty("max") int max){
-        super(id, question, qn);
+    public Writing(@JsonProperty("id") UUID id,@JsonProperty("question") String question,@JsonProperty("qn") int qn, @JsonProperty("versionID") UUID versionID,@JsonProperty("criteria") String criteria,@JsonProperty("min") int min,@JsonProperty("max") int max){
+        super(id, question, qn, 'W', versionID);
         this.criteria = criteria;
         this.minimumLimit = min;
         this.maximumLimit = max;
