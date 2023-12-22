@@ -11,7 +11,9 @@ public abstract class Question {
     private char questionType; // 'M', 'T', 'W' or 'C'
     private final UUID versionID; 
     
-    public Question(@JsonProperty("id")UUID id,@JsonProperty("question") String question,@JsonProperty("qn") int qn, @JsonProperty("qtype") char qtype, @JsonProperty("versionID") UUID versionID){
+    public Question(@JsonProperty("id")UUID id,@JsonProperty("question") String question,
+        @JsonProperty("qn") int qn, @JsonProperty("qtype") char qtype, 
+        @JsonProperty("versionID") UUID versionID){
         this.questionId = id;
         this.question = question;
         this.questionNumber = qn;

@@ -1,5 +1,6 @@
 package ras.exams.exams.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +12,11 @@ public class ExamVersion {
 
     public ExamVersion(@JsonProperty("id") UUID id){
         this.versionId = id;
+        this.questions = new ArrayList<>();
+    }
+
+    public void addMultipleChoiceQuestion(MultipleChoice mc){
+        this.questions.add(mc.getQuestionNumber(), mc);
     }
 
     public UUID getVersionId(){

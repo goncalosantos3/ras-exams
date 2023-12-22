@@ -1,7 +1,7 @@
 package ras.exams.exams.api;
 
 import ras.exams.exams.model.CompleteSpaces;
-import ras.exams.exams.model.Exam;
+import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.MultipleChoice;
 import ras.exams.exams.model.TOFQ;
@@ -31,7 +31,7 @@ public class ExamsController {
     @PostMapping("exam")
     public int createExam(@RequestParam("examName") String examName){
         // Função que cria o exame com base no examName
-        //examService.createExam(examName);
+        examService.createExam(examName);
         return 200;
     }
 
@@ -46,25 +46,25 @@ public class ExamsController {
 
     // Rota - POST /exams/header
     @PostMapping("exams/header")
-    public int createExamHeader(@RequestBody ExamHeader examHeader) {
+    public int addExamHeader(@RequestBody ExamHeader examHeader) {
         // Tem de devolver um inteiro, indicando se o examHeader foi adicionado ou não
-        // examService.createExamHeader(examHeader);
+        examService.addExamHeader(examHeader);
         return 200;
     }
     
-    // Rota - POST /exam/saveExam/{numberStudent}/{examName}
+    // Rota - POST /exam/saveExam/{studentNumber}/{examName}
     @PostMapping("exam/saveExam")
-    public int saveExam(@PathVariable String examName,@PathVariable String numberStudent,@RequestBody Exam exam) {
+    public int saveExam(@PathVariable String studentNumber, @PathVariable String examName, @RequestBody ExamAnswer examAnswer) {
         // Tem de devolver um inteiro, indicando se o exame foi guardado com sucesso ou não
-        // examService.saveExam(examName,numberStudent,exam);
+        // examService.saveExam(examName, studentNumber, examAnswer);
         return 200;
     }
     
     // Rota - POST /exams/QuestionMultipleChoice?examName=xxxx
     @PostMapping("exams/QuestionMultipleChoice")
-    public int createQuestionMultipleChoice(@RequestParam("examName") String examName, @RequestBody MultipleChoice multipleChoice) {
+    public int addMultipleChoiceQuestion(@RequestParam("examName") String examName, @RequestBody MultipleChoice multipleChoice) {
         // Tem de devolver um inteiro, indicando se a questão de escolha múltipla foi adicionada ou não
-        // examService.createQuestionMultipleChoice(examName,multipleChoice)
+        examService.addMultipleChoiceQuestion(examName, multipleChoice);
         return 200;
     }
     
@@ -120,7 +120,7 @@ public class ExamsController {
     }
 
     // Rota - PUT /exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}
-    @PutMapping("exams/QuestionTrueorFalse")
+    @PutMapping("exams/QuestionWriting")
     public void updateWritingQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody Writing writingQuestion){
         // Tem de dar return a questão de escrita corretamente atualizada - Writing
         // return examService.updateWritingQuestion(examName,versionNumber,questionNumber,writingQuestion)

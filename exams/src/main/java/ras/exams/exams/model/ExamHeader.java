@@ -8,15 +8,19 @@ public class ExamHeader {
     private String examName;
     private String examUC;
     private String examAdmissionTime;
-    private List<String> examScheduleIDs;
+    private List<String> examScheduleIDs;   
     
-    public ExamHeader(@JsonProperty("examName")String examName,@JsonProperty("examUC") String examUC,@JsonProperty("examAdmissionTime") String examAdmissionTime){
+    public ExamHeader(String examName){
+        this.examName = examName;
+    }
+
+    public ExamHeader(String examName, String examUC, String examAdmissionTime){
         this.examName = examName;
         this.examUC = examUC;
         this.examAdmissionTime = examAdmissionTime;
     }
 
-    public ExamHeader(@JsonProperty("examName")String examName,@JsonProperty("examUC") String examUC,@JsonProperty("examAdmissionTime") String examAdmissionTime,@JsonProperty("schedule") List<String> schedule){
+    public ExamHeader(@JsonProperty("examName")String examName, @JsonProperty("examUC") String examUC, @JsonProperty("examAdmissionTime") String examAdmissionTime, @JsonProperty("schedule") List<String> schedule){
         this.examName = examName;
         this.examUC = examUC;
         this.examAdmissionTime = examAdmissionTime;
