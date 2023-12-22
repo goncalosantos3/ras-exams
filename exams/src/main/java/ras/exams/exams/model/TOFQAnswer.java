@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TOFQAnswer {
     private int grade;
     private boolean answer;
-    private Question question;
+    private TOFQ option;
 
-    public TOFQAnswer(@JsonProperty("grade")int grade,@JsonProperty("answer") boolean answer,@JsonProperty("q") Question q){   
+    public TOFQAnswer(@JsonProperty("grade")int grade,@JsonProperty("answer") boolean answer,@JsonProperty("o") TOFQ option){   
         this.grade = grade;
         this.answer = answer;
-        this.question = q;
+        this.option = option;
     }
 
     public int getGrade(){
@@ -21,7 +21,7 @@ public class TOFQAnswer {
         return this.answer;
     }
 
-    public Question getQuestion(){
-        return this.question;
+    public TOFQ getOption(){
+        return this.option;
     }
 }
