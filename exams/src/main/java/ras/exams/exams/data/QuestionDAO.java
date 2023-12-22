@@ -108,8 +108,8 @@ public class QuestionDAO implements Map<UUID, Question> {
         List<Choice> choices = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM multiplechoicequestion WHERE questionID='"+
-                                                                            questionID.toString()+"'"))
+            ResultSet rs = stm.executeQuery("SELECT * FROM multiplechoicequestion WHERE questionID=UUID_TO_BIN('"+
+                                                                            questionID.toString()+"')"))
         {
             while(rs.next())
             {
@@ -315,6 +315,26 @@ public class QuestionDAO implements Map<UUID, Question> {
         return rSet;
     }
 
+    public List<Question> getQuestionsFromVersion(UUID versionID)
+    {
+        List<Question> questions = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery("SELECT * FROM question WHERE versionID=UUID_TO_BIN('"+versionID.toString()+")'"))
+        {
+            while (rs.next())
+            {
+                Question q = this.getQuestion(rs);
+                questions.add(q);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return questions;
+    }
 
     @Override
     public Question get(Object arg0) {
@@ -324,7 +344,12 @@ public class QuestionDAO implements Map<UUID, Question> {
         Question q = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM question WHERE questionID='"+key.toString()+"'"))
+            ResultSet rs = stm.executeQuery("""
+            SELECT BIN_TO_UUID(questionID) as questionID,
+            questionNumber,
+            questionType,
+            question,
+            BIN_TO_UUID(versionID) as versionID FROM question WHERE questionID=UUID_TO_BIN('"""+key.toString()+"')"))
         {
             if (rs.next())
             {
@@ -477,11 +502,13 @@ public class QuestionDAO implements Map<UUID, Question> {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
         {
-            stm.executeUpdate("DELETE FROM question WHERE questionID='"+arg0.toString()+"'");
-            stm.executeUpdate("DELETE FROM completespacesquestion WHERE questionID='"+arg0.toString()+"'");
-            stm.executeUpdate("DELETE FROM multiplechoicequestion WHERE questionID='"+arg0.toString()+"'");
-            stm.executeUpdate("DELETE FROM trueorfalsequestion WHERE questionID='"+arg0.toString()+"'");
-            stm.executeUpdate("DELETE FROM writingquestion WHERE questionID='"+arg0.toString()+"'");
+            stm.execute("SET FOREIGN_KEY_CHECKS=0");
+            stm.executeUpdate("DELETE FROM question WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
+            stm.executeUpdate("DELETE FROM completespacesquestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
+            stm.executeUpdate("DELETE FROM multiplechoicequestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
+            stm.executeUpdate("DELETE FROM trueorfalsequestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
+            stm.executeUpdate("DELETE FROM writingquestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
+            stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
         catch (SQLException e)
         {
@@ -514,7 +541,13 @@ public class QuestionDAO implements Map<UUID, Question> {
         Set<Question> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * from question"))
+            ResultSet rs = stm.executeQuery(
+            """
+            SELECT BIN_TO_UUID(questionID) as questionID,
+            questionNumber,
+            questionType,
+            question,
+            BIN_TO_UUID(versionID) as versionID from question"""))
         {
             while(rs.next())
             {
