@@ -57,37 +57,30 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return ExamVersionDAO.singleton;
     }
 
-    // public List<ExamVersion> getExamVersionsFromExam (UUID examID)
-    // {
-    //     List<ExamVersion> examAnswers = new ArrayList<>();
-    //     try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-    //         Statement stm = conn.createStatement();
-    //         ResultSet rs = stm.executeQuery("""
-    //         SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
-    //                 BIN_TO_UUID(studentID) as studentID,
-    //                 grade
-    //         FROM examversion
-    //         WHERE examID=UUID_TO_BIN('"""+examID.toString()+"')"))
-    //     {
-    //         if (rs.next())
-    //         {
-    //             UUID examAnswerID = UUID.fromString(rs.getString("examAnswerID")),
-    //                     studentID = UUID.fromString(rs.getString("studentID"));
-    //             int grade = rs.getInt("grade");
-    //             examAnswers.add(new ExamVersion(examAnswerID, 
-    //                                 examID, 
-    //                                 studentID, 
-    //                                 grade, 
-    //                                 this.answerDAO.getAnswersFromExamVersion(examAnswerID)));
-    //         }
-    //     }
-    //     catch (SQLException e)
-    //     {
-    //         e.printStackTrace();
-    //         throw new NullPointerException(e.getMessage());
-    //     }
-    //     return examAnswers; 
-    // }
+    public List<ExamVersion> getExamVersionsFromExam (UUID examID)
+    {
+        List<ExamVersion> examAnswers = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery("""
+            SELECT BIN_TO_UUID(examVersionID) as examVersionID,
+                    BIN_TO_UUID(examID) as examID,
+                    versionNumber
+            FROM examversion
+            WHERE examID=UUID_TO_BIN('"""+examID.toString()+"')"))
+        {
+            while (rs.next())
+            {
+                examAnswers.add(this.getExamVersion(rs));
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return examAnswers; 
+    }
 
     // public ExamVersion getStudentExamVersion (UUID studentID)
     // {
@@ -137,6 +130,7 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE examversion");
+            this.questionDAO.clear();
             stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
         catch (SQLException e)

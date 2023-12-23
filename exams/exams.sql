@@ -26,11 +26,14 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
   `examHeaderID` BINARY(16) NOT NULL,
-  `examAdmissionTime` TIME NULL DEFAULT NULL,
+  `examID` BINARY(16) NULL DEFAULT NULL,  
+  `examName` VARCHAR(64) NOT NULL,
   `examUC` VARCHAR(64) NULL,
-  `examID` BINARY(16) NULL DEFAULT NULL,
+  `examAdmissionTime` TIME NULL DEFAULT NULL,
   PRIMARY KEY (`examHeaderID`),
   INDEX `examID_idx` (`examID` ASC) VISIBLE,
+  CONSTRAINT `examIDunique`
+    UNIQUE(`examID`),
   CONSTRAINT `examIDheader`
     FOREIGN KEY (`examID`)
     REFERENCES `ras_exams`.`exam` (`examID`))
@@ -46,12 +49,10 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`examschedules` (
   `scheduleID` BINARY(16) NOT NULL,
   `examHeaderID` BINARY(16) NOT NULL,
   PRIMARY KEY (`scheduleID`, `examHeaderID`),
-  INDEX `examSchedule_idx` (`examHeaderID` ASC) VISIBLE,
+  INDEX `examSchedule_idx` (`scheduleID` ASC) VISIBLE,
   CONSTRAINT `examSchedule`
     FOREIGN KEY (`examHeaderID`)
-    REFERENCES `ras_exams`.`examheader` (`examHeaderID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `ras_exams`.`examheader` (`examHeaderID`))
 ENGINE = InnoDB;
 
 

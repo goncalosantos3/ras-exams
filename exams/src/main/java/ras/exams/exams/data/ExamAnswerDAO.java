@@ -126,6 +126,7 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE examanswer");
+            this.answerDAO.clear();
             stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
         catch (SQLException e)

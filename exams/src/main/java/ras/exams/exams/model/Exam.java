@@ -12,13 +12,15 @@ public class Exam {
     private final UUID id;
     private List<String> enrolled;
     private ExamHeader header;
-    private Map<UUID ,ExamVersion> versions;
-    private Map<UUID,ExamAnswer> answers;
+    private Map<UUID, ExamVersion> versions;
+    private Map<UUID, ExamAnswer> answers;
 
     public Exam(UUID id, String examName){
         this.id = id;
+        this.enrolled = new ArrayList<>();
         this.header = new ExamHeader(examName);
         this.versions = new HashMap<>();
+        this.answers = new HashMap<>();
     }
 
     public Exam(@JsonProperty("id") UUID id,@JsonProperty("header") ExamHeader header){
@@ -27,6 +29,15 @@ public class Exam {
         this.header = header;
         this.versions = new HashMap<>();
         this.answers = new HashMap<>();
+    }
+
+    public Exam(UUID examID, List<String> enrolled, ExamHeader header, 
+                Map<UUID,ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
+        this.id = examID;
+        this.enrolled = new ArrayList<>(enrolled);
+        this.header = header;
+        this.versions = new HashMap<>(versions);
+        this.answers = new HashMap<>(answers);
     }
 
     public void addQuestion(UUID versionId, Question q){
