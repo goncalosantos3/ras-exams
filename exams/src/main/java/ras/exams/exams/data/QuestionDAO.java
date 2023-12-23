@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ras.exams.exams.model.Question;
 import ras.exams.exams.model.CompleteSpaces;
@@ -102,7 +104,61 @@ public class QuestionDAO implements Map<UUID, Question> {
         }
         return QuestionDAO.singleton;
     }
-            
+
+    public Choice getChoice(UUID questionID, int choiceNumber)
+    {
+        Choice c = null;
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(
+            """
+            SELECT choiceNumber, description, correction, score 
+            FROM multiplechoicequestion
+            WHERE questionID=UUID_TO_BIN('"""+questionID.toString()+"') AND choiceNumber=" + choiceNumber))
+        {
+            if (rs.next())
+            {
+                String description = rs.getString("description");
+                boolean correction = rs.getBoolean("correction");
+                int score = rs.getInt("score");
+                c = new Choice(description, correction, score, choiceNumber);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return c;
+    }
+
+    public TOFQ getTOFQ(UUID questionID, int optionNumber)
+    {
+        TOFQ o = null;
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(
+            """
+            SELECT optionNumber, description, correction, score 
+            FROM trueorfalsequestion
+            WHERE questionID=UUID_TO_BIN('"""+questionID.toString()+"') AND optionNumber=" + optionNumber))
+        {
+            if (rs.next())
+            {
+                String description = rs.getString("description");
+                boolean correction = rs.getBoolean("correction");
+                int score = rs.getInt("score");
+                o = new TOFQ(description, correction, score, optionNumber);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return o;
+    }
+
     private List<Choice> getChoices(UUID questionID)
     {
         List<Choice> choices = new ArrayList<>();
@@ -220,7 +276,7 @@ public class QuestionDAO implements Map<UUID, Question> {
                     q = new MultipleChoice(questionID, 
                                             question, 
                                             questionNumber, 
-                                            versionID,
+                                            versionID.toString(),
                                             this.getChoices(questionID));
                     break;
                 case "T":
@@ -265,11 +321,11 @@ public class QuestionDAO implements Map<UUID, Question> {
     }
 
     @Override
-    public boolean containsKey(Object arg0) {
+    public boolean containsKey(Object key) {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT questionID FROM question WHERE questionID=UUID_TO_BIN('"+arg0.toString()+")'"))
+            ResultSet rs = stm.executeQuery("SELECT questionID FROM question WHERE questionID=UUID_TO_BIN('"+key.toString()+")'"))
         {
             r = rs.next();
         }
@@ -282,8 +338,8 @@ public class QuestionDAO implements Map<UUID, Question> {
     }
 
     @Override
-    public boolean containsValue(Object arg0) {
-        Question q = (Question) arg0;
+    public boolean containsValue(Object value) {
+        Question q = (Question) value;
         return this.containsKey(q.getQuestionId());
     }
 
@@ -320,7 +376,15 @@ public class QuestionDAO implements Map<UUID, Question> {
         List<Question> questions = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM question WHERE versionID=UUID_TO_BIN('"+versionID.toString()+")'"))
+            ResultSet rs = stm.executeQuery(
+            """
+            SELECT BIN_TO_UUID(questionID) as questionID,
+                    questionNumber,
+                    questionType,
+                    question,
+                    BIN_TO_UUID(versionID) as versionID
+            FROM question 
+            WHERE versionID=UUID_TO_BIN('"""+versionID.toString()+")'"))
         {
             while (rs.next())
             {
@@ -337,19 +401,20 @@ public class QuestionDAO implements Map<UUID, Question> {
     }
 
     @Override
-    public Question get(Object arg0) {
-        if (!(arg0 instanceof UUID))
+    public Question get(Object key) {
+        if (!(key instanceof UUID))
             return null;
-        UUID key = (UUID)arg0;
         Question q = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(questionID) as questionID,
-            questionNumber,
-            questionType,
-            question,
-            BIN_TO_UUID(versionID) as versionID FROM question WHERE questionID=UUID_TO_BIN('"""+key.toString()+"')"))
+                    questionNumber,
+                    questionType,
+                    question,
+                    BIN_TO_UUID(versionID) as versionID 
+            FROM question 
+            WHERE questionID=UUID_TO_BIN('"""+key.toString()+"')"))
         {
             if (rs.next())
             {
@@ -390,12 +455,16 @@ public class QuestionDAO implements Map<UUID, Question> {
         return r;
     }
 
-    private void putType(UUID questionID, Question q, Statement stm) throws SQLException
+    private void putType(UUID questionID, Question q, Statement stm) throws SQLException, InvalidQuestionException
     {
         char type = q.getQuestionType();
         if (type == 'C' && q instanceof CompleteSpaces)
         {
             CompleteSpaces c = (CompleteSpaces)q;
+            Pattern pattern = Pattern.compile("^(\\w|\\s)*(\\{(\\w|\\d)+,\\s*\\d+\\}(\\w|\\s)*)+$", Pattern.MULTILINE);
+            Matcher matcher = pattern.matcher(c.getText());
+            if (!matcher.matches())
+                throw new InvalidQuestionException('C');
             stm.executeUpdate("INSERT INTO completespacesquestion "+
                                 "VALUES ("+
                                     "UUID_TO_BIN('"+questionID.toString()+"'),"+
@@ -460,28 +529,30 @@ public class QuestionDAO implements Map<UUID, Question> {
     }
 
     @Override
-    public Question put(UUID arg0, Question arg1) {
-        Question rv = this.get(arg0);
+    public Question put(UUID key, Question value) {
+        Question rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO question "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+arg0.toString()+"'),"+
-                                    arg1.getQuestionNumber()+","+
-                                    "'"+arg1.getQuestionType()+"',"+
-                                    "'"+arg1.getQuestion()+"',"+
-                                    "UUID_TO_BIN('"+arg1.getVersionID().toString()+"')"+
+                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    value.getQuestionNumber()+","+
+                                    "'"+value.getQuestionType()+"',"+
+                                    "'"+value.getQuestion()+"',"+
+                                    "UUID_TO_BIN('"+value.getVersionID().toString()+"')"+
                                 ") ON DUPLICATE KEY UPDATE "+
                                     "questionID=VALUES(questionID),"+
                                     "questionNumber=VALUES(questionNumber),"+
                                     "questionType=VALUES(questionType),"+
                                     "question=VALUES(question),"+
                                     "versionID=VALUES(versionID)");
-            this.putType(arg0, arg1, stm);
+            this.putType(key, value, stm);
         }
-        catch (SQLException e)
+        catch (SQLException | InvalidQuestionException e)
         {
+            if (rv == null)
+                this.remove(key);
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }
@@ -489,25 +560,25 @@ public class QuestionDAO implements Map<UUID, Question> {
     }
 
     @Override
-    public void putAll(Map<? extends UUID, ? extends Question> arg0) {
-        for (Entry<? extends UUID, ? extends Question> entry : arg0.entrySet())
+    public void putAll(Map<? extends UUID, ? extends Question> m) {
+        for (Entry<? extends UUID, ? extends Question> entry : m.entrySet())
         {
             this.put(entry.getKey(), entry.getValue());
         }
     }
 
     @Override
-    public Question remove(Object arg0) {
-        Question rv = this.get(arg0);
+    public Question remove(Object key) {
+        Question rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
-            stm.executeUpdate("DELETE FROM question WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
-            stm.executeUpdate("DELETE FROM completespacesquestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
-            stm.executeUpdate("DELETE FROM multiplechoicequestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
-            stm.executeUpdate("DELETE FROM trueorfalsequestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
-            stm.executeUpdate("DELETE FROM writingquestion WHERE questionID=UUID_TO_BIN('"+arg0.toString()+"')");
+            stm.executeUpdate("DELETE FROM question WHERE questionID=UUID_TO_BIN('"+key.toString()+"')");
+            stm.executeUpdate("DELETE FROM completespacesquestion WHERE questionID=UUID_TO_BIN('"+key.toString()+"')");
+            stm.executeUpdate("DELETE FROM multiplechoicequestion WHERE questionID=UUID_TO_BIN('"+key.toString()+"')");
+            stm.executeUpdate("DELETE FROM trueorfalsequestion WHERE questionID=UUID_TO_BIN('"+key.toString()+"')");
+            stm.executeUpdate("DELETE FROM writingquestion WHERE questionID=UUID_TO_BIN('"+key.toString()+"')");
             stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
         catch (SQLException e)

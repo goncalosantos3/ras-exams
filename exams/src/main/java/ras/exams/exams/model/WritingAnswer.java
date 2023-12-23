@@ -9,7 +9,13 @@ public class WritingAnswer extends Answer{
     private Question question;
 
     public WritingAnswer(@JsonProperty("grade") int grade, @JsonProperty("examAnswerID") UUID examAnswerID,@JsonProperty("text") String text,@JsonProperty("q") Question q){
-        super(grade, examAnswerID);
+        super(grade, examAnswerID, 'W', q.getQuestionId());
+        this.text = text;
+        this.question = q;
+    }
+
+    public WritingAnswer(UUID answerID, int grade, UUID examAnswerID, String text, Question q){
+        super(answerID, grade, examAnswerID, 'W', q.getQuestionId());
         this.text = text;
         this.question = q;
     }
