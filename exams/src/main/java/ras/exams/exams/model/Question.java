@@ -2,23 +2,28 @@ package ras.exams.exams.model;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public abstract class Question {
     private final UUID questionId;
     private String question;
     private int questionNumber;
     private char questionType; // 'M', 'T', 'W' or 'C'
-    private final UUID versionID; 
+    private UUID versionID; 
+    private int versionNumber;
     
-    public Question(@JsonProperty("id")UUID id,@JsonProperty("question") String question,
-        @JsonProperty("qn") int qn, @JsonProperty("qtype") char qtype, 
-        @JsonProperty("versionID") UUID versionID){
+    public Question(UUID id, String question, int qn, char qtype, UUID versionID){
         this.questionId = id;
         this.question = question;
         this.questionNumber = qn;
         this.questionType = qtype;
         this.versionID = versionID;
+    }
+
+    public Question(UUID id, String question, int qn, char qtype, int versionNumber){
+        this.questionId = id;
+        this.question = question;
+        this.questionNumber = qn;
+        this.questionType = qtype;
+        this.versionNumber = versionNumber;
     }
 
     public UUID getQuestionId(){

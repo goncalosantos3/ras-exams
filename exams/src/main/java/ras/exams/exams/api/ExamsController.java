@@ -71,7 +71,7 @@ public class ExamsController {
     @GetMapping("exams/QuestionMultipleChoice")
     public void getQuestionMultipleChoice(@PathVariable String examName,@PathVariable String versionNumber,@PathVariable String questionNumber) {
         // Tem de devolver uma questão de escolha múltipla - MultipleChoice 
-        return examService.getQuestion(examName, versionNumber, questionNumber);
+        // return examService.getQuestion(examName, versionNumber, questionNumber);
     }
     
     // Rota - PUT /exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}

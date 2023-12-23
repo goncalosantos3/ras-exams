@@ -9,8 +9,13 @@ public class TrueOrFalse extends Question{
     List<TOFQ> questions;
 
     public TrueOrFalse(@JsonProperty("id") UUID id,@JsonProperty("question") String question,
-        @JsonProperty("qn") int qn, @JsonProperty("versionID") UUID versionID,
+        @JsonProperty("qn") int qn, @JsonProperty("versionNumber") int versionNumber,
         @JsonProperty("questions") List<TOFQ> questions){
+        super(id, question, qn, 'T', versionNumber);
+        this.questions = questions;
+    }
+
+    public TrueOrFalse(UUID id, String question, int qn, UUID versionID, List<TOFQ> questions){
         super(id, question, qn, 'T', versionID);
         this.questions = questions;
     }

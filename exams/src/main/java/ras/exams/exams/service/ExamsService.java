@@ -45,7 +45,7 @@ public class ExamsService {
     }
 
     // Return a question of any type
-    public Question getQuestion(String examName, int versionNumber, int questionNumber){
-        
-    }   
+    //public Question getQuestion(String examName, String versionNumber, String questionNumber){
+    //    
+    //}   
 }

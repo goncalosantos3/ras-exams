@@ -1,6 +1,8 @@
 package ras.exams.exams.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +13,8 @@ public class ExamVersion {
     private int versionNumber;
     private List<Question> questions;
     
-    public ExamVersion(@JsonProperty("id") UUID id, @JsonProperty("examID") UUID examID, @JsonProperty("versionNumber") int versionNumber){
+    public ExamVersion(@JsonProperty("id") UUID id, @JsonProperty("examID") UUID examID, 
+        @JsonProperty("versionNumber") int versionNumber){
         this.versionId = id;
         this.examID = examID;
         this.versionNumber = versionNumber;
@@ -20,6 +23,13 @@ public class ExamVersion {
     
     public void addQuestions(List<Question> questions)
     {
+        // Sort the questions based on questionNumber
+        Collections.sort(questions, new Comparator<Question>(){
+            public int compare(Question q1, Question q2){
+               return q1.getQuestionNumber() - q2.getQuestionNumber();
+            }
+        });
+
         this.questions.addAll(questions);
     }
 

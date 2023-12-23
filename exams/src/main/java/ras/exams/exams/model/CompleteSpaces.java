@@ -9,7 +9,12 @@ public class CompleteSpaces extends Question{
     
     public CompleteSpaces(@JsonProperty("id") UUID id,
         @JsonProperty("question") String question, @JsonProperty("qn") int qn, 
-        @JsonProperty("versionID") UUID versionID,@JsonProperty("text") String text){
+        @JsonProperty("versionNumber") int versionNumber,@JsonProperty("text") String text){
+        super(id, question, qn, 'C', versionNumber);
+        this.text = text;
+    }
+
+    public CompleteSpaces(UUID id, String question, int qn, UUID versionID, String text){
         super(id, question, qn, 'C', versionID);
         this.text = text;
     }
