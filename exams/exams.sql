@@ -27,7 +27,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
   `examHeaderID` BINARY(16) NOT NULL,
   `examAdmissionTime` TIME NULL DEFAULT NULL,
-  `examUC` VARCHAR(45) NULL,
+  `examUC` VARCHAR(64) NULL,
   `examID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`examHeaderID`),
   INDEX `examID_idx` (`examID` ASC) VISIBLE,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`question` (
   `questionID` BINARY(16) NOT NULL,
   `questionNumber` INT NOT NULL,
   `questionType` CHAR(1) NULL DEFAULT NULL,
-  `question` VARCHAR(200) NULL DEFAULT NULL,
+  `question` VARCHAR(512) NULL DEFAULT NULL,
   `versionID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`questionID`),
   INDEX `version_idx` (`versionID` ASC) VISIBLE,
@@ -96,7 +96,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`completespacesquestion` (
   `questionID` BINARY(16) NOT NULL,
-  `text` VARCHAR(300) NULL DEFAULT NULL COMMENT 'should be like \"complete the {blank,1} spaces with the {right,1} answers\", where {} is a blank space and the word inside is the correct word and the number how much the question is worth',
+  `text` VARCHAR(2048) NULL DEFAULT NULL COMMENT 'should be like \"complete the {blank,1} spaces with the {right,1} answers\", where {} is a blank space and the word inside is the correct word and the number how much the question is worth',
   PRIMARY KEY (`questionID`),
   CONSTRAINT `questionIDcs`
     FOREIGN KEY (`questionID`)
@@ -144,18 +144,18 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `ras_exams`.`answercompletespaces`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`answercompletespaces` (
-  `examAnswerID` BINARY(16) NOT NULL,
+  `answerID` BINARY(16) NOT NULL,
   `questionID` BINARY(16) NOT NULL,
-  `text` VARCHAR(300) NULL DEFAULT NULL,
+  `text` VARCHAR(2048) NULL DEFAULT NULL,
   `grade` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`examAnswerID`, `questionID`),
+  PRIMARY KEY (`answerID`, `questionID`),
   INDEX `answerCompleteSpaces_idx` (`questionID` ASC) VISIBLE,
   CONSTRAINT `answerCompleteSpaces`
     FOREIGN KEY (`questionID`)
     REFERENCES `ras_exams`.`completespacesquestion` (`questionID`),
   CONSTRAINT `examAnswerCS`
-    FOREIGN KEY (`examAnswerID`)
-    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+    FOREIGN KEY (`answerID`)
+    REFERENCES `ras_exams`.`answer` (`answerID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -183,19 +183,19 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `ras_exams`.`answermultiplechoice`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`answermultiplechoice` (
-  `examAnswerID` BINARY(16) NOT NULL,
+  `answerID` BINARY(16) NOT NULL,
   `questionID` BINARY(16) NOT NULL,
   `choiceNumber` INT NOT NULL,
   `selected` TINYINT NULL DEFAULT NULL,
   `grade` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`examAnswerID`, `questionID`, `choiceNumber`),
+  PRIMARY KEY (`answerID`, `questionID`, `choiceNumber`),
   INDEX `answerMultipleChoice_idx` (`questionID` ASC, `choiceNumber` ASC) VISIBLE,
   CONSTRAINT `answerMultipleChoice`
     FOREIGN KEY (`questionID` , `choiceNumber`)
     REFERENCES `ras_exams`.`multiplechoicequestion` (`questionID` , `choiceNumber`),
   CONSTRAINT `examAnswerMC`
-    FOREIGN KEY (`examAnswerID`)
-    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+    FOREIGN KEY (`answerID`)
+    REFERENCES `ras_exams`.`answer` (`answerID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -223,19 +223,19 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `ras_exams`.`answertrueorfalse`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`answertrueorfalse` (
-  `examAnswerID` BINARY(16) NOT NULL,
+  `answerID` BINARY(16) NOT NULL,
   `questionID` BINARY(16) NOT NULL,
   `optionNumber` INT NOT NULL,
   `answer` TINYINT NULL DEFAULT NULL,
   `grade` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`examAnswerID`, `questionID`, `optionNumber`),
+  PRIMARY KEY (`answerID`, `questionID`, `optionNumber`),
   INDEX `answerTrueOrFalse_idx` (`questionID` ASC, `optionNumber` ASC) VISIBLE,
   CONSTRAINT `answerTrueOrFalse`
     FOREIGN KEY (`questionID` , `optionNumber`)
     REFERENCES `ras_exams`.`trueorfalsequestion` (`questionID` , `optionNumber`),
   CONSTRAINT `examAnswerTF`
-    FOREIGN KEY (`examAnswerID`)
-    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+    FOREIGN KEY (`answerID`)
+    REFERENCES `ras_exams`.`answer` (`answerID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -246,7 +246,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`writingquestion` (
   `questionID` BINARY(16) NOT NULL,
-  `criteria` VARCHAR(200) NULL DEFAULT NULL,
+  `criteria` VARCHAR(512) NULL DEFAULT NULL,
   `minimumLimit` INT NULL DEFAULT NULL,
   `maximumLimit` INT NULL DEFAULT NULL,
   PRIMARY KEY (`questionID`),
@@ -262,22 +262,42 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `ras_exams`.`answerwriting`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`answerwriting` (
-  `examAnswerID` BINARY(16) NOT NULL,
+  `answerID` BINARY(16) NOT NULL,
   `questionID` BINARY(16) NOT NULL,
-  `text` VARCHAR(300) NULL DEFAULT NULL,
+  `text` VARCHAR(2048) NULL DEFAULT NULL,
   `grade` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`examAnswerID`, `questionID`),
+  PRIMARY KEY (`answerID`, `questionID`),
   INDEX `answerWriting_idx` (`questionID` ASC) VISIBLE,
   CONSTRAINT `answerWriting`
     FOREIGN KEY (`questionID`)
     REFERENCES `ras_exams`.`writingquestion` (`questionID`),
   CONSTRAINT `examAnswerW`
+    FOREIGN KEY (`answerID`)
+    REFERENCES `ras_exams`.`answer` (`answerID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `ras_exams`.`answer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ras_exams`.`answer` (
+  `answerID` BINARY(16) NOT NULL,
+  `examAnswerID` BINARY(16) NOT NULL,
+  `questionID` BINARY(16) NOT NULL,
+  `answerType` CHAR(1) NOT NULL,
+  `grade` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`answerID`),
+  INDEX `answer_idx` (`answerID` ASC) VISIBLE,
+  CONSTRAINT `answer`
+    FOREIGN KEY (`questionID`)
+    REFERENCES `ras_exams`.`question` (`questionID`),
+  CONSTRAINT `examAnswer`
     FOREIGN KEY (`examAnswerID`)
     REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
-
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
