@@ -325,7 +325,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT questionID FROM question WHERE questionID=UUID_TO_BIN('"+key.toString()+")'"))
+            ResultSet rs = stm.executeQuery("SELECT questionID FROM question WHERE questionID=UUID_TO_BIN('"+key.toString()+"')"))
         {
             r = rs.next();
         }
@@ -384,7 +384,7 @@ public class QuestionDAO implements Map<UUID, Question> {
                     question,
                     BIN_TO_UUID(versionID) as versionID
             FROM question 
-            WHERE versionID=UUID_TO_BIN('"""+versionID.toString()+")'"))
+            WHERE versionID=UUID_TO_BIN('"""+versionID.toString()+"')"))
         {
             while (rs.next())
             {
@@ -439,7 +439,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT questionID FROM question"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(questionID) FROM question"))
         {
             while (rs.next())
             {

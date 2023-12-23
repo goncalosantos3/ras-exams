@@ -326,7 +326,7 @@ public class AnswerDAO implements Map<UUID, Answer> {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT answerID FROM answer WHERE answerID=UUID_TO_BIN('"+key.toString()+")'"))
+            ResultSet rs = stm.executeQuery("SELECT answerID FROM answer WHERE answerID=UUID_TO_BIN('"+key.toString()+"')"))
         {
             r = rs.next();
         }
@@ -440,7 +440,7 @@ public class AnswerDAO implements Map<UUID, Answer> {
         Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT answerID FROM answer"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(answerID) FROM answer"))
         {
             while (rs.next())
             {

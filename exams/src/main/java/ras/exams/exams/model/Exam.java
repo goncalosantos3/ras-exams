@@ -31,7 +31,7 @@ public class Exam {
 
     public void addMultipleChoiceQuestion(UUID versionId, MultipleChoice mc){
         if(!this.versions.containsKey(versionId)){
-            this.versions.put(versionId, new ExamVersion(versionId));
+            this.versions.put(versionId, new ExamVersion(versionId, this.id, this.versions.size()));
         }
 
         this.versions.get(versionId).addMultipleChoiceQuestion(mc);

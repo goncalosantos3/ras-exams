@@ -27,7 +27,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
   `examHeaderID` BINARY(16) NOT NULL,
   `examAdmissionTime` TIME NULL DEFAULT NULL,
-  `examUC` VARCHAR(45) NULL,
+  `examUC` VARCHAR(64) NULL,
   `examID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`examHeaderID`),
   INDEX `examID_idx` (`examID` ASC) VISIBLE,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`question` (
   `questionID` BINARY(16) NOT NULL,
   `questionNumber` INT NOT NULL,
   `questionType` CHAR(1) NULL DEFAULT NULL,
-  `question` VARCHAR(200) NULL DEFAULT NULL,
+  `question` VARCHAR(512) NULL DEFAULT NULL,
   `versionID` BINARY(16) NULL DEFAULT NULL,
   PRIMARY KEY (`questionID`),
   INDEX `version_idx` (`versionID` ASC) VISIBLE,
@@ -246,7 +246,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`writingquestion` (
   `questionID` BINARY(16) NOT NULL,
-  `criteria` VARCHAR(200) NULL DEFAULT NULL,
+  `criteria` VARCHAR(512) NULL DEFAULT NULL,
   `minimumLimit` INT NULL DEFAULT NULL,
   `maximumLimit` INT NULL DEFAULT NULL,
   PRIMARY KEY (`questionID`),
