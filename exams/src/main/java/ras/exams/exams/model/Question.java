@@ -40,4 +40,8 @@ public abstract class Question {
     public UUID getVersionID() {
         return versionID;
     }
+
+    public String toString(){
+        return "Question Number: " + this.questionNumber + "\n" + this.question + "\n";
+    }
 }

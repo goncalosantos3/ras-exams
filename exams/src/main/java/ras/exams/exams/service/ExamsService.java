@@ -2,7 +2,7 @@ package ras.exams.exams.service;
 
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamHeader;
-import ras.exams.exams.model.MultipleChoice;
+import ras.exams.exams.model.Question;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +29,7 @@ public class ExamsService {
         System.out.println("\n" + exams.get(examId));
     }
 
+    // Add a exam header to an existing exam
     public void addExamHeader(ExamHeader header){
         UUID examId = this.namesIds.get(header.getExamName());
         this.exams.get(examId).setHeader(header);
@@ -36,9 +37,15 @@ public class ExamsService {
         this.exams.put(examId, this.exams.get(examId));
     }
 
-    public void addMultipleChoiceQuestion(String examName, MultipleChoice mc){
+    // Add a new question to an exam of every type
+    public void addQuestion(String examName, Question q){
         Exam e = this.exams.get(this.namesIds.get(examName));
-        e.addMultipleChoiceQuestion(mc.getVersionID(), mc);
+        e.addQuestion(q.getVersionID(), q);
         this.exams.put(e.getID(), e);
     }
+
+    // Return a question of any type
+    public Question getQuestion(String examName, int versionNumber, int questionNumber){
+        
+    }   
 }

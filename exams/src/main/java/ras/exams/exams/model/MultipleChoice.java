@@ -14,6 +14,12 @@ public class MultipleChoice extends Question{
         super(id, question, qn, 'M', UUID.fromString(versionID));
         this.choices = choices;
     }
+    
+    public MultipleChoice(UUID questionID, String question, int questionNumber,
+                            UUID versionID, List<Choice> choices){
+        super(questionID, question, questionNumber, 'M', versionID);
+        this.choices = choices;
+    }
 
     public List<Choice> getChoices(){
         return this.choices;

@@ -29,12 +29,13 @@ public class Exam {
         this.answers = new HashMap<>();
     }
 
-    public void addMultipleChoiceQuestion(UUID versionId, MultipleChoice mc){
+    public void addQuestion(UUID versionId, Question q){
         if(!this.versions.containsKey(versionId)){
             this.versions.put(versionId, new ExamVersion(versionId));
         }
 
-        this.versions.get(versionId).addMultipleChoiceQuestion(mc);
+        this.versions.get(versionId).addQuestion(q);
+        System.out.println(this.versions.get(versionId));
     }
 
     public UUID getID(){

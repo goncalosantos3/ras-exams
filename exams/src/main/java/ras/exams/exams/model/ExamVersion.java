@@ -15,8 +15,16 @@ public class ExamVersion {
         this.questions = new ArrayList<>();
     }
 
-    public void addMultipleChoiceQuestion(MultipleChoice mc){
-        this.questions.add(mc.getQuestionNumber(), mc);
+    // Add a question in the ArrayList in a ordered fashion
+    public void addQuestion(Question q){
+        int pos = 0;
+        for(Question ql: this.questions){
+            if(q.getQuestionNumber() <= ql.getQuestionNumber()){
+                break;
+            }
+            pos += 1;
+        }
+        this.questions.add(pos, q);
     }
 
     public UUID getVersionId(){
@@ -25,5 +33,13 @@ public class ExamVersion {
 
     public List<Question> getQuestions(){
         return this.questions;
+    }
+
+    public String toString(){
+        String str = "Exam version: " + this.versionId.toString() + "\n";
+        for(Question q : this.questions){
+            str += q.toString();
+        } 
+        return str;
     }
 }
