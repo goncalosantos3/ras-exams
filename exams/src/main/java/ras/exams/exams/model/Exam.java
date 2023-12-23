@@ -12,7 +12,7 @@ public class Exam {
     private final UUID id;
     private List<String> enrolled;
     private ExamHeader header;
-    private Map<UUID, ExamVersion> versions;
+    private Map<Integer, ExamVersion> versions;
     private Map<UUID, ExamAnswer> answers;
 
     public Exam(UUID id, String examName){
@@ -32,7 +32,7 @@ public class Exam {
     }
 
     public Exam(UUID examID, List<String> enrolled, ExamHeader header, 
-                Map<UUID,ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
+                Map<Integer, ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
         this.id = examID;
         this.enrolled = new ArrayList<>(enrolled);
         this.header = header;
@@ -40,13 +40,39 @@ public class Exam {
         this.answers = new HashMap<>(answers);
     }
 
-    public void addQuestion(UUID versionId, Question q){
-        if(!this.versions.containsKey(versionId)){
-            this.versions.put(versionId, new ExamVersion(versionId, this.id, this.versions.size()));
+    public boolean addExamVersion(int versionNumber){
+        if(this.versions.containsKey(versionNumber)){
+            return false;
         }
 
-        this.versions.get(versionId).addQuestion(q);
-        System.out.println(this.versions.get(versionId));
+        UUID examVersionID = UUID.randomUUID();
+        this.versions.put(versionNumber, new ExamVersion(examVersionID, this.id, versionNumber));
+        return true;
+    }
+
+    public boolean removeExamVersion(int versionNumber){
+        if(!this.versions.containsKey(versionNumber)){
+            return false;
+        }
+
+        this.versions.remove(versionNumber);
+        return true;
+    }
+
+    // Returns false if versionNumber doesn't exist, true otherwise
+    public boolean addQuestion(int versionNumber, Question q){
+        if(!this.versions.containsKey(versionNumber)){
+            return false;
+        }
+
+        this.versions.get(versionNumber).addQuestion(q);
+        System.out.println(this.versions.get(versionNumber));
+        return true;
+    }
+
+    // Returns a specific question from a specific exam version
+    public Question getQuestion(int versionNumber, int questionNumber){
+        return this.versions.get(versionNumber).getQuestion(questionNumber);
     }
 
     public UUID getID(){
@@ -65,7 +91,7 @@ public class Exam {
         this.header = header;
     }
 
-    public Map<UUID, ExamVersion> getVersions(){
+    public Map<Integer, ExamVersion> getVersions(){
         return this.versions;
     }
 

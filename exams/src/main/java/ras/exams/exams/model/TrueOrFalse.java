@@ -8,13 +8,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TrueOrFalse extends Question{
     List<TOFQ> questions;
 
-    public TrueOrFalse(@JsonProperty("id") UUID id,@JsonProperty("question") String question,
+    // Chamado pelas rotas do controller
+    public TrueOrFalse(@JsonProperty("question") String question,
         @JsonProperty("qn") int qn, @JsonProperty("versionNumber") int versionNumber,
         @JsonProperty("questions") List<TOFQ> questions){
-        super(id, question, qn, 'T', versionNumber);
+        super(UUID.randomUUID(), question, qn, 'T', versionNumber);
         this.questions = questions;
     }
 
+    // Chamado pela BD
     public TrueOrFalse(UUID id, String question, int qn, UUID versionID, List<TOFQ> questions){
         super(id, question, qn, 'T', versionID);
         this.questions = questions;

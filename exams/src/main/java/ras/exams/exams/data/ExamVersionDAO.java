@@ -11,9 +11,6 @@ import java.util.UUID;
 
 import ras.exams.exams.model.ExamVersion;
 import ras.exams.exams.model.Question;
-import ras.exams.exams.model.ExamVersion;
-import ras.exams.exams.model.Answer;
-
 
 public class ExamVersionDAO implements Map<UUID, ExamVersion> {
 

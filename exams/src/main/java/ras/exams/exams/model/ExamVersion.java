@@ -44,6 +44,18 @@ public class ExamVersion {
         }
         this.questions.add(pos, q);
     }
+
+    public Question getQuestion(int questionNumber){
+        Question q = null;
+        
+        for(Question ql: this.questions){
+            if(ql.getQuestionNumber() == questionNumber){
+                q = ql;
+            }
+        }
+
+        return q;
+    }
     
     public UUID getVersionId(){
         return this.versionId;

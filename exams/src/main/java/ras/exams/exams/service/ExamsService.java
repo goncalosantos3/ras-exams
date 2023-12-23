@@ -37,15 +37,30 @@ public class ExamsService {
         this.exams.put(examId, this.exams.get(examId));
     }
 
+    public boolean addExamVersion(String examName, int versionNumber){
+        UUID examId = this.namesIds.get(examName);
+        boolean res = this.exams.get(examId).addExamVersion(versionNumber);
+        this.exams.put(examId, this.exams.get(examId));
+        return res;
+    }
+
+    public boolean removeExamVersion(String examName, int versionNumber){
+        UUID examId = this.namesIds.get(examName);
+        boolean res = this.exams.get(examId).removeExamVersion(versionNumber);
+        this.exams.put(examId, this.exams.get(examId));
+        return res;
+    }
+
     // Add a new question to an exam of every type
     public void addQuestion(String examName, Question q){
         Exam e = this.exams.get(this.namesIds.get(examName));
-        e.addQuestion(q.getVersionID(), q);
+        e.addQuestion(q.getVersionNumber(), q);
         this.exams.put(e.getID(), e);
     }
 
     // Return a question of any type
-    //public Question getQuestion(String examName, String versionNumber, String questionNumber){
-    //    
-    //}   
+    public Question getQuestion(String examName, String versionNumber, String questionNumber){
+        Exam e = this.exams.get(this.namesIds.get(examName));
+        return e.getQuestion(Integer.parseInt(versionNumber), Integer.parseInt(questionNumber));
+    }   
 }

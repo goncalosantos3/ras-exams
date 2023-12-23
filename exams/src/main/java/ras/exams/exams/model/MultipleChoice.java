@@ -8,13 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MultipleChoice extends Question{
     private List<Choice> choices;
 
-    public MultipleChoice(@JsonProperty("id") UUID id, @JsonProperty("question") String question,
-        @JsonProperty("qn") int qn, @JsonProperty("versionNumber") int versionNumber,
-        @JsonProperty("choices") List<Choice> choices){
-        super(id, question, qn, 'M', versionNumber);
+    // Chamado pelas rotas do controller
+    public MultipleChoice(@JsonProperty("question") String question, @JsonProperty("qn") int qn, 
+        @JsonProperty("versionNumber") int versionNumber, @JsonProperty("choices") List<Choice> choices){
+        super(UUID.randomUUID(), question, qn, 'M', versionNumber);
         this.choices = choices;
     }
 
+    // Chamado pela BD
     public MultipleChoice(UUID id, String question, int qn, String versionID, List<Choice> choices){
         super(id, question, qn, 'M', UUID.fromString(versionID));
         this.choices = choices;

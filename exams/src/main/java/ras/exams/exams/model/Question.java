@@ -10,6 +10,7 @@ public abstract class Question {
     private UUID versionID; 
     private int versionNumber;
     
+    // Chamado pela BD
     public Question(UUID id, String question, int qn, char qtype, UUID versionID){
         this.questionId = id;
         this.question = question;
@@ -17,7 +18,7 @@ public abstract class Question {
         this.questionType = qtype;
         this.versionID = versionID;
     }
-
+    
     public Question(UUID id, String question, int qn, char qtype, int versionNumber){
         this.questionId = id;
         this.question = question;
@@ -44,6 +45,10 @@ public abstract class Question {
 
     public UUID getVersionID() {
         return versionID;
+    }
+
+    public int getVersionNumber(){
+        return versionNumber;
     }
 
     public String toString(){
