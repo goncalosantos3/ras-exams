@@ -44,7 +44,7 @@ public class AnswerDAO implements Map<UUID, Answer> {
                 CONSTRAINT `examAnswer`
                     FOREIGN KEY (`examAnswerID`)
                     REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
-        """;
+            """;
             stm.executeUpdate(sql);
 
             sql = 
