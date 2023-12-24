@@ -19,12 +19,14 @@ public class ExamsService {
     private Map<String, UUID> namesIds; // Maps exam's names to ids
 
     public ExamsService(){
-        // this.exams = new ArrayList<>();
-        this.exams = ExamDao.getInstance();
+        // this.exams = ExamDao.getInstance();
+        // this.namesIds = new HashMap<>();
+        // for(Map.Entry<UUID, Exam> e : this.exams.entrySet()){
+        //     this.namesIds.put(e.getValue().getHeader().getExamName(), e.getKey()); 
+        // }
+
+        this.exams = new HashMap<>();
         this.namesIds = new HashMap<>();
-        for(Map.Entry<UUID, Exam> e : this.exams.entrySet()){
-            this.namesIds.put(e.getValue().getHeader().getExamName(), e.getKey()); 
-        }
     }
     
     // Creates a new Exam with only it's name
