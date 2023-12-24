@@ -26,7 +26,7 @@ public class ExamVersion {
         // Sort the questions based on questionNumber
         Collections.sort(questions, new Comparator<Question>(){
             public int compare(Question q1, Question q2){
-               return q1.getQuestionNumber() - q2.getQuestionNumber();
+                return q1.getQuestionNumber() - q2.getQuestionNumber();
             }
         });
 

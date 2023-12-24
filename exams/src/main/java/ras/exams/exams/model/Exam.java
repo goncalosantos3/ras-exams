@@ -64,7 +64,7 @@ public class Exam {
         if(!this.versions.containsKey(versionNumber)){
             return false;
         }
-
+        q.setVersionID(this.versions.get(versionNumber).getVersionId());
         return this.versions.get(versionNumber).addQuestion(q);
     }
 
