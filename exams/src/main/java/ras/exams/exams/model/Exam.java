@@ -111,4 +111,8 @@ public class Exam {
         str += "\nExamUC: " + this.header.getExamUC() + "\nAdmissionTime: " + this.header.getExamAdmissionTime();
         return str;
     }
+
+    public void setEnrolled(String numberStudent){
+        this.enrolled.add(numberStudent);
+    }
 }

@@ -194,16 +194,23 @@ public class ExamsController {
 
     // Rota - GET /getExambyStudent?studentNumber=xxxx
     @GetMapping("getExambyStudent")
-    public void getExambyStudent(@RequestParam("studentNumber") String studentNumber) {
+    public List<Exam> getExambyStudent(@RequestParam("studentNumber") String studentNumber) {
         // Dá return a uma lista de exames na qual o aluno está inscrito - List<Exam>
-        // return examService.getExambyStudent(studentNumber);
+        return examService.getExambyStudent(studentNumber);
+    }
+
+    // Rota - PUT /enrollStudent/{examName}?studentNumber=xxxx
+    @PutMapping("enrollStudent/{examName}")
+    public int enrollStudent(@PathVariable String examName, @RequestParam("studentNumber") String studentNumber) {
+        // Dá return a um inteiro indicando se o aluno foi inscrito no exame ou não
+        return examService.enrollStudent(examName,studentNumber);
     }
 
     // Rota - GET /getSpecificExamforStudent?studentNumber=xxxxexamName=xxxx
     @GetMapping("getSpecificExamforStudent")
-    public void getSpecificExamforStudent(@RequestParam("studentNumber") String studentNumber,@RequestParam("examName") String examName) {
+    public Exam getSpecificExamforStudent(@RequestParam("studentNumber") String studentNumber,@RequestParam("examName") String examName) {
         // Dá return a um exame especifico do aluno - Exam 
-        // return examService.getSpecificExamforStudent(studentNumber,examName)
+        return examService.getSpecificExamforStudent(studentNumber,examName);
     }
 
     // Rota - POST /replyExam/{numberStudent}/{examName}?questionID=xxxx

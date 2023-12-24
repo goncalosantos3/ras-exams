@@ -110,4 +110,38 @@ public class ExamsService {
             return 404;
         }
     }
+
+    public List <Exam> getExambyStudent(String studentNumber){
+        List <Exam> res = new ArrayList<>();
+        for (Map.Entry<UUID, Exam> entry : this.exams.entrySet()) {
+            Exam e = entry.getValue();
+            List<String> enrolled = e.getEnrolled();
+            if (enrolled.contains(studentNumber)){
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    public int enrollStudent(String examName,String studentNumber){
+        Exam e = null;
+        if (this.namesIds.containsKey(examName)){
+            e = this.exams.get(this.namesIds.get(examName));
+            e.setEnrolled(studentNumber);
+            return 200;
+        }
+        return 404;
+    }
+
+    public Exam getSpecificExamforStudent(String studentNumber,String examName){
+        Exam e = null;
+        if (this.namesIds.containsKey(examName)){
+            e = this.exams.get(this.namesIds.get(examName));
+            List<String> enrolled = e.getEnrolled();
+            if (enrolled.contains(studentNumber)){
+                return e;
+            }
+        }
+        return e;
+    }
 }
