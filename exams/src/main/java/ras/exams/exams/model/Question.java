@@ -27,6 +27,10 @@ public abstract class Question {
         this.versionNumber = versionNumber;
     }
 
+    public void setVersionID(UUID versionID){
+        this.versionID = versionID;
+    }
+
     public UUID getQuestionId(){
         return this.questionId;
     }

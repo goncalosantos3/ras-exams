@@ -12,9 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import ras.exams.exams.model.ExamHeader;
-import ras.exams.exams.model.Question;
-import ras.exams.exams.model.Answer;
-import ras.exams.exams.model.ExamHeader;
 
 
 public class ExamHeaderDAO implements Map<UUID, ExamHeader> {

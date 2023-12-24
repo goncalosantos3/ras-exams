@@ -34,15 +34,22 @@ public class ExamVersion {
     }
 
     // Add a question in the ArrayList in a ordered fashion
-    public void addQuestion(Question q){
+    public boolean addQuestion(Question q){
+        q.setVersionID(this.versionId);
         int pos = 0;
+        
         for(Question ql: this.questions){
-            if(q.getQuestionNumber() <= ql.getQuestionNumber()){
+            if(q.getQuestionNumber() < ql.getQuestionNumber()){
                 break;
+            }else if(q.getQuestionNumber() == ql.getQuestionNumber()){
+                // Question number is taken (ERROR!)
+                return false;
             }
             pos += 1;
         }
+
         this.questions.add(pos, q);
+        return true;
     }
 
     public Question getQuestion(int questionNumber){
@@ -57,6 +64,24 @@ public class ExamVersion {
         return q;
     }
     
+    public boolean updateQuestion(Question q){
+        int pos = 0;
+        for(Question ql: this.questions){
+            if(ql.getQuestionNumber() == q.getQuestionNumber()){
+                break;
+            }
+            pos += 1;
+        }
+
+        if(pos == this.questions.size()){
+            return false;
+        }
+
+        this.questions.remove(pos);
+        this.questions.add(pos, q);
+        return true;
+    }
+
     public UUID getVersionId(){
         return this.versionId;
     }

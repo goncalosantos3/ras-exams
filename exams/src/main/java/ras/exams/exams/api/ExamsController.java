@@ -1,14 +1,17 @@
 package ras.exams.exams.api;
 
 import ras.exams.exams.model.CompleteSpaces;
+import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.MultipleChoice;
 import ras.exams.exams.model.Question;
-import ras.exams.exams.model.TOFQ;
 import ras.exams.exams.model.TrueOrFalse;
 import ras.exams.exams.model.Writing;
 import ras.exams.exams.service.ExamsService;
+
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,114 +57,110 @@ public class ExamsController {
     }
     
     // Rota - POST /exam/saveExam/{studentNumber}/{examName}
-    @PostMapping("exam/saveExam")
+    @PostMapping("exam/saveExam/{studentNumber}/{examName}")
     public int saveExam(@PathVariable String studentNumber, @PathVariable String examName, @RequestBody ExamAnswer examAnswer) {
         // Tem de devolver um inteiro, indicando se o exame foi guardado com sucesso ou não
         // examService.saveExam(examName, studentNumber, examAnswer);
         return 200;
     }
 
-    // Rota - POST /exams/versions?examName=xxxx
+    // Rota - POST /exams/versions?examName=xxxx&versionNumber=xxxx
     @PostMapping("exams/versions")
-    public boolean createExamVersion(@RequestParam("examName") String examName, @RequestBody int versionNumber){
-        return examService.addExamVersion(examName, versionNumber);
+    public boolean createExamVersion(@RequestParam("examName") String examName, @RequestParam("versionNumber") String versionNumber){
+        return examService.addExamVersion(examName, Integer.parseInt(versionNumber));
     }
 
-    // Rota - DELETE /exams/versions?examName=xxxx
-    @DeleteMapping("exams/version")
-    public boolean deleteExamVersion(@RequestParam("examName") String examName, @RequestBody int versionNumber){
-        return examService.removeExamVersion(examName, versionNumber);
+    // Rota - DELETE /exams/versions?examName=xxxx&versionNumber=xxxx
+    @DeleteMapping("exams/versions")
+    public boolean deleteExamVersion(@RequestParam("examName") String examName, @RequestParam("versionNumber") String versionNumber){
+        return examService.removeExamVersion(examName, Integer.parseInt(versionNumber));
     }  
     
     // Rota - POST /exams/QuestionMultipleChoice?examName=xxxx
     @PostMapping("exams/QuestionMultipleChoice")
-    public int addMultipleChoiceQuestion(@RequestParam("examName") String examName, @RequestBody MultipleChoice multipleChoice) {
+    public boolean addMultipleChoiceQuestion(@RequestParam("examName") String examName, @RequestBody MultipleChoice multipleChoice) {
         // Tem de devolver um inteiro, indicando se a questão de escolha múltipla foi adicionada ou não
-        examService.addQuestion(examName, multipleChoice);
-        return 200;
+        return examService.addQuestion(examName, multipleChoice);
     }
     
     // Rota - GET /exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}
-    @GetMapping("exams/QuestionMultipleChoice")
+    @GetMapping("exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}")
     public Question getQuestionMultipleChoice(@PathVariable String examName,@PathVariable String versionNumber,@PathVariable String questionNumber) {
         // Tem de devolver uma questão de escolha múltipla - MultipleChoice 
         return examService.getQuestion(examName, versionNumber, questionNumber);
     }
     
     // Rota - PUT /exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}
-    @PutMapping("exams/QuestionMultipleCoice")
-    public void updateQuestionMultipleChoice(@PathVariable String examName,@PathVariable String versionNumber,@PathVariable String questionNumber,@RequestBody MultipleChoice multipleChoice) {
+    @PutMapping("exams/QuestionMultipleCoice/{examName}")
+    public boolean updateQuestionMultipleChoice(@PathVariable String examName, @RequestBody MultipleChoice multipleChoice) {
         // Tem de devolver uma questão de escolha múltipla - MultipleChoice
-        // return examService.updateQuestionMultipleChoice(examName,versionNumber,questionNumber,multipleChoice)
+        return examService.updateQuestion(examName, multipleChoice);
     }
 
     // Rota - POST /exams/QuestionTrueorFalse?examName=xxxx
     @PostMapping("exams/QuestionTrueorFalse")
-    public int addTrueorFalseQuestion(@RequestParam("examName") String examName,@RequestBody TrueOrFalse trueOrFalseQuestion) {
+    public boolean addTrueorFalseQuestion(@RequestParam("examName") String examName,@RequestBody TrueOrFalse trueOrFalseQuestion) {
         // Tem de devolver um inteiro, indicando se a questão V/F foi adicionada ou não
-        examService.addQuestion(examName, trueOrFalseQuestion);
-        return 200;
+        return examService.addQuestion(examName, trueOrFalseQuestion);
     }
     
     // Rota - GET /exams/QuestionTrueorFalse/{examName}/{versionNumber}/{questionNumber}
-    @GetMapping("exams/QuestionTrueorFalse")
+    @GetMapping("exams/QuestionTrueorFalse/{examName}/{versionNumber}/{questionNumber}")
     public Question getQuestionTrueorFalse(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber){
         // Tem de devolver a question True or False - TOFQ
         return examService.getQuestion(examName,versionNumber,questionNumber);
     }
 
     // Rota - PUT /exams/QuestionTrueorFalse/{examName}/{versionNumber}/{questionNumber}
-    @PutMapping("exams/QuestionTrueorFalse")
-    public void updateQuestionTrueorFalse(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody TOFQ trueOrFalseQuestion){
+    @PutMapping("exams/QuestionTrueorFalse/{examName}")
+    public boolean updateQuestionTrueorFalse(@PathVariable String examName, @RequestBody TrueOrFalse trueOrFalseQuestion){
         // Tem de devolver a question True or False atualizada - TOFQ
-        // return examService.updateQuestionTrueorFalse(examName,versionNumber,questionNumber,trueOrFalseQuestion)
+        return examService.updateQuestion(examName, trueOrFalseQuestion);
     }
 
     // Rota - POST /exams/QuestionWriting?examName=xxx
     @PostMapping("exams/QuestionWriting")
-    public int addWritingQuestion(@RequestParam("examName") String examName, @RequestBody Writing writingQuestion){
+    public boolean addWritingQuestion(@RequestParam("examName") String examName, @RequestBody Writing writingQuestion){
         // return examService.createWritingQuestion(examName,writingQuestion)
         // Tem de dar return a um inteiro dizendo se a questão foi criada com sucesso ou não
-        examService.addQuestion(examName, writingQuestion);
-        return 200;
+        return examService.addQuestion(examName, writingQuestion);
     }
 
     // Rota - GET /exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}
-    @GetMapping("exams/QuestionWriting")
+    @GetMapping("exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}")
     public Question getWritingQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber){
         // Tem de dar return a questão de escrita pedida - Writing
         return examService.getQuestion(examName, versionNumber, questionNumber);
     }
 
     // Rota - PUT /exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}
-    @PutMapping("exams/QuestionWriting")
-    public void updateWritingQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody Writing writingQuestion){
+    @PutMapping("exams/QuestionWriting/{examName}")
+    public boolean updateWritingQuestion(@PathVariable String examName, @RequestBody Writing writingQuestion){
         // Tem de dar return a questão de escrita corretamente atualizada - Writing
-        // return examService.updateWritingQuestion(examName,versionNumber,questionNumber,writingQuestion)
+        return examService.updateQuestion(examName, writingQuestion);
     }
 
     // Rota - POST /exams/QuestionCompleteSpaces?examName=xxx
     @PostMapping("exams/QuestionCompleteSpaces")
-    public int addCompleteSpacesQuestion(@RequestParam("examName") String examName,@RequestBody CompleteSpaces completeSpacesQuestion){
+    public boolean addCompleteSpacesQuestion(@RequestParam("examName") String examName,@RequestBody CompleteSpaces completeSpacesQuestion){
         // return examService.createCompleteSpacesQuestion(examName,completeSpacesQuestion)
-        examService.addQuestion(examName, completeSpacesQuestion);
-        return 200;
+        return examService.addQuestion(examName, completeSpacesQuestion);
     }
 
     // Rota - GET /exams/QuestionCompleteSpaces/{examName}/{versionNumber}/{questionNumber}
-    @GetMapping("exams/QuestionCompleteSpaces")
+    @GetMapping("exams/QuestionCompleteSpaces/{examName}/{versionNumber}/{questionNumber}")
     public Question getCompleteSpacesQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber){
         return this.examService.getQuestion(examName, versionNumber, questionNumber);
     }  
 
     // Rota - PUT /exams/QuestionCompleteSpaces/{examName}/{versionNumber}/{questionNumber}
-    @PutMapping("exams/QuestionCompleteSpaces")
-    public void updateCompleteSpacesQuestion(@PathVariable String examName, @PathVariable String versionNumber, @PathVariable String questionNumber, @RequestBody CompleteSpaces completeSpacesQuestion){
-
+    @PutMapping("exams/QuestionCompleteSpaces/{examName}")
+    public boolean updateCompleteSpacesQuestion(@PathVariable String examName, @RequestBody CompleteSpaces completeSpacesQuestion){
+        return this.examService.updateQuestion(examName, completeSpacesQuestion);
     }
 
     // Rota - GET /exams/getCorrection/{examName}/{numberStudent}/{questionNumber}
-    @GetMapping("exams/getCorrection")
+    @GetMapping("exams/getCorrection/{examName}/{numberStudent}/{questionNumber}")
     public void getQuestionCorrectionStudent(@PathVariable String examName, @PathVariable String studentNumber, @PathVariable String questionNumber){
         // Dá return da cotação em que a pergunta foi avaliada - int 
         // return examService.getQuestionCorrectionStudent(examName,studentNumber,questionNumber)
@@ -169,31 +168,28 @@ public class ExamsController {
 
     // Rota - GET /getExams
     @GetMapping("getExams")
-    public void getExams(){
-        // Dá return de uma lista de exames - List <Exam>
-        // return examService.getExams()
+    public List<Exam> getExams(){
+        return examService.getExams();
     }
 
     // Rota - GET /getExamsByTeacher/{teacherNumber}
-    @GetMapping("getExamsByTeacher")
+    @GetMapping("getExamsByTeacher/{teacherNumber}")
     public void getExamsByTeacher(@PathVariable String teacherNumber) {
-        // Dá return de uma lista de exams - List<Exam>
-        // return examService.getExamsByTeacher(teacherNumber)
+        // return examService.getExamsByTeacher(teacherNumber);
     }
 
     // Rota - GET /getExamHeader?examName=xxxx
     @GetMapping("getExamHeader")
-    public void getExamHeader(@RequestParam("examName") String examName) {
+    public ExamHeader getExamHeader(@RequestParam("examName") String examName) {
         // Dá return de um header de um exame - ExamHeader
-        // return examService.getExamHeader(examName)
+        return examService.getExamHeader(examName);
     }
 
     // Rota - PUT /exams/editExamHeader?examName=xxxx
     @PutMapping("exams/editExamHeader")
     public int editExamHeader(@RequestParam("examName") String examName, @RequestBody ExamHeader examHeader) {
         // Dá return de um int se o header do exame foi alterado ou não 
-        // return examService.editExamHeader(examName,examHeader)
-        return 200;
+        return ((ExamsService) examService).editExamHeader(examName,examHeader);
     }
 
     // Rota - GET /getExambyStudent?studentNumber=xxxx
@@ -211,7 +207,7 @@ public class ExamsController {
     }
 
     // Rota - POST /replyExam/{numberStudent}/{examName}?questionID=xxxx
-    @PostMapping("replyExam")
+    @PostMapping("replyExam/{numberStudent}/{examName}")
     public int replyExam(@PathVariable String numberStudent,@PathVariable String examName,@RequestParam("questionID") String questionID,@RequestBody String answer) {
         //Dá return de um inteiro indicando se a resposta foi devidamente dada
         // return examService.replyExam(numberStudent,examName,questionID,answer)
@@ -220,8 +216,40 @@ public class ExamsController {
 
     // Rota - GET /exam/findByTags?tags=xxxx
     @GetMapping("exam/findByTags")
-        public void getExamsbyTags(@RequestParam("tags") String param) {
-            
+    public void getExamsbyTags(@RequestParam("tags") List<String> tags) {
+        // Dá return da lista de exames que contêm aquelas tags - List<Exam>
+        // return examService.getExamsbyTags(tags)
+    }
+    
+    // Rota - GET /exam/{examID}
+    @GetMapping("exam/{examID}")
+    public void getExam(@PathVariable UUID examID) {
+        // Dá return de um exame - Exam
+        // return examService.getExam(examID)
+    }
+
+    // Rota - POST /exam/{examID}?examName=xxxxstatus=xxxx
+    @PostMapping("updateExam/{examID}")
+    public int updateExam(@RequestParam("examName") String examName,@RequestParam("status") String status,@PathVariable UUID examID) {
+        //return examService.updateExam(examName,status,examID)
+        
+        return 200;
+    }
+
+    // Rota - DELETE /exam/{examID}
+    @DeleteMapping("exam/{examID}")
+    public int deleteExam(@PathVariable UUID examID){
+        // return examService.deleteExam(examID)
+        return 200;
+    }
+
+    // Rota - POST /exam/{examID}/uploadImage?additionalMetadata=xxxx
+    @PostMapping("exam/{examID}/uploadImage")
+        public int uploadImage(@PathVariable UUID examID,@RequestParam("additionalMetadata") String metadata) {
+            // Dá return a um inteiro indicando se foi dado o upload de forma correta 
+            // return examService.uploadImage(examID,metadata);
+            return 200;
         }
         
-}
+        
+}   

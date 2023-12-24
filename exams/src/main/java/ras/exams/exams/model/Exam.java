@@ -23,7 +23,7 @@ public class Exam {
         this.answers = new HashMap<>();
     }
 
-    public Exam(@JsonProperty("id") UUID id,@JsonProperty("header") ExamHeader header){
+    public Exam(@JsonProperty("id") UUID id, @JsonProperty("header") ExamHeader header){
         this.id = id;
         this.enrolled = new ArrayList<>();
         this.header = header;
@@ -59,20 +59,26 @@ public class Exam {
         return true;
     }
 
-    // Returns false if versionNumber doesn't exist, true otherwise
+    // Returns false if versionNumber doesn't exist
     public boolean addQuestion(int versionNumber, Question q){
         if(!this.versions.containsKey(versionNumber)){
             return false;
         }
 
-        this.versions.get(versionNumber).addQuestion(q);
-        System.out.println(this.versions.get(versionNumber));
-        return true;
+        return this.versions.get(versionNumber).addQuestion(q);
     }
 
     // Returns a specific question from a specific exam version
     public Question getQuestion(int versionNumber, int questionNumber){
         return this.versions.get(versionNumber).getQuestion(questionNumber);
+    }
+
+    public boolean updateQuestion(int versionNumber, Question q){
+        if(!this.versions.containsKey(versionNumber)){
+            return false;
+        }
+
+        return this.versions.get(versionNumber).updateQuestion(q);
     }
 
     public UUID getID(){
@@ -89,6 +95,7 @@ public class Exam {
     
     public void setHeader(ExamHeader header){
         this.header = header;
+        this.header.setExamId(this.id);
     }
 
     public Map<Integer, ExamVersion> getVersions(){

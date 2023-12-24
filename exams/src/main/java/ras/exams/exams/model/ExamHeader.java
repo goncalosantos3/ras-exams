@@ -23,10 +23,20 @@ public class ExamHeader {
         this.examUC = examUC;
         this.examAdmissionTime = LocalTime.parse(examAdmissionTime, DateTimeFormatter.ofPattern("HH:mm"));
     }
+    
+    // Construtor para as rotas do controller
+    public ExamHeader(@JsonProperty("examName") String examName, @JsonProperty("examUC") String examUC, 
+        @JsonProperty("examAdmissionTime") String examAT, @JsonProperty("examScheduleIDs") List<UUID> examSIds){
+        this.examHeaderID = UUID.randomUUID();
+        this.examName = examName;
+        this.examUC = examUC;
+        this.examAdmissionTime = LocalTime.parse(examAT, DateTimeFormatter.ofPattern("HH:mm"));
+        this.examScheduleIDs = examSIds;
+    }
 
-    public ExamHeader(  @JsonProperty("examHeaderID") UUID examHeaderID, @JsonProperty("examID") UUID examID, 
-                        @JsonProperty("examName")String examName, @JsonProperty("examUC") String examUC, 
-                        @JsonProperty("examAdmissionTime") String examAdmissionTime, @JsonProperty("schedule") List<String> schedule){
+    // Construtor para a BD
+    public ExamHeader(UUID examHeaderID, UUID examID, String examName, String examUC, 
+            String examAdmissionTime, List<String> schedule){
         this.examHeaderID = examHeaderID;
         this.examID = examID;
         this.examName = examName;
@@ -61,5 +71,9 @@ public class ExamHeader {
 
     public List<UUID> getExamScheduleIDs(){
         return this.examScheduleIDs;
+    }
+
+    public void setExamId(UUID examId){
+        this.examID = examId;
     }
 }
