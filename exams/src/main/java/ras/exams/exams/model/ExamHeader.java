@@ -14,7 +14,9 @@ public class ExamHeader {
     private LocalTime examAdmissionTime;
     private List<UUID> examScheduleIDs;   
     
-    public ExamHeader(String examName){
+    public ExamHeader(String examName, UUID examID){
+        this.examHeaderID = UUID.randomUUID();
+        this.examID = examID;
         this.examName = examName;
     }
 
@@ -41,7 +43,7 @@ public class ExamHeader {
         this.examID = examID;
         this.examName = examName;
         this.examUC = examUC;
-        this.examAdmissionTime = LocalTime.parse(examAdmissionTime, DateTimeFormatter.ofPattern("HH:mm"));
+        this.examAdmissionTime = (examAdmissionTime==null) ?null :LocalTime.parse(examAdmissionTime, DateTimeFormatter.ofPattern("HH:mm"));
         this.examScheduleIDs = schedule.stream().map(id -> UUID.fromString(id)).toList();
     }
     
@@ -66,7 +68,7 @@ public class ExamHeader {
     }
 
     public String getFormatedExamAdmissionTime(){
-        return this.examAdmissionTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        return (this.examAdmissionTime==null) ?null :this.examAdmissionTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     public List<UUID> getExamScheduleIDs(){

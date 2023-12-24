@@ -74,7 +74,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         List<String> schedule = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(scheduleID) as id FROM exam WHERE examHeaderID=UUID_TO_BIN('"+examHeaderID.toString()+"')"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(scheduleID) as id FROM examschedules WHERE examHeaderID=UUID_TO_BIN('"+examHeaderID.toString()+"')"))
         {
             while(rs.next())
             {
@@ -93,11 +93,12 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
     {
         UUID examHeaderID = UUID.fromString(rs.getString("examHeaderID")),
                 examID = UUID.fromString(rs.getString("examID"));
-        LocalTime examAdmissionTime =  rs.getTime("examAdmissionTime").toLocalTime();
+        Time examAdmissionTimeSQL = rs.getTime("examAdmissionTime");
+        String examAdmissionTime = (examAdmissionTimeSQL==null) ?(null) :examAdmissionTimeSQL.toString();
         String examName = rs.getString("examName"),
                 examUC = rs.getString("examUC");
         return new ExamHeader(  examHeaderID, examID, examName, examUC, 
-                                examAdmissionTime.format(DateTimeFormatter.ofPattern("HH:mm")), 
+                                examAdmissionTime, 
                                 this.getHeaderScheduleIDs(examHeaderID));
     }
 
@@ -151,7 +152,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime,
+                    examAdmissionTime
             FROM examheader"""))
         {
             while(rs.next())
@@ -180,7 +181,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime,
+                    examAdmissionTime
             FROM examheader
             WHERE examHeaderID=UUID_TO_BIN('"""+((UUID)key).toString()+"')"))
         {
@@ -207,7 +208,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime,
+                    examAdmissionTime
             FROM examheader
             WHERE examID=UUID_TO_BIN('"""+examID.toString()+"')"))
         {
@@ -280,8 +281,8 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                                     "UUID_TO_BIN('"+key.toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getExamID().toString()+"'),"+
                                     "'"+value.getExamName()+"',"+
-                                    "'"+value.getExamUC()+"',"+
-                                    "'"+value.getFormatedExamAdmissionTime()+"'"+
+                                    ((value.getExamName() != null) ?("'"+value.getExamName()+"'") :"NULL")+","+
+                                    ((value.getExamAdmissionTime() != null) ?("'"+value.getFormatedExamAdmissionTime()+"'") :"NULL")+
                                 ") ON DUPLICATE KEY UPDATE "+
                                     "examHeaderID=VALUES(examHeaderID),"+
                                     "examID=VALUES(examID),"+
@@ -375,7 +376,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime,
+                    examAdmissionTime
             FROM examheader"""))
         {
             while(rs.next())

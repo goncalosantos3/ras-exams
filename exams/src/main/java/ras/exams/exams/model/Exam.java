@@ -18,7 +18,7 @@ public class Exam {
     public Exam(UUID id, String examName){
         this.id = id;
         this.enrolled = new ArrayList<>();
-        this.header = new ExamHeader(examName);
+        this.header = new ExamHeader(examName, id);
         this.versions = new HashMap<>();
         this.answers = new HashMap<>();
     }

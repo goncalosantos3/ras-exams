@@ -26,7 +26,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
   `examHeaderID` BINARY(16) NOT NULL,
-  `examID` BINARY(16) NULL DEFAULT NULL,  
+  `examID` BINARY(16) NOT NULL DEFAULT NULL,  
   `examName` VARCHAR(64) NOT NULL,
   `examUC` VARCHAR(64) NULL,
   `examAdmissionTime` TIME NULL DEFAULT NULL,

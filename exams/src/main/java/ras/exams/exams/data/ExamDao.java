@@ -175,7 +175,7 @@ public class ExamDao implements Map<UUID, Exam> {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
-            SELECT BIN_TO_UUID(examID) as examID,
+            SELECT BIN_TO_UUID(examID) as examID
             FROM exam
             WHERE examID=UUID_TO_BIN('"""+((UUID)key).toString()+"')"))
         {
@@ -249,7 +249,7 @@ public class ExamDao implements Map<UUID, Exam> {
         {
             stm.executeUpdate("INSERT INTO exam "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+key.toString()+"')"+
                                 ") ON DUPLICATE KEY UPDATE "+
                                     "examID=VALUES(examID)");
             ExamHeader header = value.getHeader();
@@ -257,7 +257,8 @@ public class ExamDao implements Map<UUID, Exam> {
             Map<Integer, ExamVersion> versions = value.getVersions();
             Map<UUID, ExamAnswer> answers = value.getAnswers();
 
-            this.examHeaderDAO.put(header.getExamHeaderID(), header);
+            if (header.getExamHeaderID() != null)
+                this.examHeaderDAO.put(header.getExamHeaderID(), header);
             this.putEnrolled(key, enrolled);
             versions.values().forEach(v -> this.examVersionDAO.put(v.getVersionId(), v));
             this.examAnswerDAO.putAll(answers);
@@ -346,7 +347,7 @@ public class ExamDao implements Map<UUID, Exam> {
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """
-            SELECT BIN_TO_UUID(examID) as examID,
+            SELECT BIN_TO_UUID(examID) as examID
             FROM exam"""))
         {
             while(rs.next())
