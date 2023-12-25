@@ -230,9 +230,9 @@ public class ExamsController {
     
     // Rota - GET /exam/{examID}
     @GetMapping("exam/{examID}")
-    public void getExam(@PathVariable UUID examID) {
+    public Exam getExam(@PathVariable UUID examID) {
         // Dá return de um exame - Exam
-        // return examService.getExam(examID)
+        return examService.getExam(examID);
     }
 
     // Rota - POST /exam/{examID}?examName=xxxxstatus=xxxx

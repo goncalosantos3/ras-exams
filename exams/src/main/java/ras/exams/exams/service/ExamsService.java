@@ -144,4 +144,13 @@ public class ExamsService {
         }
         return e;
     }
+
+    public Exam getExam(UUID examID){
+        Exam e = null;
+        if (this.exams.containsKey(examID)){
+            e = this.exams.get(examID);
+            return e;
+        }
+        return e;
+    }
 }
