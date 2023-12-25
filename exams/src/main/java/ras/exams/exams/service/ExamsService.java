@@ -38,11 +38,15 @@ public class ExamsService {
     }
 
     // Add a exam header to an existing exam
-    public void addExamHeader(ExamHeader header){
+    public boolean addExamHeader(ExamHeader header){
+        if(!this.namesIds.containsKey(header.getExamName())){
+            return false;
+        }
+
         UUID examId = this.namesIds.get(header.getExamName());
         this.exams.get(examId).setHeader(header);
-        System.out.println("\n" + exams.get(examId));
         this.exams.put(examId, this.exams.get(examId));
+        return true;
     }
 
     public boolean addExamVersion(String examName, int versionNumber){

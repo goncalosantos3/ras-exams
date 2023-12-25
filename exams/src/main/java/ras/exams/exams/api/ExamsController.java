@@ -50,10 +50,9 @@ public class ExamsController {
 
     // Rota - POST /exams/header
     @PostMapping("exams/header")
-    public int addExamHeader(@RequestBody ExamHeader examHeader) {
+    public boolean addExamHeader(@RequestBody ExamHeader examHeader) {
         // Tem de devolver um inteiro, indicando se o examHeader foi adicionado ou não
-        examService.addExamHeader(examHeader);
-        return 200;
+        return examService.addExamHeader(examHeader);
     }
     
     // Rota - POST /exam/saveExam/{studentNumber}/{examName}
@@ -90,7 +89,7 @@ public class ExamsController {
         return examService.getQuestion(examName, versionNumber, questionNumber);
     }
     
-    // Rota - PUT /exams/QuestionMultipleChoice/{examName}/{versionNumber}/{questionNumber}
+    // Rota - PUT /exams/QuestionMultipleChoice/{examName}
     @PutMapping("exams/QuestionMultipleCoice/{examName}")
     public boolean updateQuestionMultipleChoice(@PathVariable String examName, @RequestBody MultipleChoice multipleChoice) {
         // Tem de devolver uma questão de escolha múltipla - MultipleChoice
@@ -111,7 +110,7 @@ public class ExamsController {
         return examService.getQuestion(examName,versionNumber,questionNumber);
     }
 
-    // Rota - PUT /exams/QuestionTrueorFalse/{examName}/{versionNumber}/{questionNumber}
+    // Rota - PUT /exams/QuestionTrueorFalse/{examName}
     @PutMapping("exams/QuestionTrueorFalse/{examName}")
     public boolean updateQuestionTrueorFalse(@PathVariable String examName, @RequestBody TrueOrFalse trueOrFalseQuestion){
         // Tem de devolver a question True or False atualizada - TOFQ
@@ -133,7 +132,7 @@ public class ExamsController {
         return examService.getQuestion(examName, versionNumber, questionNumber);
     }
 
-    // Rota - PUT /exams/QuestionWriting/{examName}/{versionNumber}/{questionNumber}
+    // Rota - PUT /exams/QuestionWriting/{examName}
     @PutMapping("exams/QuestionWriting/{examName}")
     public boolean updateWritingQuestion(@PathVariable String examName, @RequestBody Writing writingQuestion){
         // Tem de dar return a questão de escrita corretamente atualizada - Writing
@@ -153,7 +152,7 @@ public class ExamsController {
         return this.examService.getQuestion(examName, versionNumber, questionNumber);
     }  
 
-    // Rota - PUT /exams/QuestionCompleteSpaces/{examName}/{versionNumber}/{questionNumber}
+    // Rota - PUT /exams/QuestionCompleteSpaces/{examName}
     @PutMapping("exams/QuestionCompleteSpaces/{examName}")
     public boolean updateCompleteSpacesQuestion(@PathVariable String examName, @RequestBody CompleteSpaces completeSpacesQuestion){
         return this.examService.updateQuestion(examName, completeSpacesQuestion);
