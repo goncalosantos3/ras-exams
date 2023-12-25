@@ -2,6 +2,7 @@ package ras.exams.exams.service;
 
 import ras.exams.exams.data.ExamDao;
 import ras.exams.exams.model.Exam;
+import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.Question;
 
@@ -156,5 +157,21 @@ public class ExamsService {
             return e;
         }
         return e;
+    }
+
+    public int saveExam(String examName,String studentNumber,ExamAnswer examAnswer){
+        if (this.namesIds.containsKey(examName)){
+            Exam e = this.exams.get(this.namesIds.get(examName));
+            List <String> enrolled = e.getEnrolled();
+            if (enrolled.contains(studentNumber)){
+                UUID idAnswer = UUID.randomUUID();
+                e.getAnswers().put(idAnswer, examAnswer);
+                return 200;
+            }
+            else{
+                return 404;
+            }
+        }
+        return 404;
     }
 }

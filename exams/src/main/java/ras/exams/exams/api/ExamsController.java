@@ -59,8 +59,7 @@ public class ExamsController {
     @PostMapping("exam/saveExam/{studentNumber}/{examName}")
     public int saveExam(@PathVariable String studentNumber, @PathVariable String examName, @RequestBody ExamAnswer examAnswer) {
         // Tem de devolver um inteiro, indicando se o exame foi guardado com sucesso ou não
-        // examService.saveExam(examName, studentNumber, examAnswer);
-        return 200;
+       return examService.saveExam(examName, studentNumber, examAnswer);
     }
 
     // Rota - POST /exams/versions?examName=xxxx&versionNumber=xxxx
