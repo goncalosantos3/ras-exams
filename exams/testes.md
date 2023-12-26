@@ -66,7 +66,7 @@ POST /exams/QuestionCompleteSpaces?examName=teste
   "question": "pergunta CompleteSpaces",
   "qn": 3,
   "versionNumber": 1,
-  "text": "Hoje é o dia {antes} da {ceia} de Natal"
+  "text": "Hoje é o dia {[antes, depois], 3} da {[ceia], 3} de Natal"
 }
 
 10. Criação de uma questão de TrueOrFalse

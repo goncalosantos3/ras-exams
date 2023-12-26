@@ -442,7 +442,7 @@ public class QuestionDAO {
         if (type == 'C' && q instanceof CompleteSpaces)
         {
             CompleteSpaces c = (CompleteSpaces)q;
-            Pattern pattern = Pattern.compile("^[^{}]*(\\{[^ ,]+,\\s*\\d+\\}[^{}]*)+$", Pattern.MULTILINE);
+            Pattern pattern = Pattern.compile("^[^{}]*(\\{\\[([^, ]+)(,\\s*[^], ]+)*\\],\\s*\\d+\\}[^{}]*)+$", Pattern.MULTILINE);
             Matcher matcher = pattern.matcher(c.getText());
             if (!matcher.matches())
                 throw new InvalidQuestionException('C');
