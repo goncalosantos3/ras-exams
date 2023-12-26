@@ -13,7 +13,7 @@ import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.Answer;
 
 
-public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
+public class ExamAnswerDAO {
 
     private static ExamAnswerDAO singleton = null;
     private AnswerDAO answerDAO;
@@ -120,7 +120,7 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return a;
     }
 
-    @Override
+    
     public void clear() {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
@@ -136,8 +136,8 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         }
     }
 
-    @Override
-    public boolean containsKey(Object key) {
+    
+    public boolean contains(UUID key) {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -153,49 +153,13 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return r;
     }
 
-    @Override
-    public boolean containsValue(Object key) {
-        ExamAnswer a = (ExamAnswer) key;
-        return this.containsKey(a.getExamAnswerId());
+    
+    public boolean contains(ExamAnswer ea) {
+        return this.contains(ea.getExamAnswerId());
     }
 
-    @Override
-    public Set<Entry<UUID, ExamAnswer>> entrySet() {
-        Set<Entry<UUID, ExamAnswer>> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(
-            """
-            SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
-                    BIN_TO_UUID(examID) as examID,
-                    BIN_TO_UUID(studentID) as studentID,
-                    grade
-            FROM examanswer"""))
-        {
-            while(rs.next())
-            {
-                UUID examAnswerID = UUID.fromString(rs.getString("examAnswerID")),
-                        examID = UUID.fromString(rs.getString("examID")),
-                        studentID = UUID.fromString(rs.getString("studentID"));
-                int grade = rs.getInt("grade");
-                rSet.add(Map.entry(examAnswerID, 
-                                    new ExamAnswer(examAnswerID, 
-                                                    examID, 
-                                                    studentID, 
-                                                    grade, 
-                                                    this.answerDAO.getAnswersFromExamAnswer(examAnswerID))));
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
-        }
-        return rSet;
-    }
-
-    @Override
-    public ExamAnswer get(Object key) {
+    
+    public ExamAnswer get(UUID key) {
         if (!(key instanceof UUID))
             return null;
         ExamAnswer a = null;
@@ -230,12 +194,12 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return a;
     }
 
-    @Override
+    
     public boolean isEmpty() {
         return this.size() == 0;
     }
 
-    @Override
+    
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -256,9 +220,9 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return r;
     }
 
-    @Override
-    public ExamAnswer put(UUID key, ExamAnswer value) {
-        ExamAnswer rv = this.get(key);
+    
+    public ExamAnswer put(ExamAnswer value) {
+        ExamAnswer rv = this.get(value.getExamAnswerId());
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
@@ -266,7 +230,7 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
                 value.calculateGrade();
             stm.executeUpdate("INSERT INTO examanswer "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+value.getExamAnswerId().toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getExamID().toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getStudentID().toString()+"'),"+
                                     value.getGrade()+
@@ -277,7 +241,7 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
                                     "grade=VALUES(grade)");
             if (value.getAnswers() != null)
                 for (Answer a : value.getAnswers())
-                    this.answerDAO.put(a.getAnswerID(), a);
+                    this.answerDAO.put(a);
         }
         catch (SQLException e)
         {
@@ -287,16 +251,16 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return rv;
     }
 
-    @Override
-    public void putAll(Map<? extends UUID, ? extends ExamAnswer> m) {
-        for (Entry<? extends UUID, ? extends ExamAnswer> entry : m.entrySet())
+    
+    public void putAll(Collection<ExamAnswer> c) {
+        for (ExamAnswer ea : c)
         {
-            this.put(entry.getKey(), entry.getValue());
+            this.put(ea);
         }
     }
 
-    @Override
-    public ExamAnswer remove(Object key) {
+    
+    public ExamAnswer remove(UUID key) {
         ExamAnswer rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
@@ -316,7 +280,7 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return rv;
     }
 
-    @Override
+    
     public int size() {
         int size = 0;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -334,7 +298,7 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return size;
     }
 
-    @Override
+    
     public Collection<ExamAnswer> values() {
         Set<ExamAnswer> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -368,15 +332,15 @@ public class ExamAnswerDAO implements Map<UUID, ExamAnswer> {
         return rSet;
     }
     
-    @Override
+    
     public String toString ()
     {
         String r = "{";
         boolean begin = true;
-        for (Map.Entry<UUID, ExamAnswer> entry : this.entrySet())
+        for (ExamAnswer examAnswer : this.values())
         {
             r += (begin) ?"" :", ";
-            r += entry.getKey() + "=" + entry.getValue().getExamAnswerId();
+            r += examAnswer.toString();
             begin = false;
         }
         return r + "}";

@@ -50,4 +50,10 @@ public abstract class Answer {
     public char getAnswerType() {
         return this.type;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Answer{ ID:"+answerID+" ExamAnswerID:"+examAnswerID+" QuestionID:"+questionID+" Type:"+type+" Grade:"+grade+" }";
+    }
 }

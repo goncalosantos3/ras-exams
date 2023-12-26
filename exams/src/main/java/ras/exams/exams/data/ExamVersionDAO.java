@@ -12,7 +12,7 @@ import java.util.UUID;
 import ras.exams.exams.model.ExamVersion;
 import ras.exams.exams.model.Question;
 
-public class ExamVersionDAO implements Map<UUID, ExamVersion> {
+public class ExamVersionDAO {
 
     private static ExamVersionDAO singleton = null;
     private QuestionDAO questionDAO;
@@ -79,38 +79,6 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return examAnswers; 
     }
 
-    // public ExamVersion getStudentExamVersion (UUID studentID)
-    // {
-    //     ExamVersion a = null;
-    //     try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-    //         Statement stm = conn.createStatement();
-    //         ResultSet rs = stm.executeQuery("""
-    //         SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
-    //                 BIN_TO_UUID(examID) as examID,
-    //                 grade
-    //         FROM examversion
-    //         WHERE studentID=UUID_TO_BIN('"""+studentID.toString()+"')"))
-    //     {
-    //         if (rs.next())
-    //         {
-    //             UUID examAnswerID = UUID.fromString(rs.getString("examAnswerID")),
-    //                     examID = UUID.fromString(rs.getString("examID"));
-    //             int grade = rs.getInt("grade");
-    //             a = new ExamVersion(examAnswerID, 
-    //                                 examID, 
-    //                                 studentID, 
-    //                                 grade, 
-    //                                 this.answerDAO.getAnswersFromExamVersion(examAnswerID));
-    //         }
-    //     }
-    //     catch (SQLException e)
-    //     {
-    //         e.printStackTrace();
-    //         throw new NullPointerException(e.getMessage());
-    //     }
-    //     return a;
-    // }
-
     private ExamVersion getExamVersion (ResultSet rs) throws SQLException
     {
         UUID examVersionID = UUID.fromString(rs.getString("examVersionID")),
@@ -121,7 +89,7 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return v;
     }
 
-    @Override
+    
     public void clear() {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
@@ -137,8 +105,8 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         }
     }
 
-    @Override
-    public boolean containsKey(Object key) {
+    
+    public boolean contains(UUID key) {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -154,42 +122,13 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return r;
     }
 
-    @Override
-    public boolean containsValue(Object key) {
-        ExamVersion v = (ExamVersion) key;
-        return this.containsKey(v.getVersionId());
+    
+    public boolean contains(ExamVersion ev) {
+        return this.contains(ev.getVersionId());
     }
 
-    @Override
-    public Set<Entry<UUID, ExamVersion>> entrySet() {
-        Set<Entry<UUID, ExamVersion>> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(
-            """
-            SELECT BIN_TO_UUID(examVersionID) as examVersionID,
-                    BIN_TO_UUID(examID) as examID,
-                    versionNumber
-            FROM examversion"""))
-        {
-            while(rs.next())
-            {
-                ExamVersion v = this.getExamVersion(rs);
-                rSet.add(Map.entry(v.getVersionId(), v));
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
-        }
-        return rSet;
-    }
-
-    @Override
-    public ExamVersion get(Object key) {
-        if (!(key instanceof UUID))
-            return null;
+    
+    public ExamVersion get(UUID examVersionID) {
         ExamVersion a = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -198,7 +137,7 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
                     BIN_TO_UUID(examID) as examID,
                     versionNumber
             FROM examversion
-            WHERE examVersionID=UUID_TO_BIN('"""+((UUID)key).toString()+"')"))
+            WHERE examVersionID=UUID_TO_BIN('"""+examVersionID.toString()+"')"))
         {
             if (rs.next())
             {
@@ -213,12 +152,34 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return a;
     }
 
-    @Override
+    public ExamVersion get(UUID examID, int versionNumber) {
+        ExamVersion a = null;
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery("""
+            SELECT BIN_TO_UUID(examVersionID) as examVersionID,
+                    BIN_TO_UUID(examID) as examID,
+                    versionNumber
+            FROM examversion
+            WHERE examID=UUID_TO_BIN('"""+examID.toString()+"') AND versionNumber="+versionNumber))
+        {
+            if (rs.next())
+            {
+                a = this.getExamVersion(rs);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return a;
+    }
+    
     public boolean isEmpty() {
         return this.size() == 0;
     }
-
-    @Override
+    
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -239,15 +200,15 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return r;
     }
 
-    @Override
-    public ExamVersion put(UUID key, ExamVersion value) {
-        ExamVersion rv = this.get(key);
+    
+    public ExamVersion put(ExamVersion value) {
+        ExamVersion rv = this.get(value.getVersionId());
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO examversion "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+value.getVersionId().toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getExamID().toString()+"'),"+
                                     value.getVersionNumber()+
                                 ") ON DUPLICATE KEY UPDATE "+
@@ -256,7 +217,7 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
                                     "versionNumber=VALUES(versionNumber)");
             if (value.getQuestions() != null)
                 for (Question q : value.getQuestions())
-                    this.questionDAO.put(q.getQuestionId(), q);
+                    this.questionDAO.put(q);
         }
         catch (SQLException e)
         {
@@ -266,16 +227,16 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return rv;
     }
 
-    @Override
-    public void putAll(Map<? extends UUID, ? extends ExamVersion> m) {
-        for (Entry<? extends UUID, ? extends ExamVersion> entry : m.entrySet())
+    
+    public void putAll(Collection<ExamVersion> c) {
+        for (ExamVersion ev : c)
         {
-            this.put(entry.getKey(), entry.getValue());
+            this.put(ev);
         }
     }
 
-    @Override
-    public ExamVersion remove(Object key) {
+    
+    public ExamVersion remove(UUID key) {
         ExamVersion rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
@@ -295,7 +256,7 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return rv;
     }
 
-    @Override
+    
     public int size() {
         int size = 0;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -313,7 +274,7 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return size;
     }
 
-    @Override
+    
     public Collection<ExamVersion> values() {
         Set<ExamVersion> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -338,15 +299,15 @@ public class ExamVersionDAO implements Map<UUID, ExamVersion> {
         return rSet;
     }
     
-    @Override
+    
     public String toString ()
     {
         String r = "{";
         boolean begin = true;
-        for (Map.Entry<UUID, ExamVersion> entry : this.entrySet())
+        for (ExamVersion ev : this.values())
         {
             r += (begin) ?"" :", ";
-            r += entry.getKey() + "=" + entry.getValue().getVersionId();
+            r += ev.toString();
             begin = false;
         }
         return r + "}";

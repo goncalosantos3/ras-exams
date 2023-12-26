@@ -15,7 +15,7 @@ public class ExamAnswer {
         this.examID = examID;
         this.studentID = studentID;
     }
-
+    
     public ExamAnswer(@JsonProperty("id") UUID id, @JsonProperty("examID") UUID examID, @JsonProperty("studentID") UUID studentID, @JsonProperty("grade") int grade,@JsonProperty("answers") List<Answer> answers){
         this.examAnswerId = id; 
         this.examID = examID;

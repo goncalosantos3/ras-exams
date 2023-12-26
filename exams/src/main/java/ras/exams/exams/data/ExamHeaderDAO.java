@@ -14,7 +14,7 @@ import java.util.UUID;
 import ras.exams.exams.model.ExamHeader;
 
 
-public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
+public class ExamHeaderDAO {
 
     private static ExamHeaderDAO singleton = null;
 
@@ -26,12 +26,16 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
             """
             CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
                 `examHeaderID` BINARY(16) NOT NULL,
-                `examID` BINARY(16) NULL DEFAULT NULL,
+                `examID` BINARY(16) NOT NULL,  
                 `examName` VARCHAR(64) NOT NULL,
                 `examUC` VARCHAR(64) NULL,
                 `examAdmissionTime` TIME NULL DEFAULT NULL,
                 PRIMARY KEY (`examHeaderID`),
                 INDEX `examID_idx` (`examID` ASC) VISIBLE,
+                CONSTRAINT `examIDunique`
+                    UNIQUE(`examID`),
+                CONSTRAINT `examName`
+                    UNIQUE(`examName`),
                 CONSTRAINT `examIDheader`
                     FOREIGN KEY (`examID`)
                     REFERENCES `ras_exams`.`exam` (`examID`))
@@ -94,7 +98,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         UUID examHeaderID = UUID.fromString(rs.getString("examHeaderID")),
                 examID = UUID.fromString(rs.getString("examID"));
         Time examAdmissionTimeSQL = rs.getTime("examAdmissionTime");
-        String examAdmissionTime = (examAdmissionTimeSQL==null) ?(null) :examAdmissionTimeSQL.toString();
+        String examAdmissionTime = (examAdmissionTimeSQL==null) ?(null) :examAdmissionTimeSQL.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
         String examName = rs.getString("examName"),
                 examUC = rs.getString("examUC");
         return new ExamHeader(  examHeaderID, examID, examName, examUC, 
@@ -102,7 +106,6 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                                 this.getHeaderScheduleIDs(examHeaderID));
     }
 
-    @Override
     public void clear() {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
@@ -118,12 +121,11 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         }
     }
 
-    @Override
-    public boolean containsKey(Object key) {
+    public boolean exists(UUID examHeaderID) {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT examHeaderID FROM examheader WHERE examHeaderID=UUID_TO_BIN('"+key.toString()+"')"))
+            ResultSet rs = stm.executeQuery("SELECT examHeaderID FROM examheader WHERE examHeaderID=UUID_TO_BIN('"+examHeaderID.toString()+"')"))
         {
             r = rs.next();
         }
@@ -135,44 +137,28 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return r;
     }
 
-    @Override
-    public boolean containsValue(Object key) {
-        ExamHeader h = (ExamHeader) key;
-        return this.containsKey(h.getExamHeaderID());
-    }
-
-    @Override
-    public Set<Entry<UUID, ExamHeader>> entrySet() {
-        Set<Entry<UUID, ExamHeader>> rSet = new HashSet<>();
+    public boolean exists(String examName) {
+        boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(
-            """
-            SELECT BIN_TO_UUID(examHeaderID) as examHeaderID,
-                    BIN_TO_UUID(examID) as examID,
-                    examName,
-                    examUC,
-                    examAdmissionTime
-            FROM examheader"""))
+            ResultSet rs = stm.executeQuery("SELECT examHeaderID FROM examheader WHERE examName='"+examName+"'"))
         {
-            while(rs.next())
-            {
-                ExamHeader header = this.getExamHeader(rs);
-                rSet.add(Map.entry(header.getExamHeaderID(), header));
-            }
+            r = rs.next();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }
-        return rSet;
+        return r;
+    }
+    
+    public boolean exists(ExamHeader h) {
+        return this.exists(h.getExamHeaderID()) || this.exists(h.getExamName());
     }
 
-    @Override
-    public ExamHeader get(Object key) {
-        if (!(key instanceof UUID))
-            return null;
+    
+    public ExamHeader get(UUID id) {
         ExamHeader a = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -183,7 +169,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                     examUC,
                     examAdmissionTime
             FROM examheader
-            WHERE examHeaderID=UUID_TO_BIN('"""+((UUID)key).toString()+"')"))
+            WHERE examHeaderID=UUID_TO_BIN('"""+id.toString()+"') OR examID=UUID_TO_BIN('"+id.toString()+"')"))
         {
             if (rs.next())
             {
@@ -198,8 +184,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return a;
     }
 
-    public ExamHeader getHeaderFromExamID(UUID examID)
-    {
+        public ExamHeader get(String examName) {
         ExamHeader a = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -210,7 +195,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                     examUC,
                     examAdmissionTime
             FROM examheader
-            WHERE examID=UUID_TO_BIN('"""+examID.toString()+"')"))
+            WHERE examName='"""+examName+"'"))
         {
             if (rs.next())
             {
@@ -225,12 +210,11 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return a;
     }
 
-    @Override
     public boolean isEmpty() {
         return this.size() == 0;
     }
 
-    @Override
+    
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -270,18 +254,18 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         }
     }
 
-    @Override
-    public ExamHeader put(UUID key, ExamHeader value) {
-        ExamHeader rv = this.get(key);
+    
+    public ExamHeader put(ExamHeader value) {
+        ExamHeader rv = this.get(value.getExamHeaderID());
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO examheader "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+value.getExamHeaderID().toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getExamID().toString()+"'),"+
                                     "'"+value.getExamName()+"',"+
-                                    ((value.getExamName() != null) ?("'"+value.getExamName()+"'") :"NULL")+","+
+                                    ((value.getExamUC() != null) ?("'"+value.getExamUC()+"'") :"NULL")+","+
                                     ((value.getExamAdmissionTime() != null) ?("'"+value.getFormatedExamAdmissionTime()+"'") :"NULL")+
                                 ") ON DUPLICATE KEY UPDATE "+
                                     "examHeaderID=VALUES(examHeaderID),"+
@@ -291,7 +275,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
                                     "examAdmissionTime=VALUES(examAdmissionTime)");
             if (value.getExamScheduleIDs() != null)
                 for (UUID id : value.getExamScheduleIDs())
-                    this.putSchedule(key, id);
+                    this.putSchedule(value.getExamHeaderID(), id);
         }
         catch (SQLException e)
         {
@@ -301,11 +285,11 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return rv;
     }
 
-    @Override
-    public void putAll(Map<? extends UUID, ? extends ExamHeader> m) {
-        for (Entry<? extends UUID, ? extends ExamHeader> entry : m.entrySet())
+    
+    public void putAll(Collection<ExamHeader> m) {
+        for (ExamHeader h : m)
         {
-            this.put(entry.getKey(), entry.getValue());
+            this.put(h);
         }
     }
 
@@ -326,17 +310,17 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         }
     }
 
-    @Override
-    public ExamHeader remove(Object key) {
-        ExamHeader rv = this.get(key);
+    
+    public ExamHeader remove(UUID id) {
+        ExamHeader rv = this.get(id);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
-            stm.executeUpdate("DELETE FROM examheader WHERE examHeaderID=UUID_TO_BIN('"+key.toString()+"')");
+            stm.executeUpdate("DELETE FROM examheader WHERE examHeaderID=UUID_TO_BIN('"+id.toString()+"') OR examID=UUID_TO_BIN('"+id.toString()+"')");
             if (rv.getExamScheduleIDs() != null)
-                for (UUID id : rv.getExamScheduleIDs())
-                    this.removeSchedule(id, (UUID)key);
+                for (UUID sid : rv.getExamScheduleIDs())
+                    this.removeSchedule(sid, id);
             stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
         catch (SQLException e)
@@ -347,7 +331,26 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return rv;
     }
 
-    @Override
+    public ExamHeader remove(String examName) {
+        ExamHeader rv = this.get(examName);
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement())
+        {
+            stm.execute("SET FOREIGN_KEY_CHECKS=0");
+            stm.executeUpdate("DELETE FROM examheader WHERE examName='"+examName+"'");
+            if (rv!=null && rv.getExamScheduleIDs() != null)
+                for (UUID id : rv.getExamScheduleIDs())
+                    this.removeSchedule(id, rv.getExamHeaderID());
+            stm.execute("SET FOREIGN_KEY_CHECKS=1");
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return rv;
+    }
+
     public int size() {
         int size = 0;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -365,7 +368,7 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return size;
     }
 
-    @Override
+    
     public Collection<ExamHeader> values() {
         Set<ExamHeader> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -392,17 +395,44 @@ public class ExamHeaderDAO implements Map<UUID, ExamHeader> {
         return rSet;
     }
     
-    @Override
+    
     public String toString ()
     {
         String r = "{";
         boolean begin = true;
-        for (Map.Entry<UUID, ExamHeader> entry : this.entrySet())
+        for (Map.Entry<String, ExamHeader> entry : this.entrySet())
         {
             r += (begin) ?"" :", ";
             r += entry.getKey() + "=" + entry.getValue().getExamHeaderID();
             begin = false;
         }
         return r + "}";
+    }
+    
+    public Set<Map.Entry<String, ExamHeader>> entrySet() {
+        Set<Map.Entry<String, ExamHeader>> rSet = new HashSet<>();
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(
+            """
+            SELECT BIN_TO_UUID(examHeaderID) as examHeaderID,
+                    BIN_TO_UUID(examID) as examID,
+                    examName,
+                    examUC,
+                    examAdmissionTime
+            FROM examheader"""))
+        {
+            while(rs.next())
+            {
+                ExamHeader header = this.getExamHeader(rs);
+                rSet.add(Map.entry(header.getExamName(), header));
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return rSet;
     }
 }

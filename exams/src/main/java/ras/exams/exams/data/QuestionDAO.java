@@ -19,7 +19,7 @@ import ras.exams.exams.model.Writing;
 import ras.exams.exams.model.Choice;
 import ras.exams.exams.model.TOFQ;
 
-public class QuestionDAO implements Map<UUID, Question> {
+public class QuestionDAO {
 
     private static QuestionDAO singleton = null;
 
@@ -27,64 +27,79 @@ public class QuestionDAO implements Map<UUID, Question> {
     {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
-            String sql = "CREATE TABLE IF NOT EXISTS `question` ("+
-                            "`questionID` BINARY(16) NOT NULL," +
-                            "`questionType` VARCHAR(45) NULL DEFAULT NULL," +
-                            "`question` VARCHAR(200) NULL DEFAULT NULL," +
-                            "`versionID` BINARY(16) NULL DEFAULT NULL," +
-                            "PRIMARY KEY (`questionID`)," +
-                            "INDEX `version_idx` (`versionID` ASC) VISIBLE," +
-                            "CONSTRAINT `version`" +
-                                "FOREIGN KEY (`versionID`)" +
-                                "REFERENCES `ras_exams`.`examversion` (`examVersionID`))";
+            String sql = 
+            """
+            CREATE TABLE IF NOT EXISTS `ras_exams`.`question` (
+                `questionID` BINARY(16) NOT NULL,
+                `questionNumber` INT NOT NULL,
+                `questionType` CHAR(1) NULL DEFAULT NULL,
+                `question` VARCHAR(512) NULL DEFAULT NULL,
+                `versionID` BINARY(16) NULL DEFAULT NULL,
+                PRIMARY KEY (`questionID`),
+                INDEX `version_idx` (`versionID` ASC) VISIBLE,
+                CONSTRAINT `version`
+                    FOREIGN KEY (`versionID`)
+                    REFERENCES `ras_exams`.`examversion` (`examVersionID`))
+            """;
             stm.executeUpdate(sql);
 
-            sql = "CREATE TABLE IF NOT EXISTS `completespacesquestion` (" +
-                    "`questionID` BINARY(16) NOT NULL," +
-                    "`text` VARCHAR(300) NULL DEFAULT NULL," +
-                    "PRIMARY KEY (`questionID`)," +
-                    "CONSTRAINT `questionIDcs`" +
-                    "FOREIGN KEY (`questionID`)" +
-                    "REFERENCES `ras_exams`.`question` (`questionID`))";
+            sql =
+            """
+            CREATE TABLE IF NOT EXISTS `ras_exams`.`completespacesquestion` (
+                `questionID` BINARY(16) NOT NULL,
+                `text` VARCHAR(2048) NULL DEFAULT NULL,
+                PRIMARY KEY (`questionID`),
+                CONSTRAINT `questionIDcs`
+                    FOREIGN KEY (`questionID`)
+                    REFERENCES `ras_exams`.`question` (`questionID`))
+            """;
                 
-                stm.executeUpdate(sql);
-                
-                sql = "CREATE TABLE IF NOT EXISTS `multiplechoicequestion` (" +
-                "`questionID` BINARY(16) NOT NULL," +
-                "`choiceID` BINARY(16) NOT NULL," +
-                "`choiceNumber` INT NOT NULL," +
-                "`text` VARCHAR(256) NULL DEFAULT NULL," +
-                    "`correction` TINYINT NULL DEFAULT NULL," +
-                    "`score` INT NULL DEFAULT NULL," +
-                    "PRIMARY KEY (`questionID`, `choiceID`)," +
-                    "CONSTRAINT `questionIDmc`" +
-                    "  FOREIGN KEY (`questionID`)" +
-                    "  REFERENCES `ras_exams`.`question` (`questionID`))";
+            stm.executeUpdate(sql);
+            
+            sql = 
+            """
+            CREATE TABLE IF NOT EXISTS `ras_exams`.`multiplechoicequestion` (
+                `questionID` BINARY(16) NOT NULL,
+                `choiceNumber` INT NOT NULL,
+                `description` VARCHAR(256) NULL DEFAULT NULL,
+                `correction` TINYINT NULL DEFAULT NULL,
+                `score` INT NULL DEFAULT NULL,
+                PRIMARY KEY (`questionID`, `choiceNumber`),
+                CONSTRAINT `questionIDmc`
+                    FOREIGN KEY (`questionID`)
+                    REFERENCES `ras_exams`.`question` (`questionID`))
+            """;
 
             stm.executeUpdate(sql);
 
-            sql = "CREATE TABLE IF NOT EXISTS `trueorfalsequestion` (" +
-                    "`questionID` BINARY(16) NOT NULL," +
-                    "`optionNumber` INT NOT NULL," +
-                    "`description` VARCHAR(256) NULL DEFAULT NULL," +
-                    "`correction` TINYINT NULL DEFAULT NULL," +
-                    "`score` INT NULL DEFAULT NULL," +
-                    "PRIMARY KEY (`questionID`, `optionNumber`)," +
-                    "CONSTRAINT `questionIDtf`" +
-                    "  FOREIGN KEY (`questionID`)" +
-                    "  REFERENCES `ras_exams`.`question` (`questionID`))";
+            sql =
+            """
+            CREATE TABLE IF NOT EXISTS `ras_exams`.`trueorfalsequestion` (
+                `questionID` BINARY(16) NOT NULL,
+                `optionNumber` INT NOT NULL,
+                `description` VARCHAR(256) NULL DEFAULT NULL,
+                `correction` TINYINT NULL DEFAULT NULL,
+                `score` INT NULL DEFAULT NULL,
+                PRIMARY KEY (`questionID`, `optionNumber`),
+                CONSTRAINT `questionIDtf`
+                    FOREIGN KEY (`questionID`)
+                    REFERENCES `ras_exams`.`question` (`questionID`))
+            """;
                     
             stm.executeUpdate(sql);
             
-            sql = "CREATE TABLE IF NOT EXISTS `writingquestion` (" +
-            "`questionID` BINARY(16) NOT NULL," +
-            "`criteria` VARCHAR(200) NULL DEFAULT NULL," +
-            "`minimumLimit` INT NULL DEFAULT NULL," +
-            "`maximumLimit` INT NULL DEFAULT NULL," +
-            "PRIMARY KEY (`questionID`)," +
-            "CONSTRAINT `questionIDw`" +
-            "  FOREIGN KEY (`questionID`)" +
-            "  REFERENCES `ras_exams`.`question` (`questionID`))";
+            sql = 
+            """
+            CREATE TABLE IF NOT EXISTS `ras_exams`.`writingquestion` (
+                `questionID` BINARY(16) NOT NULL,
+                `criteria` VARCHAR(512) NULL DEFAULT NULL,
+                `minimumLimit` INT NULL DEFAULT NULL,
+                `maximumLimit` INT NULL DEFAULT NULL,
+                PRIMARY KEY (`questionID`),
+                CONSTRAINT `questionIDw`
+                    FOREIGN KEY (`questionID`)
+                    REFERENCES `ras_exams`.`question` (`questionID`))
+            """;
             
             stm.executeUpdate(sql);
         }
@@ -301,7 +316,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         return q;
     }
 
-    @Override
+    
     public void clear() {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
@@ -320,8 +335,8 @@ public class QuestionDAO implements Map<UUID, Question> {
         }
     }
 
-    @Override
-    public boolean containsKey(Object key) {
+    
+    public boolean contains(UUID key) {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -337,38 +352,9 @@ public class QuestionDAO implements Map<UUID, Question> {
         return r;
     }
 
-    @Override
-    public boolean containsValue(Object value) {
-        Question q = (Question) value;
-        return this.containsKey(q.getQuestionId());
-    }
-
-    @Override
-    public Set<Entry<UUID, Question>> entrySet() {
-        Set<Entry<UUID, Question>> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(
-            """
-            SELECT BIN_TO_UUID(questionID) as questionID,
-                    questionNumber,
-                    questionType,
-                    question,
-                    BIN_TO_UUID(versionID) as versionID
-            from question"""))
-        {
-            while(rs.next())
-            {
-                Question q = this.getQuestion(rs);
-                rSet.add(Map.entry(q.getQuestionId(), q));
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
-        }
-        return rSet;
+    
+    public boolean contains(Question q) {
+        return this.contains(q.getQuestionId());
     }
 
     public List<Question> getQuestionsFromVersion(UUID versionID)
@@ -400,10 +386,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         return questions;
     }
 
-    @Override
-    public Question get(Object key) {
-        if (!(key instanceof UUID))
-            return null;
+    public Question get(UUID key) {
         Question q = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -428,13 +411,11 @@ public class QuestionDAO implements Map<UUID, Question> {
         }
         return q;
     }
-
-    @Override
+    
     public boolean isEmpty() {
         return this.size() == 0;
     }
 
-    @Override
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -461,7 +442,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         if (type == 'C' && q instanceof CompleteSpaces)
         {
             CompleteSpaces c = (CompleteSpaces)q;
-            Pattern pattern = Pattern.compile("^(\\w|\\s)*(\\{(\\w|\\d)+,\\s*\\d+\\}(\\w|\\s)*)+$", Pattern.MULTILINE);
+            Pattern pattern = Pattern.compile("^[^{}]*(\\{[^ ,]+,\\s*\\d+\\}[^{}]*)+$", Pattern.MULTILINE);
             Matcher matcher = pattern.matcher(c.getText());
             if (!matcher.matches())
                 throw new InvalidQuestionException('C');
@@ -528,15 +509,15 @@ public class QuestionDAO implements Map<UUID, Question> {
         }
     }
 
-    @Override
-    public Question put(UUID key, Question value) {
-        Question rv = this.get(key);
+    
+    public Question put(Question value) {
+        Question rv = this.get(value.getQuestionId());
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO question "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+value.getQuestionId().toString()+"'),"+
                                     value.getQuestionNumber()+","+
                                     "'"+value.getQuestionType()+"',"+
                                     "'"+value.getQuestion()+"',"+
@@ -547,28 +528,28 @@ public class QuestionDAO implements Map<UUID, Question> {
                                     "questionType=VALUES(questionType),"+
                                     "question=VALUES(question),"+
                                     "versionID=VALUES(versionID)");
-            this.putType(key, value, stm);
+            this.putType(value.getQuestionId(), value, stm);
         }
         catch (SQLException | InvalidQuestionException e)
         {
             if (rv == null)
-                this.remove(key);
+                this.remove(value.getQuestionId());
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }
         return rv;
     }
 
-    @Override
-    public void putAll(Map<? extends UUID, ? extends Question> m) {
-        for (Entry<? extends UUID, ? extends Question> entry : m.entrySet())
+    
+    public void putAll(Collection<Question> c) {
+        for (Question q : c)
         {
-            this.put(entry.getKey(), entry.getValue());
+            this.put(q);
         }
     }
 
-    @Override
-    public Question remove(Object key) {
+    
+    public Question remove(UUID key) {
         Question rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
@@ -589,7 +570,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         return rv;
     }
 
-    @Override
+    
     public int size() {
         int size = 0;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -607,7 +588,7 @@ public class QuestionDAO implements Map<UUID, Question> {
         return size;
     }
 
-    @Override
+    
     public Collection<Question> values() {
         Set<Question> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -634,15 +615,15 @@ public class QuestionDAO implements Map<UUID, Question> {
         return rSet;
     }
     
-    @Override
+    
     public String toString ()
     {
         String r = "{";
         boolean begin = true;
-        for (Map.Entry<UUID, Question> entry : this.entrySet())
+        for (Question q : this.values())
         {
             r += (begin) ?"" :", ";
-            r += entry.getKey() + "=" + entry.getValue().getQuestionId();
+            r += q.toString();
             begin = false;
         }
         return r + "}";

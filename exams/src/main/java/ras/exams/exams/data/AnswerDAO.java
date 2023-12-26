@@ -19,7 +19,7 @@ import ras.exams.exams.model.TOFQAnswer;
 import ras.exams.exams.model.TrueOrFalseAnswer;
 import ras.exams.exams.model.WritingAnswer;
 
-public class AnswerDAO implements Map<UUID, Answer> {
+public class AnswerDAO {
 
     private static AnswerDAO singleton = null;
     private QuestionDAO questionDAO;
@@ -50,19 +50,19 @@ public class AnswerDAO implements Map<UUID, Answer> {
             sql = 
             """
             CREATE TABLE IF NOT EXISTS `ras_exams`.`answermultiplechoice` (
-                `examAnswerID` BINARY(16) NOT NULL,
+                `answerID` BINARY(16) NOT NULL,
                 `questionID` BINARY(16) NOT NULL,
                 `choiceNumber` INT NOT NULL,
                 `selected` TINYINT NULL DEFAULT NULL,
                 `grade` INT NULL DEFAULT NULL,
-                PRIMARY KEY (`examAnswerID`, `questionID`, `choiceNumber`),
+                PRIMARY KEY (`answerID`, `questionID`, `choiceNumber`),
                 INDEX `answerMultipleChoice_idx` (`questionID` ASC, `choiceNumber` ASC) VISIBLE,
                 CONSTRAINT `answerMultipleChoice`
                     FOREIGN KEY (`questionID` , `choiceNumber`)
                     REFERENCES `ras_exams`.`multiplechoicequestion` (`questionID` , `choiceNumber`),
                 CONSTRAINT `examAnswerMC`
-                    FOREIGN KEY (`examAnswerID`)
-                    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+                    FOREIGN KEY (`answerID`)
+                    REFERENCES `ras_exams`.`answer` (`answerID`))
             """;
                 
             stm.executeUpdate(sql);
@@ -70,18 +70,18 @@ public class AnswerDAO implements Map<UUID, Answer> {
             sql = 
             """
             CREATE TABLE IF NOT EXISTS `ras_exams`.`answercompletespaces` (
-                `examAnswerID` BINARY(16) NOT NULL,
+                `answerID` BINARY(16) NOT NULL,
                 `questionID` BINARY(16) NOT NULL,
-                `text` VARCHAR(300) NULL DEFAULT NULL,
+                `text` VARCHAR(2048) NULL DEFAULT NULL,
                 `grade` INT NULL DEFAULT NULL,
-                PRIMARY KEY (`examAnswerID`, `questionID`),
+                PRIMARY KEY (`answerID`, `questionID`),
                 INDEX `answerCompleteSpaces_idx` (`questionID` ASC) VISIBLE,
                 CONSTRAINT `answerCompleteSpaces`
                     FOREIGN KEY (`questionID`)
                     REFERENCES `ras_exams`.`completespacesquestion` (`questionID`),
                 CONSTRAINT `examAnswerCS`
-                    FOREIGN KEY (`examAnswerID`)
-                    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+                    FOREIGN KEY (`answerID`)
+                    REFERENCES `ras_exams`.`answer` (`answerID`))
             """;
 
             stm.executeUpdate(sql);
@@ -89,19 +89,19 @@ public class AnswerDAO implements Map<UUID, Answer> {
             sql =
             """
             CREATE TABLE IF NOT EXISTS `ras_exams`.`answertrueorfalse` (
-                `examAnswerID` BINARY(16) NOT NULL,
+                `answerID` BINARY(16) NOT NULL,
                 `questionID` BINARY(16) NOT NULL,
                 `optionNumber` INT NOT NULL,
                 `answer` TINYINT NULL DEFAULT NULL,
                 `grade` INT NULL DEFAULT NULL,
-                PRIMARY KEY (`examAnswerID`, `questionID`, `optionNumber`),
+                PRIMARY KEY (`answerID`, `questionID`, `optionNumber`),
                 INDEX `answerTrueOrFalse_idx` (`questionID` ASC, `optionNumber` ASC) VISIBLE,
                 CONSTRAINT `answerTrueOrFalse`
                     FOREIGN KEY (`questionID` , `optionNumber`)
                     REFERENCES `ras_exams`.`trueorfalsequestion` (`questionID` , `optionNumber`),
                 CONSTRAINT `examAnswerTF`
-                    FOREIGN KEY (`examAnswerID`)
-                    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+                    FOREIGN KEY (`answerID`)
+                    REFERENCES `ras_exams`.`answer` (`answerID`))
             """;
 
             stm.executeUpdate(sql);
@@ -109,18 +109,18 @@ public class AnswerDAO implements Map<UUID, Answer> {
             sql = 
             """
             CREATE TABLE IF NOT EXISTS `ras_exams`.`answerwriting` (
-                `examAnswerID` BINARY(16) NOT NULL,
+                `answerID` BINARY(16) NOT NULL,
                 `questionID` BINARY(16) NOT NULL,
-                `text` VARCHAR(300) NULL DEFAULT NULL,
+                `text` VARCHAR(2048) NULL DEFAULT NULL,
                 `grade` INT NULL DEFAULT NULL,
-                PRIMARY KEY (`examAnswerID`, `questionID`),
+                PRIMARY KEY (`answerID`, `questionID`),
                 INDEX `answerWriting_idx` (`questionID` ASC) VISIBLE,
                 CONSTRAINT `answerWriting`
                     FOREIGN KEY (`questionID`)
                     REFERENCES `ras_exams`.`writingquestion` (`questionID`),
                 CONSTRAINT `examAnswerW`
-                    FOREIGN KEY (`examAnswerID`)
-                    REFERENCES `ras_exams`.`examanswer` (`examAnswerID`))
+                    FOREIGN KEY (`answerID`)
+                    REFERENCES `ras_exams`.`answer` (`answerID`))
             """;
             
             stm.executeUpdate(sql);
@@ -302,7 +302,7 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return a;
     }
 
-    @Override
+    
     public void clear() {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
@@ -321,8 +321,8 @@ public class AnswerDAO implements Map<UUID, Answer> {
         }
     }
 
-    @Override
-    public boolean containsKey(Object key) {
+    
+    public boolean contains(UUID key) {
         boolean r;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -338,38 +338,9 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return r;
     }
 
-    @Override
-    public boolean containsValue(Object value) {
-        Answer a = (Answer) value;
-        return this.containsKey(a.getAnswerID());
-    }
-
-    @Override
-    public Set<Entry<UUID, Answer>> entrySet() {
-        Set<Entry<UUID, Answer>> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(
-            """
-            SELECT BIN_TO_UUID(answerID) as answerID,
-                    BIN_TO_UUID(examAnswerID) as examAnswerID,
-                    BIN_TO_UUID(questionID) as questionID,
-                    answerType,
-                    grade
-            FROM answer"""))
-        {
-            while(rs.next())
-            {
-                Answer a = this.getAnswer(rs);
-                rSet.add(Map.entry(a.getAnswerID(), a));
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
-        }
-        return rSet;
+    
+    public boolean contains(Answer value) {
+        return this.contains(value.getAnswerID());
     }
 
     public List<Answer> getAnswersFromExamAnswer(UUID examAnswerID)
@@ -401,10 +372,8 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return questions;
     }
 
-    @Override
-    public Answer get(Object key) {
-        if (!(key instanceof UUID))
-            return null;
+    
+    public Answer get(UUID key) {
         Answer a = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
@@ -430,30 +399,9 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return a;
     }
 
-    @Override
+    
     public boolean isEmpty() {
         return this.size() == 0;
-    }
-
-    @Override
-    public Set<UUID> keySet() {
-        Set<UUID> r = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(answerID) FROM answer"))
-        {
-            while (rs.next())
-            {
-                UUID questionID = UUID.fromString(rs.getString("answerID"));
-                r.add(questionID);
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
-        }
-        return r;
     }
 
     private void putType(UUID answerID, Answer a, Statement stm) throws SQLException, InvalidAnswerException
@@ -533,15 +481,15 @@ public class AnswerDAO implements Map<UUID, Answer> {
         }
     }
 
-    @Override
-    public Answer put(UUID key, Answer value) {
-        Answer rv = this.get(key);
+    
+    public Answer put(Answer value) {
+        Answer rv = this.get(value.getAnswerID());
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO answer "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+value.getAnswerID().toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getExamAnswerID().toString()+"'),"+
                                     "UUID_TO_BIN('"+value.getQuestionID().toString()+"'),"+
                                     "'"+value.getAnswerType()+"',"+
@@ -552,28 +500,28 @@ public class AnswerDAO implements Map<UUID, Answer> {
                                     "questionID=VALUES(questionID),"+
                                     "answerType=VALUES(answerType),"+
                                     "grade=VALUES(grade)");
-            this.putType(key, value, stm);
+            this.putType(value.getAnswerID(), value, stm);
         }
         catch (SQLException | InvalidAnswerException e)
         {
             if (rv == null)
-                this.remove(key);
+                this.remove(value.getAnswerID());
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }
         return rv;
     }
 
-    @Override
-    public void putAll(Map<? extends UUID, ? extends Answer> m) {
-        for (Entry<? extends UUID, ? extends Answer> entry : m.entrySet())
+    
+    public void putAll(Collection<Answer> l) {
+        for (Answer a : l)
         {
-            this.put(entry.getKey(), entry.getValue());
+            this.put(a);
         }
     }
 
-    @Override
-    public Answer remove(Object key) {
+    
+    public Answer remove(UUID key) {
         Answer rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
@@ -594,7 +542,7 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return rv;
     }
 
-    @Override
+    
     public int size() {
         int size = 0;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -612,7 +560,7 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return size;
     }
 
-    @Override
+    
     public Collection<Answer> values() {
         Set<Answer> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -640,15 +588,15 @@ public class AnswerDAO implements Map<UUID, Answer> {
         return rSet;
     }
     
-    @Override
+    
     public String toString ()
     {
         String r = "{";
         boolean begin = true;
-        for (Map.Entry<UUID, Answer> entry : this.entrySet())
+        for (Answer a : this.values())
         {
             r += (begin) ?"" :", ";
-            r += entry.getKey() + "=" + entry.getValue().getAnswerID();
+            r += a.toString();
             begin = false;
         }
         return r + "}";
