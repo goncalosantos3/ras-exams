@@ -260,7 +260,7 @@ public class ExamDAO implements Map<String, Exam> {
                                     "UUID_TO_BIN('"+studentID+"'),"+
                                     "UUID_TO_BIN('"+examID.toString()+"')"+
                                 ") ON DUPLICATE KEY UPDATE "+
-                                    "studentID=VALUES(studentID)"+
+                                    "studentID=VALUES(studentID),"+
                                     "examID=VALUES(examID)";
                 stm.executeUpdate(sql);
             }
