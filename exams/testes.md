@@ -92,7 +92,7 @@ POST /exams/QuestionTrueorFalse?examName=teste
 PUT /enrollStudents?examName=teste
 
 [
-  "420217d5-6b4d-47de-ae3f-8b77b2b5304b"
+  "44444444-4444-4444-4444-444444444444"
 ]
 
 12. Criar a reposta a um exame de um aluno
@@ -100,13 +100,13 @@ PUT /enrollStudents?examName=teste
 POST /exam/createExamAnswer?examName=teste
 
 {
-  "studentID": "420217d5-6b4d-47de-ae3f-8b77b2b5304b",
+  "studentID": "44444444-4444-4444-4444-444444444444",
   "grade": 20
 }
 
 13. Adicionar as respostas do aluno a uma reposta a um exame (CompleteSpacesAnswer)
 
-POST /exam/saveCompleteSpacesAnswer/teste/1/3/420217d5-6b4d-47de-ae3f-8b77b2b5304b
+POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-444444444444
 
 {
   "grade": 5,
@@ -115,7 +115,7 @@ POST /exam/saveCompleteSpacesAnswer/teste/1/3/420217d5-6b4d-47de-ae3f-8b77b2b530
 
 14. Adicionar as respostas do aluno a uma reposta a um exame (WritingAnswer)
 
-POST /exam/saveWritingAnswer/teste/1/1/420217d5-6b4d-47de-ae3f-8b77b2b5304b
+POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 
 {
   "grade": 10,
@@ -123,6 +123,8 @@ POST /exam/saveWritingAnswer/teste/1/1/420217d5-6b4d-47de-ae3f-8b77b2b5304b
 }
 
 15. Adicionar as respostas do aluno a uma reposta a um exame (TrueOrFalseAnswer)
+
+POST /exam/saveTrueOrFalseAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 
 {
   "grade": 2,
@@ -136,6 +138,8 @@ POST /exam/saveWritingAnswer/teste/1/1/420217d5-6b4d-47de-ae3f-8b77b2b5304b
 }
 
 16. Adicionar as respostas do aluno a uma reposta a um exame (MultipleChoiceAnswer)
+
+POST /exam/saveMultipleChoiceAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 
 {
   "grade": 3,
