@@ -108,8 +108,8 @@ public class ExamDAO implements Map<String, Exam> {
         Map<Integer,ExamVersion> versions = new HashMap<>();
         versionsList.forEach(v -> versions.put(v.getVersionNumber(), v));
         List<ExamAnswer> answersList = this.examAnswerDAO.getExamAnswersFromExam(examID);
-        Map<UUID,ExamAnswer> answers = new HashMap<>();
-        answersList.forEach(a -> answers.put(a.getExamAnswerId(), a));
+        Map<String,ExamAnswer> answers = new HashMap<>();
+        answersList.forEach(a -> answers.put(a.getStudentID().toString(), a));
 
         return new Exam(examID, enrolled, header, versions, answers);
     }
@@ -286,7 +286,7 @@ public class ExamDAO implements Map<String, Exam> {
                                     "examID=VALUES(examID)");
             List<String> enrolled = value.getEnrolled();
             Map<Integer, ExamVersion> versions = value.getVersions();
-            Map<UUID, ExamAnswer> answers = value.getAnswers();
+            Map<String, ExamAnswer> answers = value.getAnswers();
 
             if (rv != null && !rv.getHeader().getExamHeaderID().equals(header.getExamHeaderID()))
                 this.examHeaderDAO.remove(rv.getHeader().getExamHeaderID());
@@ -341,8 +341,8 @@ public class ExamDAO implements Map<String, Exam> {
                 this.examHeaderDAO.remove(rv.getHeader().getExamHeaderID());
                 for (ExamVersion version : rv.getVersions().values())
                     this.examVersionDAO.remove(version.getVersionId());
-                for (UUID answerID : rv.getAnswers().keySet())
-                    this.examAnswerDAO.remove(answerID);
+                for (String studentID : rv.getAnswers().keySet())
+                    this.examAnswerDAO.remove(studentID);
             }
             stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
