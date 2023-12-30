@@ -5,11 +5,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ChoiceAnswer {
     private boolean selected;
     private int grade;
-    private Choice choice;
+    private Choice choice; // question
 
-    public ChoiceAnswer(@JsonProperty("selected") boolean selected,@JsonProperty("grade") int grade,@JsonProperty("c") Choice c){
+    // Construtor usado pelas rotas do controller
+    public ChoiceAnswer(@JsonProperty("grade") int grade, @JsonProperty("selected") boolean selected, @JsonProperty("choiceNumber") int cn){
         this.selected = selected;
         this.grade = grade;
+        this.choice = new Choice(cn);
+    }
+
+    // Construtor usado pela base de dados
+    public ChoiceAnswer(boolean selected, int grade, Choice c){
+        this.selected = selected;
+        this.grade = grade;
+        this.choice = c;
+    }
+
+    public void setChoice(Choice c){
         this.choice = c;
     }
 

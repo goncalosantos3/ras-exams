@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -194,6 +193,38 @@ public class ExamAnswerDAO {
         return a;
     }
 
+        public ExamAnswer get(String studentID) {
+        ExamAnswer a = null;
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery("""
+            SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
+                    BIN_TO_UUID(examID) as examID,
+                    BIN_TO_UUID(studentID) as studentID,
+                    grade
+            FROM examanswer
+            WHERE studentID=UUID_TO_BIN('"""+studentID+"')"))
+        {
+            if (rs.next())
+            {
+                UUID examAnswerID = UUID.fromString(rs.getString("examAnswerID")),
+                        examID = UUID.fromString(rs.getString("examID"));
+                int grade = rs.getInt("grade");
+                a = new ExamAnswer(examAnswerID, 
+                                    examID, 
+                                    UUID.fromString(studentID), 
+                                    grade, 
+                                    this.answerDAO.getAnswersFromExamAnswer(examAnswerID));
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return a;
+    }
+
     
     public boolean isEmpty() {
         return this.size() == 0;
@@ -261,6 +292,26 @@ public class ExamAnswerDAO {
 
     
     public ExamAnswer remove(UUID key) {
+        ExamAnswer rv = this.get(key);
+        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
+            Statement stm = conn.createStatement())
+        {
+            stm.execute("SET FOREIGN_KEY_CHECKS=0");
+            stm.executeUpdate("DELETE FROM examanswer WHERE examAnswerID=UUID_TO_BIN('"+key.toString()+"')");
+            if (rv.getAnswers() != null)
+                for (Answer a : rv.getAnswers())
+                    this.answerDAO.remove(a.getAnswerID());
+            stm.execute("SET FOREIGN_KEY_CHECKS=1");
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
+        }
+        return rv;
+    }
+
+    public ExamAnswer remove(String key) { // key is a student id in String form
         ExamAnswer rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())

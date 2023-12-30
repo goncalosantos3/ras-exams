@@ -1,13 +1,17 @@
 package ras.exams.exams.api;
 
 import ras.exams.exams.model.CompleteSpaces;
+import ras.exams.exams.model.CompleteSpacesAnswer;
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.MultipleChoice;
+import ras.exams.exams.model.MultipleChoiceAnswer;
 import ras.exams.exams.model.Question;
 import ras.exams.exams.model.TrueOrFalse;
+import ras.exams.exams.model.TrueOrFalseAnswer;
 import ras.exams.exams.model.Writing;
+import ras.exams.exams.model.WritingAnswer;
 import ras.exams.exams.service.ExamsService;
 
 import java.util.List;
@@ -53,13 +57,6 @@ public class ExamsController {
     public boolean addExamHeader(@RequestBody ExamHeader examHeader) {
         // Tem de devolver um inteiro, indicando se o examHeader foi adicionado ou não
         return examService.addExamHeader(examHeader);
-    }
-    
-    // Rota - POST /exam/saveExam/{studentNumber}/{examName}
-    @PostMapping("exam/saveExam/{studentNumber}/{examName}")
-    public int saveExam(@PathVariable String studentNumber, @PathVariable String examName, @RequestBody ExamAnswer examAnswer) {
-        // Tem de devolver um inteiro, indicando se o exame foi guardado com sucesso ou não
-       return examService.saveExam(examName, studentNumber, examAnswer);
     }
 
     // Rota - POST /exams/versions?examName=xxxx&versionNumber=xxxx
@@ -151,6 +148,45 @@ public class ExamsController {
         return this.examService.getQuestion(examName, versionNumber, questionNumber);
     }  
 
+    // Rota - POST /exam/createExamAnswer?examName=xxxx
+    @PostMapping("exam/createExamAnswer")
+    public int createExamAnswer(@RequestParam("examName") String examName, @RequestBody ExamAnswer examAnswer){
+        // Tem de devolver um inteiro, indicando se o exame foi guardado com sucesso ou não
+       return this.examService.createExamAnswer(examName, examAnswer);
+    }
+
+    // Rota - POST /exam/saveCompleteSpacesAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}
+    @PostMapping("exam/saveCompleteSpacesAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}")
+    public int saveCompleteSpacesAnswer(@PathVariable String examName, @PathVariable String versionNumber, 
+        @PathVariable String questionNumber, @PathVariable String studentID, 
+        @RequestBody CompleteSpacesAnswer csa){
+        return this.examService.saveCompleteSpacesAnswer(examName, Integer.parseInt(versionNumber), Integer.parseInt(questionNumber), studentID, csa);
+    }
+
+    // Rota - POST /exam/saveWritingAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}
+    @PostMapping("exam/saveWritingAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}")
+    public int saveWritingAnswer(@PathVariable String examName, @PathVariable String versionNumber, 
+        @PathVariable String questionNumber, @PathVariable String studentID, 
+        @RequestBody WritingAnswer wa){
+        return this.examService.saveWritingAnswer(examName, Integer.parseInt(versionNumber), Integer.parseInt(questionNumber), studentID, wa);
+    }
+
+    // Rota - POST /exam/saveTrueOrFalseAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}
+    @PostMapping("exam/saveTrueOrFalseAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}")
+    public int saveTrueOrFalseAnswer(@PathVariable String examName, @PathVariable String versionNumber, 
+        @PathVariable String questionNumber, @PathVariable String studentID, 
+        @RequestBody TrueOrFalseAnswer tfa){
+        return this.examService.saveTrueOrFalseAnswer(examName, Integer.parseInt(versionNumber), Integer.parseInt(questionNumber), studentID, tfa);
+    }
+
+    // Rota - POST /exam/saveMultipleChoiceAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}
+    @PostMapping("exam/saveMultipleChoiceAnswer/{examName}/{versionNumber}/{questionNumber}/{studentID}")
+    public int saveMultipleChoiceAnswer(@PathVariable String examName, @PathVariable String versionNumber, 
+        @PathVariable String questionNumber, @PathVariable String studentID, 
+        @RequestBody MultipleChoiceAnswer mca){
+        return this.examService.saveMultipleChoiceAnswer(examName, Integer.parseInt(versionNumber), Integer.parseInt(questionNumber), studentID, mca);
+    }
+
     // Rota - PUT /exams/QuestionCompleteSpaces/{examName}
     @PutMapping("exams/QuestionCompleteSpaces/{examName}")
     public boolean updateCompleteSpacesQuestion(@PathVariable String examName, @RequestBody CompleteSpaces completeSpacesQuestion){
@@ -194,14 +230,14 @@ public class ExamsController {
     @GetMapping("getExambyStudent")
     public List<Exam> getExambyStudent(@RequestParam("studentNumber") String studentNumber) {
         // Dá return a uma lista de exames na qual o aluno está inscrito - List<Exam>
-        return examService.getExambyStudent(studentNumber);
+        return examService.getExamsbyStudent(studentNumber);
     }
 
-    // Rota - PUT /enrollStudent/{examName}?studentNumber=xxxx
-    @PutMapping("enrollStudent/{examName}")
-    public int enrollStudent(@PathVariable String examName, @RequestParam("studentNumber") String studentNumber) {
+    // Rota - PUT /enrollStudents?examName=xxxx
+    @PutMapping("enrollStudents")
+    public int enrollStudent(@RequestParam("examName") String examName, @RequestBody List<String> students) {
         // Dá return a um inteiro indicando se o aluno foi inscrito no exame ou não
-        return examService.enrollStudent(examName,studentNumber);
+        return examService.enrollStudents(examName, students);
     }
 
     // Rota - GET /getSpecificExamforStudent?studentNumber=xxxxexamName=xxxx

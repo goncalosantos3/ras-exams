@@ -13,7 +13,7 @@ public class Exam {
     private List<String> enrolled;
     private ExamHeader header;
     private Map<Integer, ExamVersion> versions;
-    private Map<UUID, ExamAnswer> answers;
+    private Map<String, ExamAnswer> answers;
 
     public Exam(UUID id, String examName){
         this.id = id;
@@ -32,7 +32,7 @@ public class Exam {
     }
 
     public Exam(UUID examID, List<String> enrolled, ExamHeader header, 
-                Map<Integer, ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
+                Map<Integer, ExamVersion> versions, Map<String, ExamAnswer> answers) {
         this.id = examID;
         this.enrolled = new ArrayList<>(enrolled);
         this.header = header;
@@ -81,6 +81,72 @@ public class Exam {
         return this.versions.get(versionNumber).updateQuestion(q);
     }
 
+    // Adiciona os estudantes se eles ainda não foram anteriormente adicionados
+    public void enrollStudents(List<String> students){
+        for(String s: students){
+            if(!this.enrolled.contains(s)){
+                this.enrolled.add(s);
+            }
+        }
+    }
+
+    public int saveCompleteSpacesAnswer(String studentID, int vn, int qn, CompleteSpacesAnswer csa){
+        System.out.println(this.answers.keySet());
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
+            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+            csa.setExamAnswerID(ea.getExamAnswerId());
+            Question q = this.versions.get(vn).getQuestion(qn);
+            csa.setQuestion(q);
+            csa.setQuestionID(q.getQuestionId());
+            ea.addAnswer(csa);
+            return 200;
+        }   
+        return 404;
+    }   
+
+    public int saveWritingAnswer(String studentID, int vn, int qn, WritingAnswer wa){
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
+            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+            wa.setExamAnswerID(ea.getExamAnswerId());
+            Question q = this.versions.get(vn).getQuestion(qn);
+            wa.setQuestion(q);
+            wa.setQuestionID(q.getQuestionId());
+            ea.addAnswer(wa);
+            return 200;
+        }   
+        return 404;
+    }
+
+    public int saveTrueOrFalseAnswer(String studentID, int vn, int qn, TrueOrFalseAnswer tfa){
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
+            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+            tfa.setExamAnswerID(ea.getExamAnswerId());
+            Question q = this.versions.get(vn).getQuestion(qn);
+            tfa.setQuestionID(q.getQuestionId());
+            TrueOrFalse tof = (TrueOrFalse) q;
+            for(TOFQAnswer tofqanswer: tfa.getAnswers()){
+                tofqanswer.setOption(tof.getQuestionOnOption(tofqanswer.getOption().getOptionNumber()));
+            }
+            ea.addAnswer(tfa);
+        }   
+        return 404;
+    }
+
+    public int saveMultipleChoiceAnswer(String studentID, int vn, int qn, MultipleChoiceAnswer mca){
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
+            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+            mca.setExamAnswerID(ea.getExamAnswerId());
+            Question q = this.versions.get(vn).getQuestion(qn);
+            mca.setQuestionID(q.getQuestionId());
+            MultipleChoice mc = (MultipleChoice) q;
+            for(ChoiceAnswer ca: mca.getAnswers()){
+                ca.setChoice(mc.getChoiceOnChoiceNumber(ca.getChoice().getChoiceNumber()));
+            }
+            ea.addAnswer(mca);
+        }   
+        return 404;
+    }
+
     public UUID getID(){
         return this.id;
     }
@@ -102,7 +168,7 @@ public class Exam {
         return this.versions;
     }
 
-    public Map<UUID,ExamAnswer> getAnswers(){
+    public Map<String,ExamAnswer> getAnswers(){
         return this.answers;
     }
 

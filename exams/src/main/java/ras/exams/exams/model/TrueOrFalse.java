@@ -3,6 +3,8 @@ package ras.exams.exams.model;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.tomcat.util.threads.TaskQueue;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TrueOrFalse extends Question{
@@ -24,5 +26,14 @@ public class TrueOrFalse extends Question{
 
     public List<TOFQ> getQuestions(){
         return this.questions;
+    }
+
+    public TOFQ getQuestionOnOption(int on){
+        for(TOFQ tofq: this.questions){
+            if(tofq.getOptionNumber() == on){
+                return tofq;
+            }
+        }
+        return null;
     }
 }
