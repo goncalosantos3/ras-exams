@@ -26,6 +26,19 @@ public class ExamAnswer {
         this.answers = answers;
     }
 
+    // Replaces an answer with the same questionID (only one answer per question)
+    public void addAnswer(Answer answer){
+        int pos = 0;
+        for(Answer a: this.answers){
+            if(a.getQuestionID() == answer.getQuestionID()){
+                break;
+            }
+            pos++;
+        }
+        this.answers.remove(pos);
+        this.answers.add(pos, answer);
+    }
+
     public void setExamID(UUID examID){
         this.examID = examID;
     }

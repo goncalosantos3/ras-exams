@@ -8,9 +8,10 @@ public class ChoiceAnswer {
     private Choice choice; // question
 
     // Construtor usado pelas rotas do controller
-    public ChoiceAnswer(@JsonProperty("grade") int grade, @JsonProperty("selected") boolean selected){
+    public ChoiceAnswer(@JsonProperty("grade") int grade, @JsonProperty("selected") boolean selected, @JsonProperty("choiceNumber") int cn){
         this.selected = selected;
         this.grade = grade;
+        this.choice = new Choice(cn);
     }
 
     // Construtor usado pela base de dados

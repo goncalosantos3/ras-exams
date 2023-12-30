@@ -24,4 +24,13 @@ public class MultipleChoice extends Question{
     public List<Choice> getChoices(){
         return this.choices;
     }
+
+    public Choice getChoiceOnChoiceNumber(int cn){
+        for(Choice c: this.choices){
+            if(c.getChoiceNumber() == cn){
+                return c;
+            }
+        }
+        return null;
+    }
 }

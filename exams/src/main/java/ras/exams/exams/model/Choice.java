@@ -16,6 +16,11 @@ public class Choice {
         this.choiceNumber = choiceNumber;
     }
 
+    // Este construtor é usado como auxiliar ao adicionar respostas de alunos
+    public Choice(int cn){
+        this.choiceNumber = cn;
+    }
+
     public String getDescription(){
         return this.description;
     }

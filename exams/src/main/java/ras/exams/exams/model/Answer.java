@@ -33,6 +33,10 @@ public abstract class Answer {
         return questionID;
     }
     
+    public void setQuestionID(UUID qid){
+        this.questionID = qid;
+    }
+
     public int getGrade(){
         return this.grade;
     }
@@ -43,6 +47,10 @@ public abstract class Answer {
 
     public UUID getExamAnswerID() {
         return examAnswerID;
+    }
+
+    public void setExamAnswerID(UUID eaid){
+        this.examAnswerID = eaid;
     }
 
     public char getAnswerType() {

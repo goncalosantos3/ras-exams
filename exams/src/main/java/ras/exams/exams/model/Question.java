@@ -2,6 +2,8 @@ package ras.exams.exams.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public abstract class Question {
     private final UUID questionId;
     private String question;
@@ -19,6 +21,7 @@ public abstract class Question {
         this.versionID = versionID;
     }
     
+    // Chamado pelas sub-classes (CompleteSpaces, Writing, etc.)
     public Question(UUID id, String question, int qn, char qtype, int versionNumber){
         this.questionId = id;
         this.question = question;

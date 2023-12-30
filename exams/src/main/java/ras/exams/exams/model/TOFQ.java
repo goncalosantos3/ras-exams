@@ -16,6 +16,11 @@ public class TOFQ {
         this.optionNumber = optionNumber;
     }
 
+    // Este construtor é usado como auxiliar ao adicionar respostas de alunos
+    public TOFQ(int optionNumber){
+        this.optionNumber = optionNumber;
+    }
+
     public String getDescription(){
         return this.description;
     }

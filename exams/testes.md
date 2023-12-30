@@ -95,43 +95,55 @@ PUT /enrollStudents?examName=teste
   "420217d5-6b4d-47de-ae3f-8b77b2b5304b"
 ]
 
-12. Gravar as respostas de um aluno a um exame
+12. Criar a reposta a um exame de um aluno
 
-POST /exam/saveExam/1/teste
+POST /exam/createExamAnswer?examName=teste
 
 {
   "studentID": "420217d5-6b4d-47de-ae3f-8b77b2b5304b",
-  "grade": 20,
+  "grade": 20
+}
+
+13. Adicionar as respostas do aluno a uma reposta a um exame (CompleteSpacesAnswer)
+
+POST /exam/saveCompleteSpacesAnswer/teste/1/3/420217d5-6b4d-47de-ae3f-8b77b2b5304b
+
+{
+  "grade": 5,
+  "answer": "Hoje é o dia antes da ceia de Natal"
+}
+
+14. Adicionar as respostas do aluno a uma reposta a um exame (WritingAnswer)
+
+POST /exam/saveWritingAnswer/teste/1/1/420217d5-6b4d-47de-ae3f-8b77b2b5304b
+
+{
+  "grade": 10,
+  "text": "A resposta certa é aquela que não está errada"
+}
+
+15. Adicionar as respostas do aluno a uma reposta a um exame (TrueOrFalseAnswer)
+
+{
+  "grade": 2,
   "answers": [
     {
-      "grade": 5,
-      "answer": "Hoje é o dia antes da ceia de Natal"
-    },
-    {
-      "grade": 10,
-      "text": "A resposta certa é aquela que não está errada"
-    },
+      "grade": 2,
+      "answer": true,
+      "optionNumber": 1
+    }
+  ]
+}
+
+16. Adicionar as respostas do aluno a uma reposta a um exame (MultipleChoiceAnswer)
+
+{
+  "grade": 3,
+  "choices": [
     {
       "grade": 3,
-      "choices": [
-        {
-          "grade: 2,
-          "selected": true
-        }, 
-        {
-          "grade": 1,
-          "selected": false,
-        }
-      ]
-    },
-    {
-      "grade": 2,
-      "answers": [
-        {
-          "grade": 2,
-          "answer": true
-        }
-      ]
+      "selected": false,
+      "choiceNumber": 1
     }
   ]
 }
