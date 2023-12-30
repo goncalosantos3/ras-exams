@@ -1,50 +1,42 @@
 package ras.exams.exams.service;
 
 import ras.exams.exams.data.ExamDAO;
+import ras.exams.exams.model.CompleteSpaces;
+import ras.exams.exams.model.CompleteSpacesAnswer;
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.Question;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class ExamsService {
     private Map<String, Exam> exams;
-    // private Map<String, UUID> namesIds; // Maps exam's names to ids
 
     public ExamsService(){
         this.exams = ExamDAO.getInstance();
-        // this.namesIds = new HashMap<>();
-        // for(Map.Entry<UUID, Exam> e : this.exams.entrySet()){
-        //     this.namesIds.put(e.getValue().getHeader().getExamName(), e.getKey()); 
-        // }
-
-        // this.exams = new HashMap<>();
-        // this.namesIds = new HashMap<>();
     }
     
     // Creates a new Exam with only it's name
     public void createExam(String examName){
         UUID examId = UUID.randomUUID();
         this.exams.put(examName, new Exam(examId, examName));
-        // this.namesIds.put(examName, examId);
-        System.out.println("\n" + exams.get(examId));
     }
 
     // Add a exam header to an existing exam
     public boolean addExamHeader(ExamHeader header){
-        if(!this.exams.containsKey(header.getExamName())){
+        String examName = header.getExamName();
+        if(!this.exams.containsKey(examName)){
             return false;
         }
 
-        String examName = header.getExamName();
         Exam exam = this.exams.get(examName);
         exam.setHeader(header);
         this.exams.put(header.getExamName(), exam);
@@ -87,11 +79,7 @@ public class ExamsService {
     }   
     
     public List<Exam> getExams(){
-        List<Exam> res = new ArrayList<>();
-        for (Map.Entry<String, Exam> entry : this.exams.entrySet()){
-            res.add(entry.getValue());
-        }
-        return res;
+        return this.exams.values().stream().collect(Collectors.toList());
     }
     
     public ExamHeader getExamHeader(String examName){
@@ -106,6 +94,7 @@ public class ExamsService {
     
     public int editExamHeader(String examName, ExamHeader examHeader) {
         Exam e = null;
+
         if (this.exams.containsKey(examName)){
             e = this.exams.get(examName);
             e.setHeader(examHeader);
@@ -117,8 +106,9 @@ public class ExamsService {
         }
     }
 
-    public List <Exam> getExambyStudent(String studentNumber){
+    public List <Exam> getExamsbyStudent(String studentNumber){
         List <Exam> res = new ArrayList<>();
+
         for (Map.Entry<String, Exam> entry : this.exams.entrySet()) {
             Exam e = entry.getValue();
             List<String> enrolled = e.getEnrolled();
@@ -129,11 +119,11 @@ public class ExamsService {
         return res;
     }
 
-    public int enrollStudent(String examName,String studentNumber){
+    public int enrollStudents(String examName, List<String> students){
         Exam e = null;
         if (this.exams.containsKey(examName)){
             e = this.exams.get(examName);
-            e.setEnrolled(studentNumber);
+            e.enrollStudents(students);
             this.exams.put(examName, e);
             return 200;
         }
@@ -157,14 +147,14 @@ public class ExamsService {
         return e;
     }
 
-    public int saveExam(String examName,String studentNumber,ExamAnswer examAnswer){
-        if (this.exams.containsKey(examName)){
+    public int createExamAnswer(String examName, ExamAnswer ea){
+        if(this.exams.containsKey(examName)){
             Exam e = this.exams.get(examName);
             List <String> enrolled = e.getEnrolled();
-            if (enrolled.contains(studentNumber)){
-                UUID idAnswer = UUID.randomUUID();
-                e.getAnswers().put(idAnswer, examAnswer);
-                return 200;
+            if (enrolled.contains(ea.getStudentID().toString())){
+                ea.setExamID(e.getID());
+                e.getAnswers().put(ea.getStudentID(), ea);
+                this.exams.put(examName, e);
             }
             else{
                 return 404;
@@ -172,4 +162,21 @@ public class ExamsService {
         }
         return 404;
     }
+
+    // public int saveExam(String examName, ExamAnswer examAnswer){
+    //     if (this.exams.containsKey(examName)){
+    //         Exam e = this.exams.get(examName);
+    //         List <String> enrolled = e.getEnrolled();
+    //         if (enrolled.contains(examAnswer.getStudentID().toString())){
+    //             UUID idAnswer = UUID.randomUUID();
+    //             e.getAnswers().put(idAnswer, examAnswer);
+    //             examAnswer.setExamID(e.getID());
+    //             return 200;
+    //         }
+    //         else{
+    //             return 404;
+    //         }
+    //     }
+    //     return 404;
+    // }
 }

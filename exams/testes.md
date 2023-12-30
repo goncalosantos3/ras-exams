@@ -27,7 +27,7 @@ PUT /exams/editExamHeader?examName=teste
 
 6. Criação de uma versão de exame
 
-/exams/versions?examName=teste&versionNumber=1
+POST /exams/versions?examName=teste&versionNumber=1
 
 7. Criação de uma questão de escolha múltipla
 
@@ -83,6 +83,55 @@ POST /exams/QuestionTrueorFalse?examName=teste
       "correc": true,
       "score": 30,
       "optionNumber": 1
+    }
+  ]
+}
+
+11. Inscrição de estudantes num  exame
+
+PUT /enrollStudents?examName=teste
+
+[
+  "420217d5-6b4d-47de-ae3f-8b77b2b5304b"
+]
+
+12. Gravar as respostas de um aluno a um exame
+
+POST /exam/saveExam/1/teste
+
+{
+  "studentID": "420217d5-6b4d-47de-ae3f-8b77b2b5304b",
+  "grade": 20,
+  "answers": [
+    {
+      "grade": 5,
+      "answer": "Hoje é o dia antes da ceia de Natal"
+    },
+    {
+      "grade": 10,
+      "text": "A resposta certa é aquela que não está errada"
+    },
+    {
+      "grade": 3,
+      "choices": [
+        {
+          "grade: 2,
+          "selected": true
+        }, 
+        {
+          "grade": 1,
+          "selected": false,
+        }
+      ]
+    },
+    {
+      "grade": 2,
+      "answers": [
+        {
+          "grade": 2,
+          "answer": true
+        }
+      ]
     }
   ]
 }

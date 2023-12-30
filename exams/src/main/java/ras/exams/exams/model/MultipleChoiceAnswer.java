@@ -8,16 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MultipleChoiceAnswer extends Answer{
     private List<ChoiceAnswer> answers;
 
-    public MultipleChoiceAnswer(@JsonProperty("grade")int grade, @JsonProperty("examAnswerID") UUID examAnswerID,@JsonProperty("answers") List<ChoiceAnswer> answers,  @JsonProperty("questionID") UUID questionID){
-        super(grade, examAnswerID, 'M', questionID);
-        this.answers = answers;
+    // Construtor usado pelas rotas do controller
+    public MultipleChoiceAnswer(@JsonProperty("grade")int grade, @JsonProperty("choices") List<ChoiceAnswer> choices){
+        super(UUID.randomUUID(), grade, 'M');
+        this.answers = choices;
     }
 
+    // Construtor usado pela base de dados
     public MultipleChoiceAnswer(UUID answerID, int grade, UUID examAnswerID, List<ChoiceAnswer> answers, UUID questionID){
         super(answerID, grade, examAnswerID, 'M', questionID);
         this.answers = answers;
     }
-
 
     public List<ChoiceAnswer> getAnswers(){
         return this.answers;

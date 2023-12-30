@@ -8,12 +8,17 @@ public class WritingAnswer extends Answer{
     private String text;
     private Question question;
 
-    public WritingAnswer(@JsonProperty("grade") int grade, @JsonProperty("examAnswerID") UUID examAnswerID,@JsonProperty("text") String text,@JsonProperty("q") Question q){
-        super(grade, examAnswerID, 'W', q.getQuestionId());
+    // Construtor usado pelas rotas do controller
+    public WritingAnswer(@JsonProperty("grade") int grade, @JsonProperty("text") String text){
+        super(UUID.randomUUID(), grade, 'W');
         this.text = text;
+    }
+
+    public void setQuestion(Question q){
         this.question = q;
     }
 
+    // Construtor usado pela base de dados
     public WritingAnswer(UUID answerID, int grade, UUID examAnswerID, String text, Question q){
         super(answerID, grade, examAnswerID, 'W', q.getQuestionId());
         this.text = text;

@@ -81,6 +81,15 @@ public class Exam {
         return this.versions.get(versionNumber).updateQuestion(q);
     }
 
+    // Adiciona os estudantes se eles ainda não foram anteriormente adicionados
+    public void enrollStudents(List<String> students){
+        for(String s: students){
+            if(!this.enrolled.contains(s)){
+                this.enrolled.add(s);
+            }
+        }
+    }
+
     public UUID getID(){
         return this.id;
     }

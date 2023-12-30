@@ -6,22 +6,28 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExamAnswer {
-    private final UUID examAnswerId, examID, studentID;
+    private UUID examAnswerId, examID, studentID;
     private int grade;  
     private List<Answer> answers;
-
-    public ExamAnswer(@JsonProperty("id") UUID id, @JsonProperty("examID") UUID examID, @JsonProperty("studentID") UUID studentID){
-        this.examAnswerId = id;
-        this.examID = examID;
-        this.studentID = studentID;
-    }
     
-    public ExamAnswer(@JsonProperty("id") UUID id, @JsonProperty("examID") UUID examID, @JsonProperty("studentID") UUID studentID, @JsonProperty("grade") int grade,@JsonProperty("answers") List<Answer> answers){
+    // Construtor usado pelas rotas do controller
+    public ExamAnswer(@JsonProperty("studentID") String sid, @JsonProperty("grade") int grade){
+        this.examAnswerId = UUID.randomUUID();
+        this.studentID = UUID.fromString(sid);
+        this.grade = grade;
+    }
+
+    // Construtor usado pela BD
+    public ExamAnswer(UUID id, UUID examID, UUID studentID, int grade, List<Answer> answers){
         this.examAnswerId = id; 
         this.examID = examID;
         this.studentID = studentID;
         this.grade = grade;
         this.answers = answers;
+    }
+
+    public void setExamID(UUID examID){
+        this.examID = examID;
     }
 
     public UUID getExamAnswerId(){

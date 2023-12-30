@@ -2,8 +2,6 @@ package ras.exams.exams.model;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public abstract class Answer {
     private UUID answerID;
     private UUID examAnswerID;
@@ -11,14 +9,14 @@ public abstract class Answer {
     private int grade;
     private char type;
     
-    public Answer(@JsonProperty("grade") int grade, @JsonProperty("examAnswerID") UUID examAnswerID, @JsonProperty("type") char type, @JsonProperty("questionID") UUID questionID){
+    // Construtor usado pelas rotas do controller
+    public Answer(UUID answerID, int grade, char type){
         this.answerID = UUID.randomUUID();
         this.grade = grade; 
-        this.examAnswerID = examAnswerID;
         this.type = type;
-        this.questionID = questionID;
     }
 
+    // Usado pela base de dados
     public Answer(UUID answerID, int grade, UUID examAnswerID, char type, UUID questionID){
         this.answerID = answerID;
         this.grade = grade; 

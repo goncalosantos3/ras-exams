@@ -10,15 +10,20 @@ public class CompleteSpacesAnswer extends Answer{
     private String text;
     private Question question;
 
-    public CompleteSpacesAnswer(@JsonProperty("grade") int grade, @JsonProperty("examAnswerID") UUID examAnswerID,@JsonProperty("answer") String answer,@JsonProperty("q") Question q){
-        super(grade, examAnswerID, 'C', q.getQuestionId());
+    // Construtor usado pelas rotas do controller
+    public CompleteSpacesAnswer(@JsonProperty("grade") int grade, @JsonProperty("answer") String answer){
+        super(UUID.randomUUID(), grade, 'C');
         this.text = answer;
-        this.question = q;
     }
 
+    // Construtor usado pela base de dados
     public CompleteSpacesAnswer(UUID answerID, int grade, UUID examAnswerID, String text, Question q){
         super(answerID, grade, examAnswerID, 'C', q.getQuestionId());
         this.text = text;
+        this.question = q;
+    }
+
+    public void setQuestion(Question q){
         this.question = q;
     }
 
