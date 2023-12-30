@@ -409,7 +409,7 @@ public class AnswerDAO {
         if (type == 'C' && a instanceof CompleteSpacesAnswer)
         {
             CompleteSpacesAnswer c = (CompleteSpacesAnswer)a;
-            Pattern pattern = Pattern.compile("^[^{}]*(\\\\{[^,} ]+(,\\\\s*\\\\d+)?}[^{}]*)+$", Pattern.MULTILINE);
+            Pattern pattern = Pattern.compile("^[^{}]*(\\{[^,} ]+(,\\s*\\d+)?\\}[^{}]*)+$", Pattern.MULTILINE);
             Matcher matcher = pattern.matcher(c.getText());
             if (!matcher.matches())
                 throw new InvalidAnswerException('C');
