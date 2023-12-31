@@ -1,5 +1,6 @@
 package ras.exams.exams.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ public class ExamAnswer {
         this.examAnswerId = UUID.randomUUID();
         this.studentID = UUID.fromString(sid);
         this.grade = grade;
+        this.answers = new ArrayList<>();
     }
 
     // Construtor usado pela BD
@@ -29,13 +31,17 @@ public class ExamAnswer {
     // Replaces an answer with the same questionID (only one answer per question)
     public void addAnswer(Answer answer){
         int pos = 0;
+        boolean remove = false;
+        
         for(Answer a: this.answers){
             if(a.getQuestionID() == answer.getQuestionID()){
+                remove = true;
                 break;
             }
             pos++;
         }
-        this.answers.remove(pos);
+        if(remove) this.answers.remove(pos);
+
         this.answers.add(pos, answer);
     }
 

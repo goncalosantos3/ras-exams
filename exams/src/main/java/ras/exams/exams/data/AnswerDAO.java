@@ -275,14 +275,14 @@ public class AnswerDAO {
                 case "M":
                     a = new MultipleChoiceAnswer(answerID, 
                                                 grade, 
-                                                questionID, 
+                                                examAnserID, 
                                                 this.getChoiceAnswers(answerID, questionID),
                                                 questionID);
                     break;
                 case "T":
                     a = new TrueOrFalseAnswer(answerID, 
                                                 grade, 
-                                                questionID, 
+                                                examAnserID, 
                                                 this.getTOFQAnswers(answerID, questionID),
                                                 questionID);
                     break;
@@ -452,7 +452,7 @@ public class AnswerDAO {
                                     "VALUES ("+
                                         "UUID_TO_BIN('"+answerID.toString()+"'),"+
                                         "UUID_TO_BIN('"+a.getQuestionID().toString()+"'),"+
-                                        o.getOption().getOptionNumber()+","+
+                                        o.getOption().getOptionNumber() + "," +
                                         (o.getAnswer() ?1 :0)+","+
                                         o.getGrade()+
                                     ") ON DUPLICATE KEY UPDATE "+

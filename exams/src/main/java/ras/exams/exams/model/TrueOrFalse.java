@@ -3,8 +3,6 @@ package ras.exams.exams.model;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.tomcat.util.threads.TaskQueue;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TrueOrFalse extends Question{

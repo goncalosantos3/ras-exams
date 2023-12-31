@@ -90,10 +90,15 @@ public class Exam {
         }
     }
 
+    /*
+     * Para guardar a resposta a uma pergunta:
+     *  1. O aluno tem que estar inscrito no exame
+     *  2. O aluno tem que ter criada uma resposta a exame
+     *  3. A respetiva pergunta tem que já existir
+     */
     public int saveCompleteSpacesAnswer(String studentID, int vn, int qn, CompleteSpacesAnswer csa){
-        System.out.println(this.answers.keySet());
-        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
-            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
+            ExamAnswer ea = this.answers.get(studentID);
             csa.setExamAnswerID(ea.getExamAnswerId());
             Question q = this.versions.get(vn).getQuestion(qn);
             csa.setQuestion(q);
@@ -105,8 +110,8 @@ public class Exam {
     }   
 
     public int saveWritingAnswer(String studentID, int vn, int qn, WritingAnswer wa){
-        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
-            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
+            ExamAnswer ea = this.answers.get(studentID);
             wa.setExamAnswerID(ea.getExamAnswerId());
             Question q = this.versions.get(vn).getQuestion(qn);
             wa.setQuestion(q);
@@ -118,23 +123,27 @@ public class Exam {
     }
 
     public int saveTrueOrFalseAnswer(String studentID, int vn, int qn, TrueOrFalseAnswer tfa){
-        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
-            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
+            ExamAnswer ea = this.answers.get(studentID);
             tfa.setExamAnswerID(ea.getExamAnswerId());
             Question q = this.versions.get(vn).getQuestion(qn);
             tfa.setQuestionID(q.getQuestionId());
             TrueOrFalse tof = (TrueOrFalse) q;
-            for(TOFQAnswer tofqanswer: tfa.getAnswers()){
-                tofqanswer.setOption(tof.getQuestionOnOption(tofqanswer.getOption().getOptionNumber()));
+            for(TOFQAnswer o: tfa.getAnswers()){
+                System.out.println(o.getOption().getOptionNumber());
+                System.out.println(tof.getQuestions());
+                o.setOption(tof.getQuestionOnOption(o.getOption().getOptionNumber()));
+                System.out.println(o.getOption());
             }
             ea.addAnswer(tfa);
+            return 200;
         }   
         return 404;
     }
 
     public int saveMultipleChoiceAnswer(String studentID, int vn, int qn, MultipleChoiceAnswer mca){
-        if(this.enrolled.contains(studentID) && this.answers.containsKey(UUID.fromString(studentID))){
-            ExamAnswer ea = this.answers.get(UUID.fromString(studentID));
+        if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
+            ExamAnswer ea = this.answers.get(studentID);
             mca.setExamAnswerID(ea.getExamAnswerId());
             Question q = this.versions.get(vn).getQuestion(qn);
             mca.setQuestionID(q.getQuestionId());
@@ -143,6 +152,7 @@ public class Exam {
                 ca.setChoice(mc.getChoiceOnChoiceNumber(ca.getChoice().getChoiceNumber()));
             }
             ea.addAnswer(mca);
+            return 200;
         }   
         return 404;
     }

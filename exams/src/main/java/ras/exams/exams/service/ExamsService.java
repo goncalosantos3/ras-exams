@@ -8,6 +8,7 @@ import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.MultipleChoiceAnswer;
 import ras.exams.exams.model.Question;
+import ras.exams.exams.model.TrueOrFalse;
 import ras.exams.exams.model.TrueOrFalseAnswer;
 import ras.exams.exams.model.WritingAnswer;
 
@@ -156,7 +157,7 @@ public class ExamsService {
             List <String> enrolled = e.getEnrolled();
             if(enrolled.contains(ea.getStudentID().toString())){
                 ea.setExamID(e.getID());
-                e.getAnswers().put(ea.getStudentID(), ea);
+                e.getAnswers().put(ea.getStudentID().toString(), ea);
                 this.exams.put(examName, e);
                 return 200;
             }

@@ -204,8 +204,8 @@ public class QuestionDAO {
         List<TOFQ> tofqs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM trueorfalsequestion WHERE questionID='"+
-                                                                            questionID.toString()+"'"))
+            ResultSet rs = stm.executeQuery("SELECT * FROM trueorfalsequestion WHERE questionID=UUID_TO_BIN('"+
+                                                                            questionID.toString()+"')"))
         {
             while(rs.next())
             {

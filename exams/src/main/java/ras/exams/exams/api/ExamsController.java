@@ -96,6 +96,7 @@ public class ExamsController {
     @PostMapping("exams/QuestionTrueorFalse")
     public boolean addTrueorFalseQuestion(@RequestParam("examName") String examName,@RequestBody TrueOrFalse trueOrFalseQuestion) {
         // Tem de devolver um inteiro, indicando se a questão V/F foi adicionada ou não
+        System.out.println(trueOrFalseQuestion.getQuestions());
         return examService.addQuestion(examName, trueOrFalseQuestion);
     }
     
