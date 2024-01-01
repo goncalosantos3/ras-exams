@@ -36,15 +36,15 @@ public class ExamsService {
     }
 
     public UUID addExamVersion(String examID){
-        Exam exam = this.exams.get(examID);
+        Exam exam = this.exams.get(UUID.fromString(examID));
         UUID examVersionID = exam.addExamVersion();
         this.exams.put(exam.getID(), exam);
         return examVersionID;
     }
 
     public int removeExamVersion(String examID, String versionID){
-        Exam exam = this.exams.get(examID);
-        int res = exam.removeExamVersion(examID);
+        Exam exam = this.exams.get(UUID.fromString(examID));
+        int res = exam.removeExamVersion(versionID);
         this.exams.put(exam.getID(), exam);
         return res;
     }

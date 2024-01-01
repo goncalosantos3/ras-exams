@@ -80,25 +80,6 @@ public class ExamDAO implements Map<UUID, Exam> {
         return ExamDAO.singleton;
     }
 
-    public Exam getExamByID(UUID examID){
-        Exam a = null;
-        try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID from exam WHERE examID=UUID_TO_BIN('"+examID.toString()+"')"))
-        {
-            if (rs.next())
-            {
-                a = this.getExam(rs);
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
-        }
-        return a;
-    }
-
     private Exam getExam (ResultSet rs) throws SQLException
     {
         UUID examID = UUID.fromString(rs.getString("examID"));
@@ -154,7 +135,7 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public boolean containsValue(Object value) {
         Exam v = (Exam) value;
-        return this.containsKey(v.getHeader().getExamName());
+        return this.containsKey(v.getID());
     }
 
     @Override
@@ -200,9 +181,10 @@ public class ExamDAO implements Map<UUID, Exam> {
 
     @Override
     public Exam get(Object key) {
-        if (!(key instanceof String))
+        if (!(key instanceof UUID))
             return null;
         Exam a = null;
+        System.out.println(key.toString());
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))

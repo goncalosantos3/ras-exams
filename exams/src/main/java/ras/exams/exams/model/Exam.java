@@ -40,11 +40,12 @@ public class Exam {
     }
 
     public int removeExamVersion(String examVersionID){
-        if(!this.versions.containsKey(examVersionID)){
+        UUID evid = UUID.fromString(examVersionID);
+        if(!this.versions.containsKey(evid)){
             return 404;
         }
 
-        this.versions.remove(examVersionID);
+        this.versions.remove(evid);
         return 200;
     }
 

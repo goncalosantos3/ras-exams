@@ -52,7 +52,7 @@ public class ExamsController {
     // Rota - DELETE /exam/versions?examID=xxxx&versionID=xxxx
     @DeleteMapping("exam/versions")
     public int deleteExamVersion(@RequestParam("examID") String examID, @RequestParam("versionID") String versionID){
-        return examService.removeExamVersion(examID, versionID);
+        return examService.removeExamVersion(examID, versionID);    
     }  
     
     // Rota - POST /exams/QuestionMultipleChoice?examName=xxxx
