@@ -317,7 +317,7 @@ public class ExamAnswerDAO {
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
-            stm.executeUpdate("DELETE FROM examanswer WHERE examAnswerID=UUID_TO_BIN('"+key.toString()+"')");
+            stm.executeUpdate("DELETE FROM examanswer WHERE studentID=UUID_TO_BIN('"+key.toString()+"')");
             if (rv.getAnswers() != null)
                 for (Answer a : rv.getAnswers())
                     this.answerDAO.remove(a.getAnswerID());

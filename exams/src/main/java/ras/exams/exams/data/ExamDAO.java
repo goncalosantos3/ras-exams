@@ -16,7 +16,7 @@ import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 
 
-public class ExamDAO implements Map<String, Exam> {
+public class ExamDAO implements Map<UUID, Exam> {
 
     private static ExamDAO singleton = null;
     private ExamHeaderDAO examHeaderDAO;
@@ -105,11 +105,11 @@ public class ExamDAO implements Map<String, Exam> {
         List<String> enrolled = this.getEnrolledStudents(examID);
         ExamHeader header = this.examHeaderDAO.get(examID);
         List<ExamVersion> versionsList = this.examVersionDAO.getExamVersionsFromExam(examID);
-        Map<Integer,ExamVersion> versions = new HashMap<>();
-        versionsList.forEach(v -> versions.put(v.getVersionNumber(), v));
+        Map<UUID,ExamVersion> versions = new HashMap<>();
+        versionsList.forEach(v -> versions.put(v.getVersionId(), v));
         List<ExamAnswer> answersList = this.examAnswerDAO.getExamAnswersFromExam(examID);
-        Map<String,ExamAnswer> answers = new HashMap<>();
-        answersList.forEach(a -> answers.put(a.getStudentID().toString(), a));
+        Map<UUID,ExamAnswer> answers = new HashMap<>();
+        answersList.forEach(a -> answers.put(a.getExamAnswerId(), a));
 
         return new Exam(examID, enrolled, header, versions, answers);
     }
@@ -158,8 +158,8 @@ public class ExamDAO implements Map<String, Exam> {
     }
 
     @Override
-    public Set<Entry<String, Exam>> entrySet() {
-        Set<Entry<String, Exam>> rSet = new HashSet<>();
+    public Set<Entry<UUID, Exam>> entrySet() {
+        Set<Entry<UUID, Exam>> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID FROM exam"))
@@ -167,7 +167,7 @@ public class ExamDAO implements Map<String, Exam> {
             while(rs.next())
             {
                 Exam e = this.getExam(rs);
-                rSet.add(Map.entry(e.getHeader().getExamName(), e));
+                rSet.add(Map.entry(e.getID(), e));
             }
         }
         catch (SQLException e)
@@ -202,13 +202,10 @@ public class ExamDAO implements Map<String, Exam> {
     public Exam get(Object key) {
         if (!(key instanceof String))
             return null;
-        ExamHeader header = this.examHeaderDAO.get((String)key);
-        if (header == null)
-            return null;
         Exam a = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID from exam WHERE examID=UUID_TO_BIN('"+header.getExamID().toString()+"')"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
         {
             if (rs.next())
             {
@@ -229,16 +226,15 @@ public class ExamDAO implements Map<String, Exam> {
     }
 
     @Override
-    public Set<String> keySet() {
-        Set<String> r = new HashSet<>();
+    public Set<UUID> keySet() {
+        Set<UUID> r = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) FROM exam"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID FROM exam"))
         {
             while (rs.next())
             {
-                Exam e = this.getExam(rs);
-                r.add(e.getHeader().getExamName());
+                r.add(UUID.fromString(rs.getString("examID")));
             }
         }
         catch (SQLException e)
@@ -249,7 +245,7 @@ public class ExamDAO implements Map<String, Exam> {
         return r;
     }
 
-    public void putEnrolled(UUID examID, List<String> enrolled)
+    private void putEnrolled(UUID examID, List<String> enrolled)
     {
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); Statement stm = conn.createStatement())
         {
@@ -273,20 +269,20 @@ public class ExamDAO implements Map<String, Exam> {
     }
 
     @Override
-    public Exam put(String key, Exam value) {
+    public Exam put(UUID key, Exam value) {
         Exam rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD); 
             Statement stm = conn.createStatement())
         {
-            ExamHeader header = value.getHeader();
             stm.executeUpdate("INSERT INTO exam "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+header.getExamID().toString()+"')"+
-                                ") ON DUPLICATE KEY UPDATE "+
+                                    "UUID_TO_BIN('"+key.toString()+"')"+
+                                    ") ON DUPLICATE KEY UPDATE "+
                                     "examID=VALUES(examID)");
+            ExamHeader header = value.getHeader();
             List<String> enrolled = value.getEnrolled();
-            Map<Integer, ExamVersion> versions = value.getVersions();
-            Map<String, ExamAnswer> answers = value.getAnswers();
+            Map<UUID, ExamVersion> versions = value.getVersions();
+            Map<UUID, ExamAnswer> answers = value.getAnswers();
 
             if (rv != null && !rv.getHeader().getExamHeaderID().equals(header.getExamHeaderID()))
                 this.examHeaderDAO.remove(rv.getHeader().getExamHeaderID());
@@ -304,8 +300,8 @@ public class ExamDAO implements Map<String, Exam> {
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends Exam> m) {
-        for (Entry<? extends String, ? extends Exam> entry : m.entrySet())
+    public void putAll(Map<? extends UUID, ? extends Exam> m) {
+        for (Entry<? extends UUID, ? extends Exam> entry : m.entrySet())
         {
             this.put(entry.getKey(), entry.getValue());
         }
@@ -329,6 +325,8 @@ public class ExamDAO implements Map<String, Exam> {
 
     @Override
     public Exam remove(Object key) {
+        if (!(key instanceof UUID))
+            return null;
         Exam rv = this.get(key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement())
@@ -341,8 +339,8 @@ public class ExamDAO implements Map<String, Exam> {
                 this.examHeaderDAO.remove(rv.getHeader().getExamHeaderID());
                 for (ExamVersion version : rv.getVersions().values())
                     this.examVersionDAO.remove(version.getVersionId());
-                for (String studentID : rv.getAnswers().keySet())
-                    this.examAnswerDAO.remove(studentID);
+                for (ExamAnswer answer : rv.getAnswers().values())
+                    this.examAnswerDAO.remove(answer.getExamAnswerId());
             }
             stm.execute("SET FOREIGN_KEY_CHECKS=1");
         }
@@ -400,7 +398,7 @@ public class ExamDAO implements Map<String, Exam> {
     {
         String r = "{";
         boolean begin = true;
-        for (Map.Entry<String, Exam> entry : this.entrySet())
+        for (Map.Entry<UUID, Exam> entry : this.entrySet())
         {
             r += (begin) ?"" :", ";
             r += entry.getKey() + "=" + entry.getValue().getID();

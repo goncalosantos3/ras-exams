@@ -12,8 +12,8 @@ public class Exam {
     private final UUID id;
     private List<String> enrolled;
     private ExamHeader header;
-    private Map<Integer, ExamVersion> versions;
-    private Map<String, ExamAnswer> answers;
+    private Map<UUID, ExamVersion> versions;
+    private Map<UUID, ExamAnswer> answers;
 
     public Exam(UUID id, String examName){
         this.id = id;
@@ -32,7 +32,7 @@ public class Exam {
     }
 
     public Exam(UUID examID, List<String> enrolled, ExamHeader header, 
-                Map<Integer, ExamVersion> versions, Map<String, ExamAnswer> answers) {
+                Map<UUID, ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
         this.id = examID;
         this.enrolled = new ArrayList<>(enrolled);
         this.header = header;
@@ -174,11 +174,11 @@ public class Exam {
         this.header.setExamId(this.id);
     }
 
-    public Map<Integer, ExamVersion> getVersions(){
+    public Map<UUID, ExamVersion> getVersions(){
         return this.versions;
     }
 
-    public Map<String,ExamAnswer> getAnswers(){
+    public Map<UUID,ExamAnswer> getAnswers(){
         return this.answers;
     }
 

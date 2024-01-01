@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ExamsService {
-    private Map<String, Exam> exams;
+    private Map<UUID, Exam> exams;
 
     public ExamsService(){
         this.exams = ExamDAO.getInstance();
