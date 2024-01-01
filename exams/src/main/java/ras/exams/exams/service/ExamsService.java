@@ -1,6 +1,7 @@
 package ras.exams.exams.service;
 
 import ras.exams.exams.data.ExamDAO;
+import ras.exams.exams.model.Answer;
 import ras.exams.exams.model.CompleteSpaces;
 import ras.exams.exams.model.CompleteSpacesAnswer;
 import ras.exams.exams.model.Exam;
@@ -35,6 +36,61 @@ public class ExamsService {
         return examId;
     }
 
+    public Exam getExam(String examID){
+        return this.exams.get(UUID.fromString(examID));
+    }
+
+    public List<Exam> getExams(){
+        return this.exams.values().stream().collect(Collectors.toList());
+    }
+
+    public List <Exam> getExamsbyStudent(String studentNumber){
+        List <Exam> res = new ArrayList<>();
+
+        for (Map.Entry<UUID, Exam> entry : this.exams.entrySet()) {
+            Exam e = entry.getValue();
+            List<String> enrolled = e.getEnrolled();
+            if (enrolled.contains(studentNumber)){
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    public int deleteExam(String examID){
+        UUID examUUID = UUID.fromString(examID);
+        if(!this.exams.containsKey(examUUID)){
+            return 404;
+        }
+        
+        this.exams.remove(examUUID);
+        return 200;
+    }
+
+    public ExamHeader getExamHeader(String examID){
+        UUID examUUID = UUID.fromString(examID);
+        ExamHeader eh = null;
+        
+        if(this.exams.containsKey(examUUID)){
+            eh = this.exams.get(examUUID).getHeader();   
+        }
+        
+        return eh;
+    }
+    
+    public int editExamHeader(String examID, ExamHeader examHeader) {
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = null;
+
+        if (this.exams.containsKey(examUUID)){
+            e = this.exams.get(examUUID);
+            e.setHeader(examHeader);
+            this.exams.put(examUUID, e);
+            return 200;
+        }
+        return 404;
+    }
+
     public UUID addExamVersion(String examID){
         Exam exam = this.exams.get(UUID.fromString(examID));
         UUID examVersionID = exam.addExamVersion();
@@ -58,7 +114,7 @@ public class ExamsService {
         return res;
     }
 
-    //// Return a question of any type
+    // Return a question of any type
     public Question getQuestion(String examID, String versionID, String questionNumber){
         Exam e = this.exams.get(UUID.fromString(examID));
         return e.getQuestion(versionID, Integer.parseInt(questionNumber));
@@ -72,97 +128,45 @@ public class ExamsService {
         return res;
     }   
 
-    public List<Exam> getExams(){
-        return this.exams.values().stream().collect(Collectors.toList());
+    public int deleteQuestion(String examID, String versionID, int questionNumber){
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = this.exams.get(examUUID);
+        int res = e.deleteQuestion(UUID.fromString(versionID), questionNumber);
+        this.exams.put(examUUID, e);
+        return res;
     }
 
-    //public ExamHeader getExamHeader(String examName){
-    //    ExamHeader eh = null;
+    public int enrollStudents(String examID, List<String> students){
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = null;
+        if(this.exams.containsKey(examUUID)){
+            e = this.exams.get(examUUID);
+            e.enrollStudents(students);
+            this.exams.put(examUUID, e);
+            return 200;
+        }
+        return 404;
+    }
+
+    public int saveAnswer(String examID, String versionID, int qn, String studentID, Answer a){
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = null;
+        if(this.exams.containsKey(examUUID)){
+            e = this.exams.get(examUUID);
+            int res = e.saveAnswer(versionID, qn, studentID, a);
+            this.exams.put(examUUID, e);
+            return res;
+        }
+        return 404;
+    }
+
+    //public int saveCompleteSpacesAnswer(String examID, String versionID, int qn, String studentID, CompleteSpacesAnswer csa){
+    //    UUID examUUID = UUID.fromString(examID);
     //    
-    //    if(this.exams.containsKey(examName)){
-    //        eh = this.exams.get(examName).getHeader();   
-    //    }
-    //    
-    //    return eh;
-    //}
-    //
-    //public int editExamHeader(String examName, ExamHeader examHeader) {
-    //    Exam e = null;
-//
-    //    if (this.exams.containsKey(examName)){
-    //        e = this.exams.get(examName);
-    //        e.setHeader(examHeader);
-    //        this.exams.put(examName, e);
-    //        return 200;
-    //    }
-    //    else {
-    //        return 404;
-    //    }
-    //}
-//
-    //public List <Exam> getExamsbyStudent(String studentNumber){
-    //    List <Exam> res = new ArrayList<>();
-//
-    //    for (Map.Entry<String, Exam> entry : this.exams.entrySet()) {
-    //        Exam e = entry.getValue();
-    //        List<String> enrolled = e.getEnrolled();
-    //        if (enrolled.contains(studentNumber)){
-    //            res.add(e);
-    //        }
-    //    }
-    //    return res;
-    //}
-//
-    //public int enrollStudents(String examName, List<String> students){
-    //    Exam e = null;
-    //    if (this.exams.containsKey(examName)){
-    //        e = this.exams.get(examName);
-    //        e.enrollStudents(students);
-    //        this.exams.put(examName, e);
-    //        return 200;
-    //    }
-    //    return 404;
-    //}
-//
-    //public Exam getSpecificExamforStudent(String studentNumber,String examName){
-    //    Exam e = null;
-    //    if (this.exams.containsKey(examName)){
-    //        e = this.exams.get(examName);
-    //        List<String> enrolled = e.getEnrolled();
-    //        if (enrolled.contains(studentNumber)){
-    //            return e;
-    //        }
-    //    }
-    //    return e;
-    //}
-//
-    //public Exam getExam(UUID examID){
-    //    Exam e = ((ExamDAO)this.exams).getExamByID(examID);
-    //    return e;
-    //}
-//
-    //public int createExamAnswer(String examName, ExamAnswer ea){
-    //    if(this.exams.containsKey(examName)){
-    //        Exam e = this.exams.get(examName);
-    //        List <String> enrolled = e.getEnrolled();
-    //        if(enrolled.contains(ea.getStudentID().toString())){
-    //            ea.setExamID(e.getID());
-    //            e.getAnswers().put(ea.getStudentID().toString(), ea);
-    //            this.exams.put(examName, e);
-    //            return 200;
-    //        }
-    //        else{
-    //            return 404;
-    //        }
-    //    }
-    //    return 404;
-    //}
-//
-    //public int saveCompleteSpacesAnswer(String examName, int vn, int qn, String studentID, CompleteSpacesAnswer csa){
-    //    if(this.exams.containsKey(examName)){
-    //        Exam e = this.exams.get(examName);
-    //        int res = e.saveCompleteSpacesAnswer(studentID, vn, qn, csa);
-    //        this.exams.put(examName, e);
+    //    if(this.exams.containsKey(examUUID)){
+    //        Exam e = this.exams.get(examUUID);
+    //        int res = e.saveCompleteSpacesAnswer(studentID, versionID, qn, csa);
+    //        this.exams.put(examUUID, e);
     //        return res;
     //    }
     //    return 404;
@@ -196,5 +200,17 @@ public class ExamsService {
     //        return res;
     //    }
     //    return 404;
+    //}
+
+    //public Exam getSpecificExamforStudent(String studentNumber,String examName){
+    //    Exam e = null;
+    //    if (this.exams.containsKey(examName)){
+    //        e = this.exams.get(examName);
+    //        List<String> enrolled = e.getEnrolled();
+    //        if (enrolled.contains(studentNumber)){
+    //            return e;
+    //        }
+    //    }
+    //    return e;
     //}
 }

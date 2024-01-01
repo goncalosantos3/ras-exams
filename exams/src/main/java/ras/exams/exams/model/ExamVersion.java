@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
+import java.util.stream.Collectors;
 
 public class ExamVersion {
     private final UUID versionId, examID;
@@ -87,6 +86,22 @@ public class ExamVersion {
 
         this.questions.remove(pos);
         this.questions.add(pos, q);
+        return 200;
+    }
+
+    public int deleteQuestion(int questionNumber){
+        int pos = 0;
+        for(Question q : this.questions){
+            if(q.getQuestionNumber() == questionNumber){
+                break;
+            }
+            pos++;
+        }
+        
+        if(pos == this.questions.size()){
+            return 404;
+        }
+        this.questions.remove(pos);
         return 200;
     }
 

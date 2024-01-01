@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ExamAnswer {
     private UUID examAnswerId, examID, studentID;
     private int grade;  
     private List<Answer> answers;
     
     // Construtor usado pelas rotas do controller
-    public ExamAnswer(@JsonProperty("studentID") String sid, @JsonProperty("grade") int grade){
+    // Quando o aluno regista as repostas de um exame ainda não se sabe a classificação que ele teve no mesmo
+    public ExamAnswer(String sid, UUID examID){
         this.examAnswerId = UUID.randomUUID();
         this.studentID = UUID.fromString(sid);
-        this.grade = grade;
+        this.examID = examID;
+        this.grade = 0;
         this.answers = new ArrayList<>();
     }
 

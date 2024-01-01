@@ -87,24 +87,15 @@ POST /exam/QuestionTrueorFalse?examID=xxxx
   ]
 }
 
-11. Inscrição de estudantes num  exame
+11. Inscrição de estudantes num exame
 
-PUT /enrollStudents?examName=teste
+POST /enrollStudents?examID=xxxx
 
 [
   "44444444-4444-4444-4444-444444444444"
 ]
 
-12. Criar a reposta a um exame de um aluno
-
-POST /exam/createExamAnswer?examName=teste
-
-{
-  "studentID": "44444444-4444-4444-4444-444444444444",
-  "grade": 20
-}
-
-13. Adicionar as respostas do aluno a uma reposta a um exame (CompleteSpacesAnswer)
+12. Adicionar as respostas do aluno a uma reposta a um exame (CompleteSpacesAnswer)
 
 POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-444444444444
 
@@ -113,7 +104,7 @@ POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-4444444444
   "answer": "Hoje é o dia {antes} da {ceia} de Natal"
 }
 
-14. Adicionar as respostas do aluno a uma reposta a um exame (WritingAnswer)
+13. Adicionar as respostas do aluno a uma reposta a um exame (WritingAnswer)
 
 POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 
@@ -122,7 +113,7 @@ POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
   "text": "A resposta certa é aquela que não está errada"
 }
 
-15. Adicionar as respostas do aluno a uma reposta a um exame (TrueOrFalseAnswer)
+14. Adicionar as respostas do aluno a uma reposta a um exame (TrueOrFalseAnswer)
 
 POST /exam/saveTrueOrFalseAnswer/teste/1/4/44444444-4444-4444-4444-444444444444
 
@@ -137,7 +128,7 @@ POST /exam/saveTrueOrFalseAnswer/teste/1/4/44444444-4444-4444-4444-444444444444
   ]
 }
 
-16. Adicionar as respostas do aluno a uma reposta a um exame (MultipleChoiceAnswer)
+15. Adicionar as respostas do aluno a uma reposta a um exame (MultipleChoiceAnswer)
 
 POST /exam/saveMultipleChoiceAnswer/teste/1/2/44444444-4444-4444-4444-444444444444
 
