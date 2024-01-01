@@ -117,10 +117,9 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public boolean containsKey(Object key) {
         boolean r;
-        ExamHeader examHeader = this.examHeaderDAO.get((String)key);
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT examID FROM exam WHERE examID=UUID_TO_BIN('"+examHeader.getExamID().toString()+"')"))
+            ResultSet rs = stm.executeQuery("SELECT examID FROM exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
         {
             r = rs.next();
         }
