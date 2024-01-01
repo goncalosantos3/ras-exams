@@ -50,25 +50,24 @@ public class Exam {
     }
 
     // Returns false if versionNumber doesn't exist
-    public boolean addQuestion(int versionNumber, Question q){
-        if(!this.versions.containsKey(versionNumber)){
-            return false;
+    public int addQuestion(UUID examVersionID, Question q){
+        if(!this.versions.containsKey(examVersionID)){
+            return 404;
         }
-        q.setVersionID(this.versions.get(versionNumber).getVersionId());
-        return this.versions.get(versionNumber).addQuestion(q);
+        return this.versions.get(examVersionID).addQuestion(q);
     }
 
     // Returns a specific question from a specific exam version
-    public Question getQuestion(int versionNumber, int questionNumber){
-        return this.versions.get(versionNumber).getQuestion(questionNumber);
+    public Question getQuestion(String versionID, int questionNumber){
+        return this.versions.get(UUID.fromString(versionID)).getQuestion(questionNumber);
     }
 
-    public boolean updateQuestion(int versionNumber, Question q){
-        if(!this.versions.containsKey(versionNumber)){
-            return false;
+    public int updateQuestion(UUID versionID, Question q){
+        if(!this.versions.containsKey(versionID)){
+            return 404;
         }
 
-        return this.versions.get(versionNumber).updateQuestion(q);
+        return this.versions.get(versionID).updateQuestion(q);
     }
 
     // Adiciona os estudantes se eles ainda não foram anteriormente adicionados

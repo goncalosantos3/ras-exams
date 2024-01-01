@@ -10,9 +10,9 @@ public class TrueOrFalse extends Question{
 
     // Chamado pelas rotas do controller
     public TrueOrFalse(@JsonProperty("question") String question,
-        @JsonProperty("qn") int qn, @JsonProperty("versionNumber") int versionNumber,
+        @JsonProperty("qn") int qn, @JsonProperty("versionID") String versionID,
         @JsonProperty("questions") List<TOFQ> questions){
-        super(UUID.randomUUID(), question, qn, 'T', versionNumber);
+        super(UUID.randomUUID(), question, qn, 'T', UUID.fromString(versionID));
         this.questions = questions;
     }
 

@@ -7,8 +7,7 @@ public abstract class Question {
     private String question;
     private int questionNumber;
     private char questionType; // 'M', 'T', 'W' or 'C'
-    private UUID versionID; 
-    private int versionNumber;
+    private UUID versionID;
     
     // Chamado pela BD
     public Question(UUID id, String question, int qn, char qtype, UUID versionID){
@@ -17,15 +16,6 @@ public abstract class Question {
         this.questionNumber = qn;
         this.questionType = qtype;
         this.versionID = versionID;
-    }
-    
-    // Chamado pelas sub-classes (CompleteSpaces, Writing, etc.)
-    public Question(UUID id, String question, int qn, char qtype, int versionNumber){
-        this.questionId = id;
-        this.question = question;
-        this.questionNumber = qn;
-        this.questionType = qtype;
-        this.versionNumber = versionNumber;
     }
 
     public void setVersionID(UUID versionID){
@@ -50,10 +40,6 @@ public abstract class Question {
 
     public UUID getVersionID() {
         return versionID;
-    }
-
-    public int getVersionNumber(){
-        return versionNumber;
     }
 
     public String toString(){

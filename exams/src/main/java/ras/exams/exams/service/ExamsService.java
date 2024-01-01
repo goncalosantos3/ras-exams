@@ -50,30 +50,32 @@ public class ExamsService {
     }
 
     // Add a new question to an exam of every type
-    //public boolean addQuestion(String examName, Question q){
-    //    Exam e = this.exams.get(examName);
-    //    boolean res = e.addQuestion(q.getVersionNumber(), q);
-    //    this.exams.put(examName, e);
-    //    return res;
-    //}
-//
+    public int addQuestion(String examID, Question q){
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = this.exams.get(examUUID);
+        int res = e.addQuestion(q.getVersionID(), q);
+        this.exams.put(examUUID, e);
+        return res;
+    }
+
     //// Return a question of any type
-    //public Question getQuestion(String examName, String versionNumber, String questionNumber){
-    //    Exam e = this.exams.get(examName);
-    //    return e.getQuestion(Integer.parseInt(versionNumber), Integer.parseInt(questionNumber));
-    //}   
-//
-    //public boolean updateQuestion(String examName, Question q){
-    //    Exam e = this.exams.get(examName);
-    //    boolean res = e.updateQuestion(q.getVersionNumber(), q);
-    //    this.exams.put(examName, e);
-    //    return res;
-    //}   
-    //
-    //public List<Exam> getExams(){
-    //    return this.exams.values().stream().collect(Collectors.toList());
-    //}
-    //
+    public Question getQuestion(String examID, String versionID, String questionNumber){
+        Exam e = this.exams.get(UUID.fromString(examID));
+        return e.getQuestion(versionID, Integer.parseInt(questionNumber));
+    }   
+
+    public int updateQuestion(String examID, Question q){
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = this.exams.get(examUUID);
+        int res = e.updateQuestion(q.getVersionID(), q);
+        this.exams.put(examUUID, e);
+        return res;
+    }   
+
+    public List<Exam> getExams(){
+        return this.exams.values().stream().collect(Collectors.toList());
+    }
+
     //public ExamHeader getExamHeader(String examName){
     //    ExamHeader eh = null;
     //    

@@ -9,8 +9,8 @@ public class CompleteSpaces extends Question{
     
     // Chamado pelas rotas do controller
     public CompleteSpaces(@JsonProperty("question") String question, @JsonProperty("qn") int qn, 
-        @JsonProperty("versionNumber") int versionNumber, @JsonProperty("text") String text){
-        super(UUID.randomUUID(), question, qn, 'C', versionNumber);
+        @JsonProperty("versionID") String versionID, @JsonProperty("text") String text){
+        super(UUID.randomUUID(), question, qn, 'C', UUID.fromString(versionID));
         this.text = text;
     }
 
