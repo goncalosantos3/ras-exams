@@ -90,7 +90,7 @@ public class ExamDAO implements Map<UUID, Exam> {
         versionsList.forEach(v -> versions.put(v.getVersionId(), v));
         List<ExamAnswer> answersList = this.examAnswerDAO.getExamAnswersFromExam(examID);
         Map<UUID,ExamAnswer> answers = new HashMap<>();
-        answersList.forEach(a -> answers.put(a.getExamAnswerId(), a));
+        answersList.forEach(a -> answers.put(a.getStudentID(), a));
 
         return new Exam(examID, enrolled, header, versions, answers);
     }
