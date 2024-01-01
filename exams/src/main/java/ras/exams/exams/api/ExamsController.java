@@ -88,6 +88,12 @@ public class ExamsController {
         return examService.addExamVersion(examID);
     }
 
+    // Rota - GET /exam/getExamVersions?examID=xxxx
+    @GetMapping("exam/getExamVersions")
+    public List<String> getExamVersions(@RequestParam("examID") String examID){
+        return examService.getExamVersions(examID);
+    }
+
     // Rota - DELETE /exam/versions?examID=xxxx&versionID=xxxx
     @DeleteMapping("exam/versions")
     public int deleteExamVersion(@RequestParam("examID") String examID, @RequestParam("versionID") String versionID){

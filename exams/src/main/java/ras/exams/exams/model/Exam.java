@@ -33,6 +33,14 @@ public class Exam {
         this.answers = new HashMap<>(answers);
     }
 
+    public List<String> getExamVersions(){
+        List<String> res = new ArrayList<>();
+        for(UUID id: this.versions.keySet()){
+            res.add(id.toString());
+        }
+        return res;
+    }
+
     public UUID addExamVersion(){
         UUID examVersionID = UUID.randomUUID();
         this.versions.put(examVersionID, new ExamVersion(examVersionID, this.id));

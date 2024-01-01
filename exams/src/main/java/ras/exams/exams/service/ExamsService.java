@@ -62,7 +62,7 @@ public class ExamsService {
         if(!this.exams.containsKey(examUUID)){
             return 404;
         }
-        
+
         this.exams.remove(examUUID);
         return 200;
     }
@@ -96,6 +96,12 @@ public class ExamsService {
         UUID examVersionID = exam.addExamVersion();
         this.exams.put(exam.getID(), exam);
         return examVersionID;
+    }
+
+    public List<String> getExamVersions(String examID){
+        UUID examUUID = UUID.fromString(examID);
+        Exam e = this.exams.get(examUUID);
+        return e.getExamVersions();
     }
 
     public int removeExamVersion(String examID, String versionID){
