@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Exam {
     private final UUID id;
     private List<String> enrolled;
@@ -15,22 +13,17 @@ public class Exam {
     private Map<UUID, ExamVersion> versions;
     private Map<UUID, ExamAnswer> answers;
 
-    public Exam(UUID id, String examName){
+    // Usado na rota do controller
+    public Exam(UUID id, ExamHeader eh){
         this.id = id;
         this.enrolled = new ArrayList<>();
-        this.header = new ExamHeader(examName, id);
+        this.header = eh;
+        eh.setExamId(this.id);
         this.versions = new HashMap<>();
         this.answers = new HashMap<>();
     }
 
-    public Exam(@JsonProperty("id") UUID id, @JsonProperty("header") ExamHeader header){
-        this.id = id;
-        this.enrolled = new ArrayList<>();
-        this.header = header;
-        this.versions = new HashMap<>();
-        this.answers = new HashMap<>();
-    }
-
+    // Usado pela BD
     public Exam(UUID examID, List<String> enrolled, ExamHeader header, 
                 Map<UUID, ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
         this.id = examID;
@@ -40,23 +33,19 @@ public class Exam {
         this.answers = new HashMap<>(answers);
     }
 
-    public boolean addExamVersion(int versionNumber){
-        if(this.versions.containsKey(versionNumber)){
-            return false;
-        }
-
+    public UUID addExamVersion(){
         UUID examVersionID = UUID.randomUUID();
-        this.versions.put(versionNumber, new ExamVersion(examVersionID, this.id, versionNumber));
-        return true;
+        this.versions.put(examVersionID, new ExamVersion(examVersionID, this.id));
+        return examVersionID;
     }
 
-    public boolean removeExamVersion(int versionNumber){
-        if(!this.versions.containsKey(versionNumber)){
-            return false;
+    public int removeExamVersion(String examVersionID){
+        if(!this.versions.containsKey(examVersionID)){
+            return 404;
         }
 
-        this.versions.remove(versionNumber);
-        return true;
+        this.versions.remove(examVersionID);
+        return 200;
     }
 
     // Returns false if versionNumber doesn't exist

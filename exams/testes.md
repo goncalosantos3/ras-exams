@@ -1,14 +1,6 @@
 1. Criação de um exame
 
-POST /exam?examName=teste
-
-2. Lista de todos os exames
-
-GET /getExams
-
-3. Criação de header (o examName tem que ser um nome de um exame que já exista)
-
-POST /exams/header
+POST /exam
 
 {
   "examName": "teste",
@@ -17,19 +9,23 @@ POST /exams/header
   "examScheduleIDs": []
 }
 
-4. Buscar um ExamHeader de um exame específico
+2. Lista de todos os exames
+
+GET /getExams
+
+3. Buscar um ExamHeader de um exame específico
 
 GET /getExamHeader?examName=teste
 
-5. Alterar o ExamHeader de um exame específico
+4. Alterar o ExamHeader de um exame específico
 
 PUT /exams/editExamHeader?examName=teste
 
-6. Criação de uma versão de exame
+5. Criação de uma versão de exame
 
-POST /exams/versions?examName=teste&versionNumber=1
+POST /exam/versions?examID=xxxx
 
-7. Criação de uma questão de escolha múltipla
+6. Criação de uma questão de escolha múltipla
 
 POST /exams/QuestionMultipleChoice?examName=teste
 
@@ -45,7 +41,7 @@ POST /exams/QuestionMultipleChoice?examName=teste
   }]
 }
 
-8. Criação de uma questão de Writing
+7. Criação de uma questão de Writing
 
 POST /exams/QuestionWriting?examName=teste
 
@@ -58,7 +54,7 @@ POST /exams/QuestionWriting?examName=teste
   "max": 100
 }
 
-9. Criação de uma questão de CompleteSpaces
+8. Criação de uma questão de CompleteSpaces
 
 POST /exams/QuestionCompleteSpaces?examName=teste
 
@@ -69,7 +65,7 @@ POST /exams/QuestionCompleteSpaces?examName=teste
   "text": "Hoje é o dia {[antes, depois], 3} da {[ceia], 3} de Natal"
 }
 
-10. Criação de uma questão de TrueOrFalse
+9. Criação de uma questão de TrueOrFalse
 
 POST /exams/QuestionTrueorFalse?examName=teste
 
@@ -87,7 +83,7 @@ POST /exams/QuestionTrueorFalse?examName=teste
   ]
 }
 
-11. Inscrição de estudantes num  exame
+10. Inscrição de estudantes num  exame
 
 PUT /enrollStudents?examName=teste
 
@@ -95,7 +91,7 @@ PUT /enrollStudents?examName=teste
   "44444444-4444-4444-4444-444444444444"
 ]
 
-12. Criar a reposta a um exame de um aluno
+11. Criar a reposta a um exame de um aluno
 
 POST /exam/createExamAnswer?examName=teste
 
@@ -104,7 +100,7 @@ POST /exam/createExamAnswer?examName=teste
   "grade": 20
 }
 
-13. Adicionar as respostas do aluno a uma reposta a um exame (CompleteSpacesAnswer)
+12. Adicionar as respostas do aluno a uma reposta a um exame (CompleteSpacesAnswer)
 
 POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-444444444444
 
@@ -113,7 +109,7 @@ POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-4444444444
   "answer": "Hoje é o dia {antes} da {ceia} de Natal"
 }
 
-14. Adicionar as respostas do aluno a uma reposta a um exame (WritingAnswer)
+13. Adicionar as respostas do aluno a uma reposta a um exame (WritingAnswer)
 
 POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 
@@ -122,7 +118,7 @@ POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
   "text": "A resposta certa é aquela que não está errada"
 }
 
-15. Adicionar as respostas do aluno a uma reposta a um exame (TrueOrFalseAnswer)
+14. Adicionar as respostas do aluno a uma reposta a um exame (TrueOrFalseAnswer)
 
 POST /exam/saveTrueOrFalseAnswer/teste/1/4/44444444-4444-4444-4444-444444444444
 
@@ -137,7 +133,7 @@ POST /exam/saveTrueOrFalseAnswer/teste/1/4/44444444-4444-4444-4444-444444444444
   ]
 }
 
-16. Adicionar as respostas do aluno a uma reposta a um exame (MultipleChoiceAnswer)
+15. Adicionar as respostas do aluno a uma reposta a um exame (MultipleChoiceAnswer)
 
 POST /exam/saveMultipleChoiceAnswer/teste/1/2/44444444-4444-4444-4444-444444444444
 

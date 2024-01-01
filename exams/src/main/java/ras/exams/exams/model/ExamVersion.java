@@ -6,21 +6,29 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 
 public class ExamVersion {
     private final UUID versionId, examID;
-    private int versionNumber;
+    private int versionNumber = 0;
     private List<Question> questions;
     
-    public ExamVersion(@JsonProperty("id") UUID id, @JsonProperty("examID") UUID examID, 
-        @JsonProperty("versionNumber") int versionNumber){
+    // Usado nas rotas do controller
+    public ExamVersion(UUID id, UUID examID){
+        this.versionId = id;
+        this.examID = examID;
+        this.versionNumber = this.versionNumber++;
+        this.questions = new ArrayList<>();
+    }
+    
+    // Usado na BD
+    public ExamVersion(UUID id, UUID examID, int versionNumber){
         this.versionId = id;
         this.examID = examID;
         this.versionNumber = versionNumber;
         this.questions = new ArrayList<>();
     }
-    
+
     public void addQuestions(List<Question> questions)
     {
         // Sort the questions based on questionNumber
