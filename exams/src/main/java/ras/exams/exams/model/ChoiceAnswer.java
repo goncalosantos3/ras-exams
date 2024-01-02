@@ -34,6 +34,10 @@ public class ChoiceAnswer {
         return this.grade;
     }
 
+    public void setGrade(int grade){
+        this.grade = grade;
+    }
+
     public Choice getChoice(){
         return this.choice;
     }

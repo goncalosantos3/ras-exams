@@ -25,6 +25,11 @@ public class WritingAnswer extends Answer{
         this.question = q;
     }
 
+    // This type of answer can't be auto-corrected
+    public int autoCorrect(){
+        return 0;
+    }
+
     public String getText(){
         return this.text;
     }

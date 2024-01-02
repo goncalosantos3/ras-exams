@@ -20,6 +20,23 @@ public class MultipleChoiceAnswer extends Answer{
         this.answers = answers;
     }
 
+    public int autoCorrect(){
+        if(this.getGrade() == 0){
+            int r = 0;
+            for(ChoiceAnswer ca: this.answers){
+                Choice c = ca.getChoice();
+                if(ca.getSelected() == c.getCorrection()){
+                    ca.setGrade(c.getScore());
+                    r += c.getScore();
+                }
+            }
+            System.out.println("Cotação MCA: " + r);
+            this.setGrade(r);
+            return r;
+        }
+        return 0; // 0 para não aumentar no ExamAnswer
+    }
+
     public List<ChoiceAnswer> getAnswers(){
         return this.answers;
     }

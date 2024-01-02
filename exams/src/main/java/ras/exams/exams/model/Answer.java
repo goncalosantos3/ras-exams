@@ -24,6 +24,8 @@ public abstract class Answer {
         this.type = type;
         this.questionID = questionID;
     }
+
+    public abstract int autoCorrect();
     
     public UUID getAnswerID() {
         return answerID;

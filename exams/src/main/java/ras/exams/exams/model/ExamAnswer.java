@@ -61,7 +61,7 @@ public class ExamAnswer {
         this.grade = 0;
         for (Answer a : this.answers)
         {
-            this.grade += a.getGrade();
+            this.grade += a.autoCorrect();
         }
     }
 

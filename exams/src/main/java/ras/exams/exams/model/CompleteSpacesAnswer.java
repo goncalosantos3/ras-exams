@@ -35,17 +35,22 @@ public class CompleteSpacesAnswer extends Answer{
         return this.question;
     }
 
-    public void correct(){
-        int r = 0;
-        Pattern pattern = Pattern.compile("\\{\\w+,\\s*\\d+}");
-        Matcher matcher = pattern.matcher(this.text);
-    
-        while(matcher.find())
-        {
-            String q = matcher.group();
-            q = q.substring(q.indexOf(',')+1, q.length()-1).strip();
-            r += Integer.parseInt(q);
+    public int autoCorrect(){
+        if(this.getGrade() == 0){
+            int r = 0;
+            Pattern pattern = Pattern.compile("\\{\\w+,\\s*\\d+}");
+            Matcher matcher = pattern.matcher(this.text);
+            
+            while(matcher.find())
+            {
+                String q = matcher.group();
+                q = q.substring(q.indexOf(',')+1, q.length()-1).strip();
+                r += Integer.parseInt(q);
+            }
+            System.out.println("Cotação CSA: " + r);
+            this.setGrade(r);
+            return r;
         }
-        this.setGrade(r);
+        return 0; // 0 para não aumentar no ExamAnswer
     }
 }

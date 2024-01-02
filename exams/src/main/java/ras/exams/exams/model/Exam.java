@@ -155,6 +155,12 @@ public class Exam {
         return 404;
     }
 
+    public void autoCorrect(){
+        for(ExamAnswer ea: this.answers.values()){
+            ea.calculateGrade();
+        }
+    }
+
     public UUID getID(){
         return this.id;
     }

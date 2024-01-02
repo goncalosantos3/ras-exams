@@ -3,7 +3,6 @@ package ras.exams.exams.api;
 import ras.exams.exams.model.CompleteSpaces;
 import ras.exams.exams.model.CompleteSpacesAnswer;
 import ras.exams.exams.model.Exam;
-import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.MultipleChoice;
 import ras.exams.exams.model.MultipleChoiceAnswer;
@@ -226,6 +225,12 @@ public class ExamsController {
         @PathVariable String questionNumber, @PathVariable String studentID, 
         @RequestBody MultipleChoiceAnswer mca){
         return this.examService.saveAnswer(examID, versionID, Integer.parseInt(questionNumber), studentID, mca);
+    }
+
+    // Rota - POST /exam/autoCorrect?examID=xxxx
+    @PostMapping("exam/autoCorrect")
+    public int autoCorrectExam(@RequestParam("examID") String examID){
+        return this.examService.autoCorrectExam(examID);
     }
 
     // // Rota - GET /exams/getCorrection/{examName}/{numberStudent}/{questionNumber}

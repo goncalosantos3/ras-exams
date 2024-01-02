@@ -20,6 +20,23 @@ public class TrueOrFalseAnswer extends Answer{
         this.answers = answers;
     }
 
+    public int autoCorrect(){
+        if(this.getGrade() == 0){
+            int r = 0;
+            for(TOFQAnswer ta: this.answers){
+                TOFQ q = ta.getOption();
+                if(ta.getAnswer() == q.getCorrection()){
+                    ta.setGrade(q.getScore());
+                    r += q.getScore();
+                }
+            }
+            System.out.println("Cotação TOFA: " + r);
+            this.setGrade(r);
+            return r;
+        }
+        return 0; // 0 para não aumentar no ExamAnswer
+    }
+
     public List<TOFQAnswer> getAnswers(){
         return this.answers;
     }

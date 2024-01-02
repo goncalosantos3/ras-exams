@@ -2,16 +2,9 @@ package ras.exams.exams.service;
 
 import ras.exams.exams.data.ExamDAO;
 import ras.exams.exams.model.Answer;
-import ras.exams.exams.model.CompleteSpaces;
-import ras.exams.exams.model.CompleteSpacesAnswer;
 import ras.exams.exams.model.Exam;
-import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
-import ras.exams.exams.model.MultipleChoiceAnswer;
 import ras.exams.exams.model.Question;
-import ras.exams.exams.model.TrueOrFalse;
-import ras.exams.exams.model.TrueOrFalseAnswer;
-import ras.exams.exams.model.WritingAnswer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,47 +159,17 @@ public class ExamsService {
         return 404;
     }
 
-    //public int saveCompleteSpacesAnswer(String examID, String versionID, int qn, String studentID, CompleteSpacesAnswer csa){
-    //    UUID examUUID = UUID.fromString(examID);
-    //    
-    //    if(this.exams.containsKey(examUUID)){
-    //        Exam e = this.exams.get(examUUID);
-    //        int res = e.saveCompleteSpacesAnswer(studentID, versionID, qn, csa);
-    //        this.exams.put(examUUID, e);
-    //        return res;
-    //    }
-    //    return 404;
-    //}
-//
-    //public int saveWritingAnswer(String examName, int vn, int qn, String studentID, WritingAnswer wa){
-    //    if(this.exams.containsKey(examName)){
-    //        Exam e = this.exams.get(examName);
-    //        int res = e.saveWritingAnswer(studentID, vn, qn, wa);
-    //        this.exams.put(examName, e);
-    //        return res;
-    //    }
-    //    return 404;
-    //}
-//
-    //public int saveTrueOrFalseAnswer(String examName, int vn, int qn, String studentID, TrueOrFalseAnswer tfa){
-    //    if(this.exams.containsKey(examName)){
-    //        Exam e = this.exams.get(examName);
-    //        int res = e.saveTrueOrFalseAnswer(studentID, vn, qn, tfa);
-    //        this.exams.put(examName, e);
-    //        return res;
-    //    }
-    //    return 404;
-    //}
-//
-    //public int saveMultipleChoiceAnswer(String examName, int vn, int qn, String studentID, MultipleChoiceAnswer mca){
-    //    if(this.exams.containsKey(examName)){
-    //        Exam e = this.exams.get(examName);
-    //        int res = e.saveMultipleChoiceAnswer(studentID, vn, qn, mca);
-    //        this.exams.put(examName, e);
-    //        return res;
-    //    }
-    //    return 404;
-    //}
+    public int autoCorrectExam(String examID){
+        UUID examUUID = UUID.fromString(examID);
+        if(this.exams.containsKey(examUUID)){
+            Exam e = this.exams.get(examUUID);
+            e.autoCorrect();
+            this.exams.put(examUUID, e);
+            return 200;
+        }
+        
+        return 404;
+    }
 
     //public Exam getSpecificExamforStudent(String studentNumber,String examName){
     //    Exam e = null;

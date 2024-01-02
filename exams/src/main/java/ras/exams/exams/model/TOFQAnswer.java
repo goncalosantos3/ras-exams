@@ -29,6 +29,10 @@ public class TOFQAnswer {
         return this.grade;
     }
 
+    public void setGrade(int grade){
+        this.grade = grade;
+    }
+
     public boolean getAnswer(){
         return this.answer;
     }
