@@ -35,13 +35,11 @@ public class CompleteSpacesAnswer extends Answer{
         return this.question;
     }
 
-    @Override
-    public int getGrade()
-    {
+    public void correct(){
         int r = 0;
         Pattern pattern = Pattern.compile("\\{\\w+,\\s*\\d+}");
         Matcher matcher = pattern.matcher(this.text);
-
+    
         while(matcher.find())
         {
             String q = matcher.group();
@@ -49,6 +47,5 @@ public class CompleteSpacesAnswer extends Answer{
             r += Integer.parseInt(q);
         }
         this.setGrade(r);
-        return r;
     }
 }
