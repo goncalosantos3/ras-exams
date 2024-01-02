@@ -371,7 +371,8 @@ public class QuestionDAO {
                     questionNumber,
                     questionType,
                     question,
-                    BIN_TO_UUID(versionID) as versionID
+                    BIN_TO_UUID(versionID) as versionID,
+                    score
             FROM question 
             WHERE versionID=UUID_TO_BIN('"""+versionID.toString()+"')"))
         {
@@ -398,7 +399,7 @@ public class QuestionDAO {
                     questionNumber,
                     questionType,
                     question,
-                    BIN_TO_UUID(versionID) as versionID ,
+                    BIN_TO_UUID(versionID) as versionID,
                     score
             FROM question 
             WHERE questionID=UUID_TO_BIN('"""+key.toString()+"')"))
@@ -604,7 +605,8 @@ public class QuestionDAO {
             questionNumber,
             questionType,
             question,
-            BIN_TO_UUID(versionID) as versionID from question"""))
+            BIN_TO_UUID(versionID) as versionID,
+            score from question"""))
         {
             while(rs.next())
             {
