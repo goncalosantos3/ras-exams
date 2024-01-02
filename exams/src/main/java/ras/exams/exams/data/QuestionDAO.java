@@ -34,6 +34,7 @@ public class QuestionDAO {
                 `questionType` CHAR(1) NULL DEFAULT NULL,
                 `question` VARCHAR(512) NULL DEFAULT NULL,
                 `versionID` BINARY(16) NULL DEFAULT NULL,
+                `score` INT NULL DEFAULT 0,
                 PRIMARY KEY (`questionID`),
                 INDEX `version_idx` (`versionID` ASC) VISIBLE,
                 CONSTRAINT `version`
@@ -225,7 +226,7 @@ public class QuestionDAO {
         return tofqs;
     }
         
-    private Writing getWriting (UUID questionID, String question, int questionNumber, UUID versionID)
+    private Writing getWriting (UUID questionID, String question, int questionNumber, UUID versionID, int score)
     {
         Writing w = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -238,7 +239,7 @@ public class QuestionDAO {
                 String criteria = rs.getString("criteria");
                 int minimumLimit = rs.getInt("minimumLimit");
                 int maximumLimit = rs.getInt("maximumLimit");
-                w = new Writing(questionID, question, questionNumber, versionID, criteria, minimumLimit, maximumLimit);
+                w = new Writing(questionID, question, questionNumber, score, versionID, criteria, minimumLimit, maximumLimit);
             }
         }
         catch (SQLException e)
@@ -249,7 +250,7 @@ public class QuestionDAO {
         return w;
     }
 
-    private CompleteSpaces getCompleteSpaces (UUID questionID, String question, int questionNumber, UUID versionID)
+    private CompleteSpaces getCompleteSpaces (UUID questionID, String question, int questionNumber, UUID versionID, int score)
     {
         CompleteSpaces c = null;
         try (Connection conn = DriverManager.getConnection(DAOconfig.URL, DAOconfig.USERNAME, DAOconfig.PASSWORD);
@@ -260,7 +261,7 @@ public class QuestionDAO {
             if (rs.next())
             {
                 String text = rs.getString("text");
-                c = new CompleteSpaces(questionID, question, questionNumber, versionID, text);
+                c = new CompleteSpaces(questionID, question, questionNumber, score, versionID, text);
             }
         }
         catch (SQLException e)
@@ -281,15 +282,17 @@ public class QuestionDAO {
             int questionNumber = rs.getInt("questionNumber");
             String question = rs.getString("question");
             UUID versionID = UUID.fromString(rs.getString("versionID"));
+            int score = rs.getInt("score");
 
             switch (questionType) {
                 case "C":
-                    q = this.getCompleteSpaces(questionID, question, questionNumber, versionID);
+                    q = this.getCompleteSpaces(questionID, question, questionNumber, versionID, score);
                     break;
                 case "M":
                     q = new MultipleChoice(questionID, 
                                             question, 
                                             questionNumber, 
+                                            score,
                                             versionID.toString(),
                                             this.getChoices(questionID));
                     break;
@@ -297,11 +300,12 @@ public class QuestionDAO {
                     q = new TrueOrFalse(questionID, 
                                             question, 
                                             questionNumber,
+                                            score,
                                             versionID,
                                             this.getTOFQs(questionID));
                     break;
                 case "W":
-                    q = this.getWriting(questionID, question, questionNumber, versionID);
+                    q = this.getWriting(questionID, question, questionNumber, versionID, score);
                     break;
                 default:
                     break;

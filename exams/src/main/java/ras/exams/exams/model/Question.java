@@ -7,7 +7,7 @@ public abstract class Question {
     private UUID versionID;
     private String question;
     private int questionNumber;
-    private int score;
+    protected int score;
     private char questionType; // 'M', 'T', 'W' or 'C'
     
     public Question(UUID id, String question, int qn, int score, char qtype, UUID versionID){

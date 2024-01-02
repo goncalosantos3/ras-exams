@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`question` (
   `questionType` CHAR(1) NULL DEFAULT NULL,
   `question` VARCHAR(512) NULL DEFAULT NULL,
   `versionID` BINARY(16) NULL DEFAULT NULL,
+  `score` INT NULL DEFAULT 0,
   PRIMARY KEY (`questionID`),
   INDEX `version_idx` (`versionID` ASC) VISIBLE,
   CONSTRAINT `version`
