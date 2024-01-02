@@ -533,7 +533,8 @@ public class QuestionDAO {
                                     "questionNumber=VALUES(questionNumber),"+
                                     "questionType=VALUES(questionType),"+
                                     "question=VALUES(question),"+
-                                    "versionID=VALUES(versionID)");
+                                    "versionID=VALUES(versionID),"+
+                                    "score=VALUES(score)");
             this.putType(value.getQuestionId(), value, stm);
         }
         catch (SQLException | InvalidQuestionException e)
