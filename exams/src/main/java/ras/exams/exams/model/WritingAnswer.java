@@ -9,8 +9,8 @@ public class WritingAnswer extends Answer{
     private Question question;
 
     // Construtor usado pelas rotas do controller
-    public WritingAnswer(@JsonProperty("grade") int grade, @JsonProperty("text") String text){
-        super(UUID.randomUUID(), grade, 'W');
+    public WritingAnswer(@JsonProperty("text") String text){
+        super(UUID.randomUUID(), 0, 'W');
         this.text = text;
     }
 

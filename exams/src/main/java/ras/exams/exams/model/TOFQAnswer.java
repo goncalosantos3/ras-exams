@@ -8,8 +8,8 @@ public class TOFQAnswer {
     private TOFQ option;
 
     // Construtor usado pelas rotas do controller
-    public TOFQAnswer(@JsonProperty("grade")int grade, @JsonProperty("answer") boolean answer, @JsonProperty("optionNumber") int on){   
-        this.grade = grade;
+    public TOFQAnswer(@JsonProperty("answer") boolean answer, @JsonProperty("optionNumber") int on){   
+        this.grade = 0;
         this.answer = answer;
         this.option = new TOFQ(on);
     }

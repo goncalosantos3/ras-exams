@@ -11,8 +11,8 @@ public class CompleteSpacesAnswer extends Answer{
     private Question question;
 
     // Construtor usado pelas rotas do controller
-    public CompleteSpacesAnswer(@JsonProperty("grade") int grade, @JsonProperty("answer") String answer){
-        super(UUID.randomUUID(), grade, 'C');
+    public CompleteSpacesAnswer(@JsonProperty("answer") String answer){
+        super(UUID.randomUUID(), 0, 'C');
         this.text = answer;
     }
 

@@ -9,16 +9,21 @@ public class TrueOrFalse extends Question{
     List<TOFQ> questions;
 
     // Chamado pelas rotas do controller
-    public TrueOrFalse(@JsonProperty("question") String question,
-        @JsonProperty("qn") int qn, @JsonProperty("versionID") String versionID,
-        @JsonProperty("questions") List<TOFQ> questions){
-        super(UUID.randomUUID(), question, qn, 'T', UUID.fromString(versionID));
+    public TrueOrFalse(@JsonProperty("question") String question, @JsonProperty("qn") int qn, 
+        @JsonProperty("versionID") String versionID, @JsonProperty("questions") List<TOFQ> questions){
+        super(UUID.randomUUID(), question, qn, 0, 'T', UUID.fromString(versionID));
         this.questions = questions;
+
+        int score = 0;
+        for(TOFQ q: this.questions){
+            score += q.getScore();
+        }
+        this.setScore(score);
     }
 
     // Chamado pela BD
-    public TrueOrFalse(UUID id, String question, int qn, UUID versionID, List<TOFQ> questions){
-        super(id, question, qn, 'T', versionID);
+    public TrueOrFalse(UUID id, String question, int qn, int score, UUID versionID, List<TOFQ> questions){
+        super(id, question, qn, score, 'T', versionID);
         this.questions = questions;
     }
 

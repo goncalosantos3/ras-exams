@@ -109,6 +109,7 @@ public class Exam {
         UUID studentUUID = UUID.fromString(studentID);
         UUID versionUUID = UUID.fromString(versionID);  
 
+        System.out.println(a);
         System.out.println(studentUUID + "!!!");
         System.out.println(this.answers.keySet());
         System.out.println(this.enrolled.contains(studentID));
@@ -117,12 +118,13 @@ public class Exam {
 
         if(this.enrolled.contains(studentID) && this.answers.containsKey(studentUUID) && this.versions.get(versionUUID).getQuestion(qn) != null){
             ExamAnswer ea = this.answers.get(studentUUID);
-            a.setExamAnswerID(this.id);
+            a.setExamAnswerID(ea.getExamAnswerId());
             Question q = this.versions.get(versionUUID).getQuestion(qn);
             a.setQuestionID(q.getQuestionId());
-            switch (a.getClass().getName()) {
+            switch (a.getClass().getSimpleName()) {
                 case "CompleteSpacesAnswer":
                     CompleteSpacesAnswer csa = (CompleteSpacesAnswer) a;
+                    System.out.println(q);
                     csa.setQuestion(q);
                     break;
                 case "WritingAnswer":
@@ -142,6 +144,7 @@ public class Exam {
                     for(ChoiceAnswer c: mca.getAnswers()){
                         c.setChoice(mc.getChoiceOnChoiceNumber(c.getChoice().getChoiceNumber()));
                     }
+                    break;
                 default:
                     System.out.println("Classe de resposta inválida");
                     break;
@@ -151,67 +154,6 @@ public class Exam {
         }   
         return 404;
     }
-    
-    //public int saveCompleteSpacesAnswer(String studentID, int vn, int qn, CompleteSpacesAnswer csa){
-    //    if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
-    //        ExamAnswer ea = this.answers.get(studentID);
-    //        csa.setExamAnswerID(ea.getExamAnswerId());
-    //        Question q = this.versions.get(vn).getQuestion(qn);
-    //        csa.setQuestion(q);
-    //        csa.setQuestionID(q.getQuestionId());
-    //        ea.addAnswer(csa);
-    //        return 200;
-    //    }   
-    //    return 404;
-    //}   
-//
-    //public int saveWritingAnswer(String studentID, int vn, int qn, WritingAnswer wa){
-    //    if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
-    //        ExamAnswer ea = this.answers.get(studentID);
-    //        wa.setExamAnswerID(ea.getExamAnswerId());
-    //        Question q = this.versions.get(vn).getQuestion(qn);
-    //        wa.setQuestion(q);
-    //        wa.setQuestionID(q.getQuestionId());
-    //        ea.addAnswer(wa);
-    //        return 200;
-    //    }   
-    //    return 404;
-    //}
-//
-    //public int saveTrueOrFalseAnswer(String studentID, int vn, int qn, TrueOrFalseAnswer tfa){
-    //    if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
-    //        ExamAnswer ea = this.answers.get(studentID);
-    //        tfa.setExamAnswerID(ea.getExamAnswerId());
-    //        Question q = this.versions.get(vn).getQuestion(qn);
-    //        tfa.setQuestionID(q.getQuestionId());
-    //        TrueOrFalse tof = (TrueOrFalse) q;
-    //        for(TOFQAnswer o: tfa.getAnswers()){
-    //            System.out.println(o.getOption().getOptionNumber());
-    //            System.out.println(tof.getQuestions());
-    //            o.setOption(tof.getQuestionOnOption(o.getOption().getOptionNumber()));
-    //            System.out.println(o.getOption());
-    //        }
-    //        ea.addAnswer(tfa);
-    //        return 200;
-    //    }   
-    //    return 404;
-    //}
-//
-    //public int saveMultipleChoiceAnswer(String studentID, int vn, int qn, MultipleChoiceAnswer mca){
-    //    if(this.enrolled.contains(studentID) && this.answers.containsKey(studentID) && this.versions.get(vn).getQuestion(qn) != null){
-    //        ExamAnswer ea = this.answers.get(studentID);
-    //        mca.setExamAnswerID(ea.getExamAnswerId());
-    //        Question q = this.versions.get(vn).getQuestion(qn);
-    //        mca.setQuestionID(q.getQuestionId());
-    //        MultipleChoice mc = (MultipleChoice) q;
-    //        for(ChoiceAnswer ca: mca.getAnswers()){
-    //            ca.setChoice(mc.getChoiceOnChoiceNumber(ca.getChoice().getChoiceNumber()));
-    //        }
-    //        ea.addAnswer(mca);
-    //        return 200;
-    //    }   
-    //    return 404;
-    //}
 
     public UUID getID(){
         return this.id;

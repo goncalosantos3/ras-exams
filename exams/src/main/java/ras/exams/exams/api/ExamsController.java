@@ -212,21 +212,21 @@ public class ExamsController {
         return this.examService.saveAnswer(examID, versionID, Integer.parseInt(questionNumber), studentID, wa);
     }
 
-    //// Rota - POST /exam/saveTrueOrFalseAnswer/{examID}/{versionID}/{questionNumber}/{studentID}
-    //@PostMapping("exam/saveTrueOrFalseAnswer/{examID}/{versionID}/{questionNumber}/{studentID}")
-    //public int saveTrueOrFalseAnswer(@PathVariable String examName, @PathVariable String versionNumber, 
-    //    @PathVariable String questionNumber, @PathVariable String studentID, 
-    //    @RequestBody TrueOrFalseAnswer tfa){
-    //    return this.examService.saveTrueOrFalseAnswer(examName, Integer.parseInt(versionNumber), Integer.parseInt(questionNumber), studentID, tfa);
-    //}
-//
-    //// Rota - POST /exam/saveMultipleChoiceAnswer/{examID}/{versionID}/{questionNumber}/{studentID}
-    //@PostMapping("exam/saveMultipleChoiceAnswer/{examID}/{versionID}/{questionNumber}/{studentID}")
-    //public int saveMultipleChoiceAnswer(@PathVariable String examName, @PathVariable String versionNumber, 
-    //    @PathVariable String questionNumber, @PathVariable String studentID, 
-    //    @RequestBody MultipleChoiceAnswer mca){
-    //    return this.examService.saveMultipleChoiceAnswer(examName, Integer.parseInt(versionNumber), Integer.parseInt(questionNumber), studentID, mca);
-    //}
+    // Rota - POST /exam/saveTrueOrFalseAnswer/{examID}/{versionID}/{questionNumber}/{studentID}
+    @PostMapping("exam/saveTrueOrFalseAnswer/{examID}/{versionID}/{questionNumber}/{studentID}")
+    public int saveTrueOrFalseAnswer(@PathVariable String examID, @PathVariable String versionID, 
+        @PathVariable String questionNumber, @PathVariable String studentID, 
+        @RequestBody TrueOrFalseAnswer tfa){
+        return this.examService.saveAnswer(examID, versionID, Integer.parseInt(questionNumber), studentID, tfa);
+    }
+
+    // Rota - POST /exam/saveMultipleChoiceAnswer/{examID}/{versionID}/{questionNumber}/{studentID}
+    @PostMapping("exam/saveMultipleChoiceAnswer/{examID}/{versionID}/{questionNumber}/{studentID}")
+    public int saveMultipleChoiceAnswer(@PathVariable String examID, @PathVariable String versionID, 
+        @PathVariable String questionNumber, @PathVariable String studentID, 
+        @RequestBody MultipleChoiceAnswer mca){
+        return this.examService.saveAnswer(examID, versionID, Integer.parseInt(questionNumber), studentID, mca);
+    }
 
     // // Rota - GET /exams/getCorrection/{examName}/{numberStudent}/{questionNumber}
     // @GetMapping("exams/getCorrection/{examName}/{numberStudent}/{questionNumber}")

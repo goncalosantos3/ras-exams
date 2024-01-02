@@ -9,8 +9,8 @@ public class MultipleChoiceAnswer extends Answer{
     private List<ChoiceAnswer> answers;
 
     // Construtor usado pelas rotas do controller
-    public MultipleChoiceAnswer(@JsonProperty("grade")int grade, @JsonProperty("choices") List<ChoiceAnswer> choices){
-        super(UUID.randomUUID(), grade, 'M');
+    public MultipleChoiceAnswer(@JsonProperty("choices") List<ChoiceAnswer> choices){
+        super(UUID.randomUUID(), 0, 'M');
         this.answers = choices;
     }
 

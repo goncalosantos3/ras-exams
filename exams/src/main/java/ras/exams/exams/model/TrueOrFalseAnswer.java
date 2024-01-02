@@ -9,8 +9,8 @@ public class TrueOrFalseAnswer extends Answer{
     private List<TOFQAnswer> answers;
     
     // Construtor usado pelas rotas do controller
-    public TrueOrFalseAnswer(@JsonProperty("grade") int grade, @JsonProperty("answers") List<TOFQAnswer> answers){
-        super(UUID.randomUUID(), grade, 'T');
+    public TrueOrFalseAnswer(@JsonProperty("answers") List<TOFQAnswer> answers){
+        super(UUID.randomUUID(), 0, 'T');
         this.answers = answers;
     }
 

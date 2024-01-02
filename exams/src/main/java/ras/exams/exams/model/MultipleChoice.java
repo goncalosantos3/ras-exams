@@ -11,13 +11,19 @@ public class MultipleChoice extends Question{
     // Chamado pelas rotas do controller
     public MultipleChoice(@JsonProperty("question") String question, @JsonProperty("qn") int qn, 
         @JsonProperty("versionID") String versionID, @JsonProperty("choices") List<Choice> choices){
-        super(UUID.randomUUID(), question, qn, 'M', UUID.fromString(versionID));
+        super(UUID.randomUUID(), question, qn, 0, 'M', UUID.fromString(versionID));
         this.choices = choices;
+        
+        int score = 0;
+        for(Choice c: this.choices){
+            score += c.getScore();
+        }
+        this.setScore(score);
     }
 
     // Chamado pela BD
-    public MultipleChoice(UUID id, String question, int qn, String versionID, List<Choice> choices){
-        super(id, question, qn, 'M', UUID.fromString(versionID));
+    public MultipleChoice(UUID id, String question, int qn, int score, String versionID, List<Choice> choices){
+        super(id, question, qn, score, 'M', UUID.fromString(versionID));
         this.choices = choices;
     }
 

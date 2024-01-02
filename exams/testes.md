@@ -52,6 +52,7 @@ POST /exam/QuestionWriting?examID=xxxx
 {
   "question": "pergunta writing",
   "qn": 1,
+  "score": 10,
   "versionID": xxxx,
   "criteria": "Critério da pergunta",
   "min": 10,
@@ -100,7 +101,6 @@ POST /enrollStudents?examID=xxxx
 POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-444444444444
 
 {
-  "grade": 5,
   "answer": "Hoje é o dia {antes} da {ceia} de Natal"
 }
 
@@ -109,7 +109,6 @@ POST /exam/saveCompleteSpacesAnswer/teste/1/3/44444444-4444-4444-4444-4444444444
 POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 
 {
-  "grade": 10,
   "text": "A resposta certa é aquela que não está errada"
 }
 
@@ -118,10 +117,8 @@ POST /exam/saveWritingAnswer/teste/1/1/44444444-4444-4444-4444-444444444444
 POST /exam/saveTrueOrFalseAnswer/teste/1/4/44444444-4444-4444-4444-444444444444
 
 {
-  "grade": 2,
   "answers": [
     {
-      "grade": 2,
       "answer": true,
       "optionNumber": 1
     }
@@ -133,10 +130,8 @@ POST /exam/saveTrueOrFalseAnswer/teste/1/4/44444444-4444-4444-4444-444444444444
 POST /exam/saveMultipleChoiceAnswer/teste/1/2/44444444-4444-4444-4444-444444444444
 
 {
-  "grade": 3,
   "choices": [
     {
-      "grade": 3,
       "selected": false,
       "choiceNumber": 1
     }

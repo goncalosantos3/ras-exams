@@ -4,13 +4,13 @@ import java.util.UUID;
 
 public abstract class Question {
     private final UUID questionId;
+    private UUID versionID;
     private String question;
     private int questionNumber;
+    private int score;
     private char questionType; // 'M', 'T', 'W' or 'C'
-    private UUID versionID;
     
-    // Chamado pela BD
-    public Question(UUID id, String question, int qn, char qtype, UUID versionID){
+    public Question(UUID id, String question, int qn, int score, char qtype, UUID versionID){
         this.questionId = id;
         this.question = question;
         this.questionNumber = qn;
@@ -20,6 +20,10 @@ public abstract class Question {
 
     public void setVersionID(UUID versionID){
         this.versionID = versionID;
+    }
+
+    public void setScore(int score){
+        this.score = score;
     }
 
     public UUID getQuestionId(){

@@ -11,18 +11,18 @@ public class Writing extends Question{
 
     // Chamado pelas rotas do controller
     public Writing(@JsonProperty("question") String question,
-        @JsonProperty("qn") int qn, @JsonProperty("versionID") String versionID,
-        @JsonProperty("criteria") String criteria, @JsonProperty("min") int min,
-        @JsonProperty("max") int max){
-        super(UUID.randomUUID(), question, qn, 'W', UUID.fromString(versionID));
+        @JsonProperty("qn") int qn, @JsonProperty("score") int score, 
+        @JsonProperty("versionID") String versionID, @JsonProperty("criteria") String criteria, 
+        @JsonProperty("min") int min, @JsonProperty("max") int max){
+        super(UUID.randomUUID(), question, qn, score, 'W', UUID.fromString(versionID));
         this.criteria = criteria;
         this.minimumLimit = min;
         this.maximumLimit = max;
     }
 
     // Chamado pela BD
-    public Writing(UUID questionID, String question, int qn, UUID versionID, String criteria, int min, int max){
-        super(questionID, question, qn, 'W', versionID);
+    public Writing(UUID questionID, String question, int qn, int score, UUID versionID, String criteria, int min, int max){
+        super(questionID, question, qn, score, 'W', versionID);
         this.criteria = criteria;
         this.minimumLimit = min;
         this.maximumLimit = max;
