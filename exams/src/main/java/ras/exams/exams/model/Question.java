@@ -26,6 +26,11 @@ public abstract class Question {
         this.score = score;
     }
 
+    public int getScore()
+    {
+        return this.score;
+    }
+
     public UUID getQuestionId(){
         return this.questionId;
     }

@@ -398,7 +398,8 @@ public class QuestionDAO {
                     questionNumber,
                     questionType,
                     question,
-                    BIN_TO_UUID(versionID) as versionID 
+                    BIN_TO_UUID(versionID) as versionID ,
+                    score
             FROM question 
             WHERE questionID=UUID_TO_BIN('"""+key.toString()+"')"))
         {
@@ -524,7 +525,8 @@ public class QuestionDAO {
                                     value.getQuestionNumber()+","+
                                     "'"+value.getQuestionType()+"',"+
                                     "'"+value.getQuestion()+"',"+
-                                    "UUID_TO_BIN('"+value.getVersionID().toString()+"')"+
+                                    "UUID_TO_BIN('"+value.getVersionID().toString()+"'),"+
+                                    value.getScore()+
                                 ") ON DUPLICATE KEY UPDATE "+
                                     "questionID=VALUES(questionID),"+
                                     "questionNumber=VALUES(questionNumber),"+
