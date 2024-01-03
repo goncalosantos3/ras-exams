@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "default_db_url",
+  "type": "java.lang.String",
+  "description": "Used to create the database while running app'"
+}]}
