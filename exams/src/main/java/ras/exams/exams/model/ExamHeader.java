@@ -12,28 +12,25 @@ public class ExamHeader {
     private String examName;
     private String examUC;
     private LocalTime examAdmissionTime;
-    private List<UUID> examScheduleIDs;   
+    private List<UUID> examScheduleIDs;  
+    private char status;    
+    /* Status:
+     *  - 'S': exame ainda não começou (skecth)
+     *  - 'P': exame em progresso (progress)
+     *  - 'F': exame terminado (finished)
+     */
     
-    public ExamHeader(String examName, UUID examID){
-        this.examHeaderID = UUID.randomUUID();
-        this.examID = examID;
-        this.examName = examName;
-    }
-
-    public ExamHeader(String examName, String examUC, String examAdmissionTime){
-        this.examName = examName;
-        this.examUC = examUC;
-        this.examAdmissionTime = LocalTime.parse(examAdmissionTime, DateTimeFormatter.ofPattern("HH:mm"));
-    }
     
     // Construtor para as rotas do controller
     public ExamHeader(@JsonProperty("examName") String examName, @JsonProperty("examUC") String examUC, 
-        @JsonProperty("examAdmissionTime") String examAT, @JsonProperty("examScheduleIDs") List<UUID> examSIds){
+        @JsonProperty("examAdmissionTime") String examAT, @JsonProperty("examScheduleIDs") List<UUID> examSIds,
+        @JsonProperty("status") char status){
         this.examHeaderID = UUID.randomUUID();
         this.examName = examName;
         this.examUC = examUC;
         this.examAdmissionTime = LocalTime.parse(examAT, DateTimeFormatter.ofPattern("HH:mm"));
         this.examScheduleIDs = examSIds;
+        this.status = status;
     }
 
     // Construtor para a BD
@@ -73,6 +70,10 @@ public class ExamHeader {
 
     public List<UUID> getExamScheduleIDs(){
         return this.examScheduleIDs;
+    }
+
+    public char getStatus(){
+        return this.status;
     }
 
     public void setExamId(UUID examId){
