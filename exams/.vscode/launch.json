@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ExamsApplication<exams>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ras.exams.exams.ExamsApplication",
+            "projectName": "exams",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

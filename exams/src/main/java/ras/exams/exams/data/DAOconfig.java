@@ -1,11 +1,41 @@
 package ras.exams.exams.data;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+@Configuration
 public class DAOconfig {
-    static final String USERNAME = "ras";                           // Actualizar
-    static final String PASSWORD = "rasexams";                      // Actualizar
-    private static final String DATABASE = "ras_exams";             // Actualizar
-	// private static final String DRIVER = "jdbc:mariadb";            // Usar para MariaDB
-	private static final String DRIVER = "jdbc:mysql";           // Usar para MySQL
-    static final String URL = DRIVER+"://localhost:3306/"+DATABASE;
-    static final String INITIAL_URL = DRIVER+"://localhost:3306/";
+
+    @Value("${spring.datasource.username}")
+    private String USERNAME;
+    
+    public String getUSERNAME() {
+        return USERNAME;
+    }
+
+    @Value("${spring.datasource.password}") 
+    private String PASSWORD;
+    
+    public String getPASSWORD() {
+        return PASSWORD;
+    }
+
+    @Value("${spring.datasource.url}") 
+    private String URL;
+    
+    public String getURL() {
+        return URL;
+    }
+
+    @Value("${default_db_url}")
+    private String INITIAL_URL;
+
+    public String getINITIAL_URL() {
+        return INITIAL_URL;
+    }
+
+    public DAOconfig(){}
+
 }

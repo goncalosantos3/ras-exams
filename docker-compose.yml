@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  exams:
+    build: ./exams
+    restart: on-failure
+    ports:
+      - 8001:8001
+    networks:
+      - exams
+    depends_on:
+      - exams-mysql
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        spring.jpa.hibernate.ddl-auto=update
+        spring.datasource.url=jdbc:mysql://localhost:3306/ras_exams 
+        spring.datasource.username=ras
+        spring.datasource.password=rasexams
+        spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+        #spring.jpa.show-sql: true
+        default_db_url=jdbc:mysql://exams-mysql:5433/}'
+  exams-mysql:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_USERNAME: ras
+      MYQSL_PASSWORD: rasexams
+      MYSQL_DATABASE: ras_exams
+    networks:
+      - exams
+    volumes:
+      - exams-mysql-data:/var/lib/mysql/data
+    ports:
+      - 5433:5433
+
+volumes:
+  exams-mysql-data:
+
+networks:
+  exams:
+    driver: bridge
