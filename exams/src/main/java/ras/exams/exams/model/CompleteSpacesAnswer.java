@@ -1,5 +1,9 @@
 package ras.exams.exams.model;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,19 +41,74 @@ public class CompleteSpacesAnswer extends Answer{
 
     public int autoCorrect(){
         if(this.getGrade() == 0){
-            int r = 0;
-            Pattern pattern = Pattern.compile("\\{\\w+,\\s*\\d+}");
-            Matcher matcher = pattern.matcher(this.text);
-            
-            while(matcher.find())
+
+            List<AbstractMap.SimpleEntry<List<String>,Integer>> listQ = new ArrayList<>();
+            List<String> listA = new ArrayList<>();
+
+            String q = ((CompleteSpaces)this.question).getText();
+            String a = this.text;
+
+            int from = 0,openIndex, closeIndex;
+            while (true)
             {
-                String q = matcher.group();
-                q = q.substring(q.indexOf(',')+1, q.length()-1).strip();
-                r += Integer.parseInt(q);
+                openIndex = q.indexOf('{', from);
+                if (openIndex == -1)
+                    break;
+
+                closeIndex = q.indexOf('}', openIndex);
+                
+                if (closeIndex == -1)
+                    break;
+
+                from = closeIndex+1;
+                String sub = q.substring(openIndex+1, closeIndex).trim();
+                System.out.println(sub);
+
+                String[] parts = sub.split("]\\s*,\\s*");
+                System.out.println(Arrays.toString(parts));
+                int val = Integer.parseInt(parts[1].trim());
+
+                List<String> vals = new ArrayList<>();
+                for (String s : parts[0].substring(1).split(","))
+                {
+                    vals.add(s.trim());
+                }
+                listQ.add(new AbstractMap.SimpleEntry<>(vals, val));
+            } 
+
+            from=0;
+            while (true)
+            {
+                openIndex = a.indexOf('{', from);
+                if (openIndex == -1)
+                    break;
+
+                closeIndex = a.indexOf('}', openIndex);
+                
+                if (closeIndex == -1)
+                    break;
+
+                from = closeIndex+1;
+                String sub = a.substring(openIndex+1, closeIndex).trim();
+                listA.add(sub);
+            } 
+
+            if (listA.size() != listQ.size())
+                return 0;
+
+            System.out.println(listQ +  " " + listA);
+            int grade = 0;
+            for (int i=0 ; i<listA.size() ; i++)
+            {
+                String ans = listA.get(i);
+                AbstractMap.SimpleEntry<List<String>,Integer> ques = listQ.get(i);
+                if (ques.getKey().contains(ans))
+                    grade += ques.getValue();
             }
-            System.out.println("Cotação CSA: " + r);
-            this.setGrade(r);
-            return r;
+
+            System.out.println("Grade: " + grade);
+            this.setGrade(grade);
+            return grade;
         }
         return 0; // 0 para não aumentar no ExamAnswer
     }
