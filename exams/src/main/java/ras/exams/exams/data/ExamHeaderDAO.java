@@ -43,6 +43,7 @@ public class ExamHeaderDAO {
                 `examName` VARCHAR(64) NOT NULL,
                 `examUC` VARCHAR(64) NULL,
                 `examAdmissionTime` TIME NULL DEFAULT NULL,
+                `status` CHAR(1) NULL DEFAULT 'S',
                 PRIMARY KEY (`examHeaderID`),
                 INDEX `examID_idx` (`examID` ASC) VISIBLE,
                 CONSTRAINT `examIDunique`
@@ -105,9 +106,11 @@ public class ExamHeaderDAO {
         String examAdmissionTime = (examAdmissionTimeSQL==null) ?(null) :examAdmissionTimeSQL.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
         String examName = rs.getString("examName"),
                 examUC = rs.getString("examUC");
+        char status = rs.getString("status").charAt(0);
         return new ExamHeader(  examHeaderID, examID, examName, examUC, 
                                 examAdmissionTime, 
-                                this.getHeaderScheduleIDs(examHeaderID));
+                                this.getHeaderScheduleIDs(examHeaderID),
+                                status);
     }
 
     public void clear() {
@@ -171,7 +174,8 @@ public class ExamHeaderDAO {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime
+                    examAdmissionTime,
+                    status
             FROM examheader
             WHERE examHeaderID=UUID_TO_BIN('"""+id.toString()+"') OR examID=UUID_TO_BIN('"+id.toString()+"')"))
         {
@@ -197,7 +201,8 @@ public class ExamHeaderDAO {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime
+                    examAdmissionTime,
+                    status
             FROM examheader
             WHERE examName='"""+examName+"'"))
         {
@@ -270,13 +275,15 @@ public class ExamHeaderDAO {
                                     "UUID_TO_BIN('"+value.getExamID().toString()+"'),"+
                                     "'"+value.getExamName()+"',"+
                                     ((value.getExamUC() != null) ?("'"+value.getExamUC()+"'") :"NULL")+","+
-                                    ((value.getExamAdmissionTime() != null) ?("'"+value.getFormatedExamAdmissionTime()+"'") :"NULL")+
+                                    ((value.getExamAdmissionTime() != null) ?("'"+value.getFormatedExamAdmissionTime()+"'") :"NULL")+","+
+                                    "'"+value.getStatus()+"'"+
                                 ") ON DUPLICATE KEY UPDATE "+
                                     "examHeaderID=VALUES(examHeaderID),"+
                                     "examID=VALUES(examID),"+
                                     "examName=VALUES(examName),"+
                                     "examUC=VALUES(examUC),"+
-                                    "examAdmissionTime=VALUES(examAdmissionTime)");
+                                    "examAdmissionTime=VALUES(examAdmissionTime)"+
+                                    "status=VALUES(status)");
             if (value.getExamScheduleIDs() != null)
                 for (UUID id : value.getExamScheduleIDs())
                     this.putSchedule(value.getExamHeaderID(), id);
@@ -423,7 +430,8 @@ public class ExamHeaderDAO {
                     BIN_TO_UUID(examID) as examID,
                     examName,
                     examUC,
-                    examAdmissionTime
+                    examAdmissionTime,
+                    status
             FROM examheader"""))
         {
             while(rs.next())
