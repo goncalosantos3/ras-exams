@@ -20,7 +20,6 @@ public class ExamHeader {
      *  - 'F': exame terminado (finished)
      */
     
-    
     // Construtor para as rotas do controller
     public ExamHeader(@JsonProperty("examName") String examName, @JsonProperty("examUC") String examUC, 
         @JsonProperty("examAdmissionTime") String examAT, @JsonProperty("examScheduleIDs") List<UUID> examSIds,
