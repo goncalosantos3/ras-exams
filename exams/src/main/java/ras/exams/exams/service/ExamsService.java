@@ -23,9 +23,9 @@ public class ExamsService {
     }
     
     // Creates a new Exam with only it's name
-    public UUID createExam(ExamHeader header){
+    public UUID createExam(String teacherID, ExamHeader header){
         UUID examId = UUID.randomUUID();
-        this.exams.put(examId, new Exam(examId, header));
+        this.exams.put(examId, new Exam(examId, teacherID, header));
         return examId;
     }
 
@@ -37,13 +37,25 @@ public class ExamsService {
         return this.exams.values().stream().collect(Collectors.toList());
     }
 
-    public List <Exam> getExamsbyStudent(String studentNumber){
-        List <Exam> res = new ArrayList<>();
+    public List<Exam> getExamsByStudent(String studentID){
+        List<Exam> res = new ArrayList<>();
 
         for (Map.Entry<UUID, Exam> entry : this.exams.entrySet()) {
             Exam e = entry.getValue();
             List<String> enrolled = e.getEnrolled();
-            if (enrolled.contains(studentNumber)){
+            if (enrolled.contains(studentID)){
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    public List<Exam> getExamsByTeacher(String teacherID){
+        List<Exam> res = new ArrayList<>();
+
+        for (Map.Entry<UUID, Exam> entry : this.exams.entrySet()) {
+            Exam e = entry.getValue();
+            if(teacherID.equals(e.getTeacherID())){
                 res.add(e);
             }
         }

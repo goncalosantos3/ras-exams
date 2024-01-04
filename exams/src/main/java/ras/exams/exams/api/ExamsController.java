@@ -34,11 +34,11 @@ public class ExamsController {
         this.examService = examService;
     }
 
-    // Rota - POST /exam
+    // Rota - POST /exam?teacherID=xxxx
     @PostMapping("exam")
-    public UUID createExam(@RequestBody ExamHeader eh){
+    public UUID createExam(@RequestParam("teacherID") String teacherID, @RequestBody ExamHeader header){
         // Função que cria o exame com base no examName
-        return examService.createExam(eh);
+        return examService.createExam(teacherID, header);
     }
 
     // Rota - GET /exam?examID=xxxx
@@ -54,11 +54,17 @@ public class ExamsController {
         return examService.getExams();
     }
 
-    // Rota - GET /getExamsbyStudent?studentNumber=xxxx
-    @GetMapping("getExamsbyStudent")
-    public List<Exam> getExambyStudent(@RequestParam("studentNumber") String studentNumber) {
+    // Rota - GET /getExamsByTeacher?teacherID=xxxx
+    @GetMapping("getExamsByTeacher")
+    public List<Exam> getExamsByTeacher(@RequestParam("teacherID") String teacherID) {
+        return examService.getExamsByTeacher(teacherID);
+    }
+
+    // Rota - GET /getExamsByStudent?studentID=xxxx
+    @GetMapping("getExamsByStudent")
+    public List<Exam> getExambyStudent(@RequestParam("studentID") String studentID) {
         // Dá return a uma lista de exames na qual o aluno está inscrito - List<Exam>
-        return examService.getExamsbyStudent(studentNumber);
+        return examService.getExamsByStudent(studentID);
     }
     
     // Rota - DELETE /exam?examID=xxxx
@@ -239,51 +245,13 @@ public class ExamsController {
     //     // Dá return da cotação em que a pergunta foi avaliada - int 
     //     // return examService.getQuestionCorrectionStudent(examName,studentNumber,questionNumber)
     // }
-
-    // // Rota - GET /getExamsByTeacher/{teacherNumber}
-    // @GetMapping("getExamsByTeacher/{teacherNumber}")
-    // public void getExamsByTeacher(@PathVariable String teacherNumber) {
-    //     // return examService.getExamsByTeacher(teacherNumber);
-    // }
-// 
-    // // Rota - GET /getSpecificExamforStudent?studentNumber=xxxxexamName=xxxx
-    // @GetMapping("getSpecificExamforStudent")
-    // public Exam getSpecificExamforStudent(@RequestParam("studentNumber") String studentNumber,@RequestParam("examName") String examName) {
-    //     // Dá return a um exame especifico do aluno - Exam 
-    //     return examService.getSpecificExamforStudent(studentNumber,examName);
-    // }
-// 
-    // // Rota - POST /replyExam/{numberStudent}/{examName}?questionID=xxxx
-    // @PostMapping("replyExam/{numberStudent}/{examName}")
-    // public int replyExam(@PathVariable String numberStudent,@PathVariable String examName,@RequestParam("questionID") String questionID,@RequestBody String answer) {
-    //     //Dá return de um inteiro indicando se a resposta foi devidamente dada
-    //     // return examService.replyExam(numberStudent,examName,questionID,answer)
-    //     return 200;
-    // }
-// 
-    // // Rota - GET /exam/findByTags?tags=xxxx
-    // @GetMapping("exam/findByTags")
-    // public void getExamsbyTags(@RequestParam("tags") List<String> tags) {
-    //     // Dá return da lista de exames que contêm aquelas tags - List<Exam>
-    //     // return examService.getExamsbyTags(tags)
-    // }
-// 
     // // Rota - POST /exam/{examID}?examName=xxxxstatus=xxxx
     // @PostMapping("updateExam/{examID}")
     // public int updateExam(@RequestParam("examName") String examName,@RequestParam("status") String status,@PathVariable UUID examID) {
     //     //return examService.updateExam(examName,status,examID)
     //     
     //     return 200;
-    // }
-// 
-    // // Rota - POST /exam/{examID}/uploadImage?additionalMetadata=xxxx
-    // @PostMapping("exam/{examID}/uploadImage")
-    // public int uploadImage(@PathVariable UUID examID,@RequestParam("additionalMetadata") String metadata) {
-    //     // Dá return a um inteiro indicando se foi dado o upload de forma correta 
-    //     // return examService.uploadImage(examID,metadata);
-    //     return 200;
-    // }
-    //     
+    // }  
     // // Rota - GET /exam/getClassrooms?examName=xxxx
     // @GetMapping("exam/getClassrooms")
     // public int getClassroomsForExam (@RequestParam("examName") String examName) {
@@ -292,5 +260,4 @@ public class ExamsController {
     //     // examService.getClassroomsForExam(examName);
     //     return 200;
     // }
-        
 }   

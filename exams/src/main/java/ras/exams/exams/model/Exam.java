@@ -8,16 +8,18 @@ import java.util.UUID;
 
 public class Exam {
     private final UUID id;
-    private List<String> enrolled;
     private ExamHeader header;
+    private String teacherID;
+    private List<String> enrolled;
     private Map<UUID, ExamVersion> versions;
     private Map<UUID, ExamAnswer> answers;
 
     // Usado na rota do controller
-    public Exam(UUID id, ExamHeader eh){
+    public Exam(UUID id, String teacherID, ExamHeader eh){
         this.id = id;
-        this.enrolled = new ArrayList<>();
         this.header = eh;
+        this.teacherID = teacherID;
+        this.enrolled = new ArrayList<>();
         eh.setExamId(this.id);
         this.versions = new HashMap<>();
         this.answers = new HashMap<>();
@@ -109,13 +111,6 @@ public class Exam {
         UUID studentUUID = UUID.fromString(studentID);
         UUID versionUUID = UUID.fromString(versionID);  
 
-        System.out.println(a);
-        System.out.println(studentUUID + "!!!");
-        System.out.println(this.answers.keySet());
-        System.out.println(this.enrolled.contains(studentID));
-        System.out.println(this.answers.containsKey(studentUUID));
-        System.out.println(this.versions.get(versionUUID).getQuestion(qn) != null);
-
         if(this.enrolled.contains(studentID) && this.answers.containsKey(studentUUID) && this.versions.get(versionUUID).getQuestion(qn) != null){
             ExamAnswer ea = this.answers.get(studentUUID);
             a.setExamAnswerID(ea.getExamAnswerId());
@@ -184,6 +179,10 @@ public class Exam {
 
     public Map<UUID,ExamAnswer> getAnswers(){
         return this.answers;
+    }
+
+    public String getTeacherID(){
+        return this.teacherID;
     }
 
     public String toString(){
