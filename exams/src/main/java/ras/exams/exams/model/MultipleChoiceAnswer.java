@@ -26,7 +26,6 @@ public class MultipleChoiceAnswer extends Answer{
             for(ChoiceAnswer ca: this.answers){
                 r += ca.autoCorrect();
             }
-            System.out.println("Cotação MCA: " + r);
             this.setGrade(r);
             return r;
         }

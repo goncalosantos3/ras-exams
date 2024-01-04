@@ -26,7 +26,6 @@ public class TrueOrFalseAnswer extends Answer{
             for(TOFQAnswer ta: this.answers){
                 r += ta.autoCorrect();
             }
-            System.out.println("Cotação TOFA: " + r);
             this.setGrade(r);
             return r;
         }

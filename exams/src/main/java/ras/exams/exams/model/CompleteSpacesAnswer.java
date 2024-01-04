@@ -2,11 +2,8 @@ package ras.exams.exams.model;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -62,10 +59,8 @@ public class CompleteSpacesAnswer extends Answer{
 
                 from = closeIndex+1;
                 String sub = q.substring(openIndex+1, closeIndex).trim();
-                System.out.println(sub);
 
                 String[] parts = sub.split("]\\s*,\\s*");
-                System.out.println(Arrays.toString(parts));
                 int val = Integer.parseInt(parts[1].trim());
 
                 List<String> vals = new ArrayList<>();
@@ -96,7 +91,6 @@ public class CompleteSpacesAnswer extends Answer{
             if (listA.size() != listQ.size())
                 return 0;
 
-            System.out.println(listQ +  " " + listA);
             int grade = 0;
             for (int i=0 ; i<listA.size() ; i++)
             {
@@ -106,7 +100,6 @@ public class CompleteSpacesAnswer extends Answer{
                     grade += ques.getValue();
             }
 
-            System.out.println("Grade: " + grade);
             this.setGrade(grade);
             return grade;
         }

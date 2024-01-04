@@ -27,7 +27,6 @@ public class ChoiceAnswer {
         if(this.selected == this.choice.getCorrection()){
             grade = this.choice.getScore();
         }
-        System.out.println(grade);
         this.grade = grade;
         return grade;
     }

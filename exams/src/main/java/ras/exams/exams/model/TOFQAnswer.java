@@ -26,7 +26,6 @@ public class TOFQAnswer {
         if(this.answer == this.option.getCorrection()){
             grade = this.option.getScore();
         }
-        System.out.println(grade);
         this.grade = grade;
         return grade;
     }
