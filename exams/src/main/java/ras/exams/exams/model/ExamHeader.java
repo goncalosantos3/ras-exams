@@ -34,13 +34,14 @@ public class ExamHeader {
 
     // Construtor para a BD
     public ExamHeader(UUID examHeaderID, UUID examID, String examName, String examUC, 
-            String examAdmissionTime, List<String> schedule){
+            String examAdmissionTime, List<String> schedule, char status){
         this.examHeaderID = examHeaderID;
         this.examID = examID;
         this.examName = examName;
         this.examUC = examUC;
         this.examAdmissionTime = (examAdmissionTime==null) ?null :LocalTime.parse(examAdmissionTime, DateTimeFormatter.ofPattern("HH:mm"));
         this.examScheduleIDs = schedule.stream().map(id -> UUID.fromString(id)).toList();
+        this.status = status;
     }
     
     public UUID getExamHeaderID() {

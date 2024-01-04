@@ -1,39 +1,47 @@
-version: "3.8"
-
+version: "3"
 services:
   exams-mysql:
-    image: mysql:latest
+    container_name: exams-mysql
+    image: mysql
     restart: unless-stopped
     environment:
-      - MYSQL_USERNAME=ras
-      - MYQSL_PASSWORD=rasexams
+      - MYSQL_USER=ras
+      - MYSQL_PASSWORD=rasexams
       - MYSQL_DATABASE=ras_exams
+      - MYSQL_HOST=mysql
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - TZ=Europe/Lisbon
     networks:
       - exams
     volumes:
-      - exams-mysql-data:/var/lib/mysql/data
-    ports:
-      - 5433:5433
-  exams:
+      - mysql-data:/var/lib/mysql
+  
+  wait-for-db:
+    image: atkrad/wait4x
+    networks:      
+      - exams
     depends_on:
       - exams-mysql
+    command: tcp exams-mysql:3306 -t 30s -i 250ms
+  
+  exams:
+    container_name: exams
+    depends_on:
+      wait-for-db:
+        condition: service_completed_successfully
     build: ./exams
     restart: on-failure
     ports:
-      - 8001:8001
+      - 8001:8080
     networks:
       - exams
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://exams-mysql:5433/ras_exams 
-      - DEFAULT_DB_URL=jdbc:mysql://exams-mysql:5433/
-    volumes:
-      - .m2:/root/.m2
-    stdin_open: true
-    tty: true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://exams-mysql:3306/ras_exams
+      - DEFAULT_DB_URL=jdbc:mysql://exams-mysql:3306/
+      - TZ=Europe/Lisbon
 
 volumes:
-  exams-mysql-data:
+  mysql-data:
 
 networks:
   exams:

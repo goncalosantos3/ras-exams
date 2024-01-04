@@ -282,7 +282,7 @@ public class ExamHeaderDAO {
                                     "examID=VALUES(examID),"+
                                     "examName=VALUES(examName),"+
                                     "examUC=VALUES(examUC),"+
-                                    "examAdmissionTime=VALUES(examAdmissionTime)"+
+                                    "examAdmissionTime=VALUES(examAdmissionTime),"+
                                     "status=VALUES(status)");
             if (value.getExamScheduleIDs() != null)
                 for (UUID id : value.getExamScheduleIDs())

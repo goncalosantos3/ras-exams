@@ -19,9 +19,7 @@ public class ExamsService {
     @Autowired
     private Map<UUID,Exam> exams;
 
-    public ExamsService(){
-        // this.exams = ExamDAO.getInstance();
-    }
+    public ExamsService(){}
     
     // Creates a new Exam with only it's name
     public UUID createExam(String teacherID, ExamHeader header){

@@ -44,10 +44,6 @@ public class ExamDAO implements Map<UUID, Exam> {
         this.PASSWORD = PASSWORD;
         this.URL = URL;
 
-        System.out.println(INITIAL_URL);
-        System.out.println(PASSWORD);
-        System.out.println(USERNAME);
-        System.out.println(URL);
         try (Connection conn = DriverManager.getConnection(INITIAL_URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.executeUpdate("CREATE SCHEMA IF NOT EXISTS `ras_exams`");
@@ -82,9 +78,6 @@ public class ExamDAO implements Map<UUID, Exam> {
                     REFERENCES `ras_exams`.`exam` (`examID`))
             """;
             stm.executeUpdate(sql);
-            // this.examHeaderDAO = ExamHeaderDAO.getInstance();
-            // this.examVersionDAO = ExamVersionDAO.getInstance();
-            // this.examAnswerDAO = ExamAnswerDAO.getInstance();
         }
         catch (SQLException e)
         {
@@ -94,15 +87,6 @@ public class ExamDAO implements Map<UUID, Exam> {
         }
 
     }
-            
-    // public static ExamDAO getInstance()
-    // {
-    //     if (ExamDAO.singleton == null)
-    //     {
-    //         ExamDAO.singleton = new ExamDAO();
-    //     }
-    //     return ExamDAO.singleton;
-    // }
 
     private Exam getExam (ResultSet rs) throws SQLException
     {
@@ -208,7 +192,6 @@ public class ExamDAO implements Map<UUID, Exam> {
         if (!(key instanceof UUID))
             return null;
         Exam a = null;
-        System.out.println(key.toString());
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, teacherID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))

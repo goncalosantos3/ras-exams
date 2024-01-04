@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `ras_exams`.`examheader` (
   `examName` VARCHAR(64) NOT NULL,
   `examUC` VARCHAR(64) NULL,
   `examAdmissionTime` TIME NULL DEFAULT NULL,
+  `status` CHAR(1) NULL DEFAULT 'S',
   PRIMARY KEY (`examHeaderID`),
   INDEX `examID_idx` (`examID` ASC) VISIBLE,
   CONSTRAINT `examIDunique`
