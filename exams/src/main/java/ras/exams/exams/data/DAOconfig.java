@@ -4,38 +4,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 public class DAOconfig {
 
-    @Value("${spring.datasource.username}")
-    private String USERNAME;
-    
+    @Autowired
+    private Environment env;
+
     public String getUSERNAME() {
-        return USERNAME;
+        return env.getProperty("spring.datasource.username");
     }
 
-    @Value("${spring.datasource.password}") 
-    private String PASSWORD;
-    
     public String getPASSWORD() {
-        return PASSWORD;
+        return env.getProperty("spring.datasource.password");
     }
 
-    @Value("${spring.datasource.url}") 
-    private String URL;
-    
     public String getURL() {
-        return URL;
+        return env.getProperty("spring.datasource.url");
     }
-
-    @Value("${default_db_url}")
-    private String INITIAL_URL;
 
     public String getINITIAL_URL() {
-        return INITIAL_URL;
+        return env.getProperty("default_db_url");
     }
-
-    public DAOconfig(){}
-
 }

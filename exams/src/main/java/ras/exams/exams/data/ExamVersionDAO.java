@@ -8,19 +8,34 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import ras.exams.exams.model.ExamVersion;
 import ras.exams.exams.model.Question;
 
+@Component
 public class ExamVersionDAO {
 
-    private DAOconfig daoconfig;
-    private static ExamVersionDAO singleton = null;
+    private String USERNAME;
+    private String PASSWORD;
+    private String URL;
+
+    @Autowired
     private QuestionDAO questionDAO;
 
-    private ExamVersionDAO()
+    private ExamVersionDAO(
+        @Value("${spring.datasource.username}") String USERNAME,
+        @Value("${spring.datasource.password}") String PASSWORD,
+        @Value("${spring.datasource.url}") String URL
+    )
     {
-        this.daoconfig = new DAOconfig();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        this.USERNAME = USERNAME;
+        this.PASSWORD = PASSWORD;
+        this.URL = URL;
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             String sql = 
             """
@@ -35,7 +50,6 @@ public class ExamVersionDAO {
                     REFERENCES `ras_exams`.`exam` (`examID`))
             """;
             stm.executeUpdate(sql);
-            this.questionDAO = QuestionDAO.getInstance();
         }
         catch (SQLException e)
         {
@@ -45,20 +59,11 @@ public class ExamVersionDAO {
         }
 
     }
-            
-    public static ExamVersionDAO getInstance()
-    {
-        if (ExamVersionDAO.singleton == null)
-        {
-            ExamVersionDAO.singleton = new ExamVersionDAO();
-        }
-        return ExamVersionDAO.singleton;
-    }
 
     public List<ExamVersion> getExamVersionsFromExam (UUID examID)
     {
         List<ExamVersion> examAnswers = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examVersionID) as examVersionID,
@@ -92,7 +97,7 @@ public class ExamVersionDAO {
 
     
     public void clear() {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE examversion");
@@ -109,7 +114,7 @@ public class ExamVersionDAO {
     
     public boolean contains(UUID key) {
         boolean r;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT examVersionID FROM examversion WHERE examVersionID=UUID_TO_BIN('"+key.toString()+"')"))
         {
@@ -131,7 +136,7 @@ public class ExamVersionDAO {
     
     public ExamVersion get(UUID examVersionID) {
         ExamVersion a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examVersionID) as examVersionID,
@@ -155,7 +160,7 @@ public class ExamVersionDAO {
 
     public ExamVersion get(UUID examID, int versionNumber) {
         ExamVersion a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examVersionID) as examVersionID,
@@ -183,7 +188,7 @@ public class ExamVersionDAO {
     
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examVersionID) FROM examversion"))
         {
@@ -204,7 +209,7 @@ public class ExamVersionDAO {
     
     public ExamVersion put(ExamVersion value) {
         ExamVersion rv = this.get(value.getVersionId());
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); 
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO examversion "+
@@ -239,7 +244,7 @@ public class ExamVersionDAO {
     
     public ExamVersion remove(UUID key) {
         ExamVersion rv = this.get(key);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -260,7 +265,7 @@ public class ExamVersionDAO {
     
     public int size() {
         int size = 0;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT count(*) FROM examversion"))
         {
@@ -278,7 +283,7 @@ public class ExamVersionDAO {
     
     public Collection<ExamVersion> values() {
         Set<ExamVersion> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """

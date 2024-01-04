@@ -26,9 +26,10 @@ public class Exam {
     }
 
     // Usado pela BD
-    public Exam(UUID examID, List<String> enrolled, ExamHeader header, 
+    public Exam(UUID examID, String teacherID, List<String> enrolled, ExamHeader header, 
                 Map<UUID, ExamVersion> versions, Map<UUID, ExamAnswer> answers) {
         this.id = examID;
+        this.teacherID = teacherID;
         this.enrolled = new ArrayList<>(enrolled);
         this.header = header;
         this.versions = new HashMap<>(versions);

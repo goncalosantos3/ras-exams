@@ -10,28 +10,45 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import ras.exams.exams.model.ExamVersion;
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 
-
+@Component
 public class ExamDAO implements Map<UUID, Exam> {
 
-    private DAOconfig daoconfig;
-    private static ExamDAO singleton = null;
+    private String USERNAME;
+    private String PASSWORD;
+    private String URL;
+    
+    @Autowired
     private ExamHeaderDAO examHeaderDAO;
+    @Autowired
     private ExamVersionDAO examVersionDAO;
+    @Autowired
     private ExamAnswerDAO examAnswerDAO;
 
-    private ExamDAO()
+    public ExamDAO(
+        @Value("${spring.datasource.username}") String USERNAME,
+        @Value("${spring.datasource.password}") String PASSWORD,
+        @Value("${spring.datasource.url}") String URL,
+        @Value("${default_db_url}") String INITIAL_URL
+    )
     {
-        this.daoconfig = new DAOconfig();
-        System.out.println(this.daoconfig.getINITIAL_URL());
-        System.out.println(this.daoconfig.getPASSWORD());
-        System.out.println(this.daoconfig.getUSERNAME());
-        System.out.println(this.daoconfig.getURL());
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getINITIAL_URL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        this.USERNAME = USERNAME;
+        this.PASSWORD = PASSWORD;
+        this.URL = URL;
+
+        System.out.println(INITIAL_URL);
+        System.out.println(PASSWORD);
+        System.out.println(USERNAME);
+        System.out.println(URL);
+        try (Connection conn = DriverManager.getConnection(INITIAL_URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.executeUpdate("CREATE SCHEMA IF NOT EXISTS `ras_exams`");
         }
@@ -42,12 +59,13 @@ public class ExamDAO implements Map<UUID, Exam> {
             throw new NullPointerException(e.getMessage());
         }
 
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getINITIAL_URL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(INITIAL_URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             String sql = 
             """
             CREATE TABLE IF NOT EXISTS `ras_exams`.`exam` (
                 `examID` BINARY(16) NOT NULL,
+                `teacherID` BINARY(16) NOT NULL,
                 PRIMARY KEY (`examID`))
             """;
             stm.executeUpdate(sql);
@@ -64,9 +82,9 @@ public class ExamDAO implements Map<UUID, Exam> {
                     REFERENCES `ras_exams`.`exam` (`examID`))
             """;
             stm.executeUpdate(sql);
-            this.examHeaderDAO = ExamHeaderDAO.getInstance();
-            this.examVersionDAO = ExamVersionDAO.getInstance();
-            this.examAnswerDAO = ExamAnswerDAO.getInstance();
+            // this.examHeaderDAO = ExamHeaderDAO.getInstance();
+            // this.examVersionDAO = ExamVersionDAO.getInstance();
+            // this.examAnswerDAO = ExamAnswerDAO.getInstance();
         }
         catch (SQLException e)
         {
@@ -77,18 +95,19 @@ public class ExamDAO implements Map<UUID, Exam> {
 
     }
             
-    public static ExamDAO getInstance()
-    {
-        if (ExamDAO.singleton == null)
-        {
-            ExamDAO.singleton = new ExamDAO();
-        }
-        return ExamDAO.singleton;
-    }
+    // public static ExamDAO getInstance()
+    // {
+    //     if (ExamDAO.singleton == null)
+    //     {
+    //         ExamDAO.singleton = new ExamDAO();
+    //     }
+    //     return ExamDAO.singleton;
+    // }
 
     private Exam getExam (ResultSet rs) throws SQLException
     {
         UUID examID = UUID.fromString(rs.getString("examID"));
+        String teacherID = rs.getString("teacherID");
         List<String> enrolled = this.getEnrolledStudents(examID);
         ExamHeader header = this.examHeaderDAO.get(examID);
         List<ExamVersion> versionsList = this.examVersionDAO.getExamVersionsFromExam(examID);
@@ -98,12 +117,12 @@ public class ExamDAO implements Map<UUID, Exam> {
         Map<UUID,ExamAnswer> answers = new HashMap<>();
         answersList.forEach(a -> answers.put(a.getStudentID(), a));
 
-        return new Exam(examID, enrolled, header, versions, answers);
+        return new Exam(examID, teacherID, enrolled, header, versions, answers);
     }
 
     @Override
     public void clear() {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE exam");
@@ -123,7 +142,7 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public boolean containsKey(Object key) {
         boolean r;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT examID FROM exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
         {
@@ -146,9 +165,9 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public Set<Entry<UUID, Exam>> entrySet() {
         Set<Entry<UUID, Exam>> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID FROM exam"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, teacherID FROM exam"))
         {
             while(rs.next())
             {
@@ -167,7 +186,7 @@ public class ExamDAO implements Map<UUID, Exam> {
     public List<String> getEnrolledStudents(UUID examID)
     {
         List<String> enrolledStudents = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(studentID) as id FROM enrolledstudents WHERE examID=UUID_TO_BIN('"+examID.toString()+"')"))
         {
@@ -190,9 +209,9 @@ public class ExamDAO implements Map<UUID, Exam> {
             return null;
         Exam a = null;
         System.out.println(key.toString());
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, teacherID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
         {
             if (rs.next())
             {
@@ -215,7 +234,7 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID FROM exam"))
         {
@@ -234,7 +253,7 @@ public class ExamDAO implements Map<UUID, Exam> {
 
     private void putEnrolled(UUID examID, List<String> enrolled)
     {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             for (String studentID : enrolled)
             {
@@ -258,14 +277,16 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public Exam put(UUID key, Exam value) {
         Exam rv = this.get(key);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); 
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO exam "+
                                 "VALUES ("+
-                                    "UUID_TO_BIN('"+key.toString()+"')"+
+                                    "UUID_TO_BIN('"+key.toString()+"'),"+
+                                    "UUID_TO_BIN('"+value.getTeacherID()+"')"+
                                     ") ON DUPLICATE KEY UPDATE "+
-                                    "examID=VALUES(examID)");
+                                    "examID=VALUES(examID),"+
+                                    "teacherID=VALUES(teacherID)");
             ExamHeader header = value.getHeader();
             List<String> enrolled = value.getEnrolled();
             Map<UUID, ExamVersion> versions = value.getVersions();
@@ -296,7 +317,7 @@ public class ExamDAO implements Map<UUID, Exam> {
 
     public void removeEnrolled(UUID examID, List<String> enrolled)
     {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             for (String studentID : enrolled)
@@ -315,7 +336,7 @@ public class ExamDAO implements Map<UUID, Exam> {
         if (!(key instanceof UUID))
             return null;
         Exam rv = this.get(key);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -342,7 +363,7 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public int size() {
         int size = 0;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT count(*) FROM exam"))
         {
@@ -360,11 +381,12 @@ public class ExamDAO implements Map<UUID, Exam> {
     @Override
     public Collection<Exam> values() {
         Set<Exam> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """
-            SELECT BIN_TO_UUID(examID) as examID
+            SELECT BIN_TO_UUID(examID) as examID,
+                    teacherID
             FROM exam"""))
         {
             while(rs.next())

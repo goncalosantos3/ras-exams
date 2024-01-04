@@ -10,18 +10,30 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import ras.exams.exams.model.ExamHeader;
 
 
+@Component
 public class ExamHeaderDAO {
 
-    private DAOconfig daoconfig;
-    private static ExamHeaderDAO singleton = null;
+    private String USERNAME;
+    private String PASSWORD;
+    private String URL;
 
-    private ExamHeaderDAO()
+    private ExamHeaderDAO(
+        @Value("${spring.datasource.username}") String USERNAME,
+        @Value("${spring.datasource.password}") String PASSWORD,
+        @Value("${spring.datasource.url}") String URL
+    )
     {
-        this.daoconfig = new DAOconfig();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        this.USERNAME = USERNAME;
+        this.PASSWORD = PASSWORD;
+        this.URL = URL;
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             String sql = 
             """
@@ -64,20 +76,11 @@ public class ExamHeaderDAO {
         }
 
     }
-            
-    public static ExamHeaderDAO getInstance()
-    {
-        if (ExamHeaderDAO.singleton == null)
-        {
-            ExamHeaderDAO.singleton = new ExamHeaderDAO();
-        }
-        return ExamHeaderDAO.singleton;
-    }
 
     private List<String> getHeaderScheduleIDs (UUID examHeaderID)
     {
         List<String> schedule = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(scheduleID) as id FROM examschedules WHERE examHeaderID=UUID_TO_BIN('"+examHeaderID.toString()+"')"))
         {
@@ -108,7 +111,7 @@ public class ExamHeaderDAO {
     }
 
     public void clear() {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE examheader");
@@ -124,7 +127,7 @@ public class ExamHeaderDAO {
 
     public boolean exists(UUID examHeaderID) {
         boolean r;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT examHeaderID FROM examheader WHERE examHeaderID=UUID_TO_BIN('"+examHeaderID.toString()+"')"))
         {
@@ -140,7 +143,7 @@ public class ExamHeaderDAO {
 
     public boolean exists(String examName) {
         boolean r;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT examHeaderID FROM examheader WHERE examName='"+examName+"'"))
         {
@@ -161,7 +164,7 @@ public class ExamHeaderDAO {
     
     public ExamHeader get(UUID id) {
         ExamHeader a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examHeaderID) as examHeaderID,
@@ -187,7 +190,7 @@ public class ExamHeaderDAO {
 
         public ExamHeader get(String examName) {
         ExamHeader a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examHeaderID) as examHeaderID,
@@ -218,7 +221,7 @@ public class ExamHeaderDAO {
     
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examHeaderID) FROM examheader"))
         {
@@ -238,7 +241,7 @@ public class ExamHeaderDAO {
 
     public void putSchedule(UUID examHeaderID, UUID scheduleID)
     {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate( "INSERT INTO examschedules"+
@@ -258,7 +261,7 @@ public class ExamHeaderDAO {
     
     public ExamHeader put(ExamHeader value) {
         ExamHeader rv = this.get(value.getExamHeaderID());
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); 
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO examheader "+
@@ -296,7 +299,7 @@ public class ExamHeaderDAO {
 
     public void removeSchedule(UUID scheduleID, UUID examHeaderID)
     {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -314,7 +317,7 @@ public class ExamHeaderDAO {
     
     public ExamHeader remove(UUID id) {
         ExamHeader rv = this.get(id);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -334,7 +337,7 @@ public class ExamHeaderDAO {
 
     public ExamHeader remove(String examName) {
         ExamHeader rv = this.get(examName);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -354,7 +357,7 @@ public class ExamHeaderDAO {
 
     public int size() {
         int size = 0;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT count(*) FROM examheader"))
         {
@@ -372,7 +375,7 @@ public class ExamHeaderDAO {
     
     public Collection<ExamHeader> values() {
         Set<ExamHeader> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """
@@ -412,7 +415,7 @@ public class ExamHeaderDAO {
     
     public Set<Map.Entry<String, ExamHeader>> entrySet() {
         Set<Map.Entry<String, ExamHeader>> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """

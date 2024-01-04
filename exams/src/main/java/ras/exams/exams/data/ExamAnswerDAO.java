@@ -8,20 +8,35 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.Answer;
 
 
+@Component
 public class ExamAnswerDAO {
 
-    private DAOconfig daoconfig;
-    private static ExamAnswerDAO singleton = null;
+    private String USERNAME;
+    private String PASSWORD;
+    private String URL;
+
+    @Autowired
     private AnswerDAO answerDAO;
 
-    private ExamAnswerDAO()
+    private ExamAnswerDAO(
+        @Value("${spring.datasource.username}") String USERNAME,
+        @Value("${spring.datasource.password}") String PASSWORD,
+        @Value("${spring.datasource.url}") String URL
+    )
     {
-        this.daoconfig = new DAOconfig();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        this.USERNAME = USERNAME;
+        this.PASSWORD = PASSWORD;
+        this.URL = URL;
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             String sql = 
             """
@@ -37,7 +52,6 @@ public class ExamAnswerDAO {
                     REFERENCES `ras_exams`.`enrolledstudents` (`examID` , `studentID`))
             """;
             stm.executeUpdate(sql);
-            this.answerDAO = AnswerDAO.getInstance();
         }
         catch (SQLException e)
         {
@@ -47,20 +61,11 @@ public class ExamAnswerDAO {
         }
 
     }
-            
-    public static ExamAnswerDAO getInstance()
-    {
-        if (ExamAnswerDAO.singleton == null)
-        {
-            ExamAnswerDAO.singleton = new ExamAnswerDAO();
-        }
-        return ExamAnswerDAO.singleton;
-    }
 
     public List<ExamAnswer> getExamAnswersFromExam (UUID examID)
     {
         List<ExamAnswer> examAnswers = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
@@ -92,7 +97,7 @@ public class ExamAnswerDAO {
     public ExamAnswer getStudentExamAnswer (UUID studentID)
     {
         ExamAnswer a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
@@ -123,7 +128,7 @@ public class ExamAnswerDAO {
 
     
     public void clear() {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE examanswer");
@@ -140,7 +145,7 @@ public class ExamAnswerDAO {
     
     public boolean contains(UUID key) {
         boolean r;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT examAnswerID FROM examanswer WHERE examAnswerID=UUID_TO_BIN('"+key.toString()+"')"))
         {
@@ -164,7 +169,7 @@ public class ExamAnswerDAO {
         if (!(key instanceof UUID))
             return null;
         ExamAnswer a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
@@ -197,7 +202,7 @@ public class ExamAnswerDAO {
 
         public ExamAnswer get(String studentID) {
         ExamAnswer a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(examAnswerID) as examAnswerID,
@@ -235,7 +240,7 @@ public class ExamAnswerDAO {
     
     public Set<UUID> keySet() {
         Set<UUID> r = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examAnswerID) FROM examanswer"))
         {
@@ -256,7 +261,7 @@ public class ExamAnswerDAO {
     
     public ExamAnswer put(ExamAnswer value) {
         ExamAnswer rv = this.get(value.getExamAnswerId());
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); 
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); 
             Statement stm = conn.createStatement())
         {
             if (value.getAnswers() != null)
@@ -295,7 +300,7 @@ public class ExamAnswerDAO {
     
     public ExamAnswer remove(UUID key) {
         ExamAnswer rv = this.get(key);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -315,7 +320,7 @@ public class ExamAnswerDAO {
 
     public ExamAnswer remove(String key) { // key is a student id in String form
         ExamAnswer rv = this.get(key);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -336,7 +341,7 @@ public class ExamAnswerDAO {
     
     public int size() {
         int size = 0;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT count(*) FROM examanswer"))
         {
@@ -354,7 +359,7 @@ public class ExamAnswerDAO {
     
     public Collection<ExamAnswer> values() {
         Set<ExamAnswer> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """

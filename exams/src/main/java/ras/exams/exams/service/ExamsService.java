@@ -1,6 +1,5 @@
 package ras.exams.exams.service;
 
-import ras.exams.exams.data.ExamDAO;
 import ras.exams.exams.model.Answer;
 import ras.exams.exams.model.Exam;
 import ras.exams.exams.model.ExamHeader;
@@ -12,14 +11,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ExamsService {
-    private Map<UUID, Exam> exams;
+    @Autowired
+    private Map<UUID,Exam> exams;
 
     public ExamsService(){
-        this.exams = ExamDAO.getInstance();
+        // this.exams = ExamDAO.getInstance();
     }
     
     // Creates a new Exam with only it's name

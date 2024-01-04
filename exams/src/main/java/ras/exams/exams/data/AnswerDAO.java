@@ -10,6 +10,10 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import ras.exams.exams.model.Answer;
 import ras.exams.exams.model.ChoiceAnswer;
 import ras.exams.exams.model.CompleteSpacesAnswer;
@@ -18,16 +22,27 @@ import ras.exams.exams.model.TOFQAnswer;
 import ras.exams.exams.model.TrueOrFalseAnswer;
 import ras.exams.exams.model.WritingAnswer;
 
+@Component
 public class AnswerDAO {
 
-    private DAOconfig daoconfig;
-    private static AnswerDAO singleton = null;
+    private String USERNAME;
+    private String PASSWORD;
+    private String URL;
+
+    @Autowired
     private QuestionDAO questionDAO;
 
-    private AnswerDAO()
+    public AnswerDAO(
+        @Value("${spring.datasource.username}") String USERNAME,
+        @Value("${spring.datasource.password}") String PASSWORD,
+        @Value("${spring.datasource.url}") String URL
+    )
     {
-        this.daoconfig = new DAOconfig();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        this.USERNAME = USERNAME;
+        this.PASSWORD = PASSWORD;
+        this.URL = URL;
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             String sql = 
             """
@@ -125,8 +140,6 @@ public class AnswerDAO {
             """;
             
             stm.executeUpdate(sql);
-
-            this.questionDAO = QuestionDAO.getInstance();
         }
         catch (SQLException e)
         {
@@ -137,19 +150,10 @@ public class AnswerDAO {
 
     }
             
-    public static AnswerDAO getInstance()
-    {
-        if (AnswerDAO.singleton == null)
-        {
-            AnswerDAO.singleton = new AnswerDAO();
-        }
-        return AnswerDAO.singleton;
-    }
-            
     private List<ChoiceAnswer> getChoiceAnswers(UUID answerID, UUID questionID)
     {
         List<ChoiceAnswer> choices = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """
@@ -181,7 +185,7 @@ public class AnswerDAO {
     private List<TOFQAnswer> getTOFQAnswers (UUID answerID, UUID questionID)
     {
         List<TOFQAnswer> tofqs = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """
@@ -212,7 +216,7 @@ public class AnswerDAO {
     private WritingAnswer getWritingAnswer (UUID answerID, UUID examAnswerID, UUID questionID)
     {
         WritingAnswer w = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         Statement stm = conn.createStatement();
         ResultSet rs = stm.executeQuery(
         """
@@ -239,7 +243,7 @@ public class AnswerDAO {
     private CompleteSpacesAnswer getCompleteSpacesAnswer (UUID answerID, UUID examAnswerID, UUID questionID)
     {
         CompleteSpacesAnswer c = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT text, grade FROM answercompletespaces WHERE answerID=UUID_TO_BIN('"+
                                                                             answerID.toString()+"')"))
@@ -305,7 +309,7 @@ public class AnswerDAO {
 
     
     public void clear() {
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); Statement stm = conn.createStatement())
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
             stm.executeUpdate("TRUNCATE answercompletespaces");
@@ -325,7 +329,7 @@ public class AnswerDAO {
     
     public boolean contains(UUID key) {
         boolean r;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT answerID FROM answer WHERE answerID=UUID_TO_BIN('"+key.toString()+"')"))
         {
@@ -347,7 +351,7 @@ public class AnswerDAO {
     public List<Answer> getAnswersFromExamAnswer(UUID examAnswerID)
     {
         List<Answer> questions = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """
@@ -376,7 +380,7 @@ public class AnswerDAO {
     
     public Answer get(UUID key) {
         Answer a = null;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("""
             SELECT BIN_TO_UUID(answerID) as answerID,
@@ -485,7 +489,7 @@ public class AnswerDAO {
     
     public Answer put(Answer value) {
         Answer rv = this.get(value.getAnswerID());
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD()); 
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); 
             Statement stm = conn.createStatement())
         {
             stm.executeUpdate("INSERT INTO answer "+
@@ -524,7 +528,7 @@ public class AnswerDAO {
     
     public Answer remove(UUID key) {
         Answer rv = this.get(key);
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement())
         {
             stm.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -546,7 +550,7 @@ public class AnswerDAO {
     
     public int size() {
         int size = 0;
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT count(*) FROM answer"))
         {
@@ -564,7 +568,7 @@ public class AnswerDAO {
     
     public Collection<Answer> values() {
         Set<Answer> rSet = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(this.daoconfig.getURL(), this.daoconfig.getUSERNAME(), this.daoconfig.getPASSWORD());
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(
             """

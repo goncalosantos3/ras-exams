@@ -15,6 +15,7 @@ USE `ras_exams` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ras_exams`.`exam` (
   `examID` BINARY(16) NOT NULL,
+  `teacherID` BINARY(16) NOT NULL
   PRIMARY KEY (`examID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
