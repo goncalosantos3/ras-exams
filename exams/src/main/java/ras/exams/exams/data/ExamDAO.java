@@ -151,7 +151,7 @@ public class ExamDAO implements Map<UUID, Exam> {
         Set<Entry<UUID, Exam>> rSet = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, teacherID FROM exam"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, BIN_TO_UUID(teacherID) as teacherID FROM exam"))
         {
             while(rs.next())
             {
@@ -194,7 +194,7 @@ public class ExamDAO implements Map<UUID, Exam> {
         Exam a = null;
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, teacherID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
+            ResultSet rs = stm.executeQuery("SELECT BIN_TO_UUID(examID) as examID, BIN_TO_UUID(teacherID) as teacherID from exam WHERE examID=UUID_TO_BIN('"+key.toString()+"')"))
         {
             if (rs.next())
             {
@@ -369,7 +369,7 @@ public class ExamDAO implements Map<UUID, Exam> {
             ResultSet rs = stm.executeQuery(
             """
             SELECT BIN_TO_UUID(examID) as examID,
-                    teacherID
+                    BIN_TO_UUID(teacherID) as teacherID
             FROM exam"""))
         {
             while(rs.next())
