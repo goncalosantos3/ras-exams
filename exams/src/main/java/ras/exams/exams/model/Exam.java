@@ -94,8 +94,6 @@ public class Exam {
     public void enrollStudents(List<String> students){
         for(String s: students){
             if(!this.enrolled.contains(s)){
-                System.out.println(s);
-                System.out.println(UUID.fromString(s));
                 this.enrolled.add(s);
                 this.answers.put(UUID.fromString(s), new ExamAnswer(s, this.id));
             }
@@ -120,7 +118,6 @@ public class Exam {
             switch (a.getClass().getSimpleName()) {
                 case "CompleteSpacesAnswer":
                     CompleteSpacesAnswer csa = (CompleteSpacesAnswer) a;
-                    System.out.println(q);
                     csa.setQuestion(q);
                     break;
                 case "WritingAnswer":
@@ -143,7 +140,7 @@ public class Exam {
                     break;
                 default:
                     System.out.println("Classe de resposta inválida");
-                    break;
+                    return 404;
             }
             ea.addAnswer(a);
             return 200;
@@ -155,6 +152,14 @@ public class Exam {
         for(ExamAnswer ea: this.answers.values()){
             ea.calculateGrade();
         }
+    }
+
+    public ExamAnswer getExamAnswer(String studentID){
+        UUID studentUUID = UUID.fromString(studentID);
+        if(this.answers.containsKey(studentUUID)){
+            return this.answers.get(studentUUID);
+        }
+        return null;
     }
 
     public UUID getID(){

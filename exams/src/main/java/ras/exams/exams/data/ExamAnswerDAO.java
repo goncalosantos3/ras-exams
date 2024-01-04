@@ -264,8 +264,6 @@ public class ExamAnswerDAO {
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD); 
             Statement stm = conn.createStatement())
         {
-            if (value.getAnswers() != null)
-                value.calculateGrade();
             stm.executeUpdate("INSERT INTO examanswer "+
                                 "VALUES ("+
                                     "UUID_TO_BIN('"+value.getExamAnswerId().toString()+"'),"+

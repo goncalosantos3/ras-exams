@@ -24,11 +24,7 @@ public class MultipleChoiceAnswer extends Answer{
         if(this.getGrade() == 0){
             int r = 0;
             for(ChoiceAnswer ca: this.answers){
-                Choice c = ca.getChoice();
-                if(ca.getSelected() == c.getCorrection()){
-                    ca.setGrade(c.getScore());
-                    r += c.getScore();
-                }
+                r += ca.autoCorrect();
             }
             System.out.println("Cotação MCA: " + r);
             this.setGrade(r);

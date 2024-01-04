@@ -16,7 +16,7 @@ public class TrueOrFalseAnswer extends Answer{
 
     // Construtor usado pela base de dados
     public TrueOrFalseAnswer(UUID answerID, int grade, UUID examAnswerID, List<TOFQAnswer> answers, UUID questionID){
-        super(answerID, grade, examAnswerID, 'M', questionID);
+        super(answerID, grade, examAnswerID, 'T', questionID);
         this.answers = answers;
     }
 
@@ -24,11 +24,7 @@ public class TrueOrFalseAnswer extends Answer{
         if(this.getGrade() == 0){
             int r = 0;
             for(TOFQAnswer ta: this.answers){
-                TOFQ q = ta.getOption();
-                if(ta.getAnswer() == q.getCorrection()){
-                    ta.setGrade(q.getScore());
-                    r += q.getScore();
-                }
+                r += ta.autoCorrect();
             }
             System.out.println("Cotação TOFA: " + r);
             this.setGrade(r);

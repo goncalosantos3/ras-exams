@@ -21,6 +21,16 @@ public class TOFQAnswer {
         this.option = option;
     }
 
+    public int autoCorrect(){
+        int grade = 0;
+        if(this.answer == this.option.getCorrection()){
+            grade = this.option.getScore();
+        }
+        System.out.println(grade);
+        this.grade = grade;
+        return grade;
+    }
+
     public void setOption(TOFQ o){
         this.option = o;
     }

@@ -22,6 +22,16 @@ public class ChoiceAnswer {
         this.choice = c;
     }
 
+    public int autoCorrect(){
+        int grade = 0;
+        if(this.selected == this.choice.getCorrection()){
+            grade = this.choice.getScore();
+        }
+        System.out.println(grade);
+        this.grade = grade;
+        return grade;
+    }
+
     public void setChoice(Choice c){
         this.choice = c;
     }

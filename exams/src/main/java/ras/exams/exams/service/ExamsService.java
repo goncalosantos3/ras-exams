@@ -2,6 +2,7 @@ package ras.exams.exams.service;
 
 import ras.exams.exams.model.Answer;
 import ras.exams.exams.model.Exam;
+import ras.exams.exams.model.ExamAnswer;
 import ras.exams.exams.model.ExamHeader;
 import ras.exams.exams.model.Question;
 
@@ -181,6 +182,14 @@ public class ExamsService {
         
         return 404;
     }
+
+    public ExamAnswer getExamAnswer(String examID, String studentID){
+        UUID examUUID = UUID.fromString(examID);
+        if(this.exams.containsKey(examUUID)){
+            return this.exams.get(examUUID).getExamAnswer(studentID);
+        }
+        return null;
+    }   
 
     //public Exam getSpecificExamforStudent(String studentNumber,String examName){
     //    Exam e = null;

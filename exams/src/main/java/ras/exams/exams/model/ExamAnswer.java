@@ -59,6 +59,7 @@ public class ExamAnswer {
 
     public void calculateGrade() {
         this.grade = 0;
+        
         for (Answer a : this.answers)
         {
             this.grade += a.autoCorrect();

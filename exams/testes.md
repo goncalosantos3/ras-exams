@@ -1,12 +1,13 @@
 1. Criação de um exame
 
-POST /exam
+POST /exam?teacherID=f6955182-d26d-44a6-bcec-bb5c75938118
 
 {
   "examName": "teste",
   "examUC": "UC de teste",
   "examAdmissionTime": "03:33",
-  "examScheduleIDs": []
+  "examScheduleIDs": [],
+  "status": "S"
 }
 
 2. Lista de todos os exames
@@ -27,7 +28,7 @@ POST /exam/versions?examID=xxxx
 
 6. Eliminação da versão de um exame
 
-DELETE POST /exam/versions?examID=xxxx&versionID=xxxx 
+DELETE /exam/versions?examID=xxxx&versionID=xxxx 
 
 7. Criação de uma questão de escolha múltipla
 
@@ -161,3 +162,7 @@ POST /exam/saveMultipleChoiceAnswer/{examID}/{versionID}/{questionNumber}/{stude
 16. Corrigir automaticamente um exame
 
 POST /exam/autoCorrect?examID=xxxx
+
+17. Buscar a resposta a um exame de um aluno
+
+GET /exam/getExamAnswer?examID=xxxx&studentID=xxxx
