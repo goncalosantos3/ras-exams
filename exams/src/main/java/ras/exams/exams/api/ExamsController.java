@@ -25,7 +25,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class ExamsController {
@@ -199,7 +204,9 @@ public class ExamsController {
     @PostMapping("enrollStudents")
     public int enrollStudent(@RequestParam("examID") String examID, @RequestBody List<String> students) {
         // Dá return a um inteiro indicando se o aluno foi inscrito no exame ou não
-        return examService.enrollStudents(examID, students);
+        int res = examService.enrollStudents(examID, students);
+        sendNotificationRequest(examID, students, "http://nginx/notifications/exam/details/");
+        return res;
     }
 
     // Rota - POST /exam/saveCompleteSpacesAnswer/{examID}/{versionID}/{questionNumber}/{studentID}
@@ -237,13 +244,39 @@ public class ExamsController {
     // Rota - POST /exam/autoCorrect?examID=xxxx
     @PostMapping("exam/autoCorrect")
     public int autoCorrectExam(@RequestParam("examID") String examID){
-        return this.examService.autoCorrectExam(examID);
+        int res = this.examService.autoCorrectExam(examID);
+        Exam e = this.examService.getExam(examID);
+        sendNotificationRequest(examID, e.getEnrolled(), "http://nginx/notifications/exam/grades/");
+        return res;
     }
 
     // Rota - GET /exam/getExamAnswer?examID=xxxx&studentID=xxxx
     @GetMapping("exam/getExamAnswer")
     public ExamAnswer getExamAnswer(@RequestParam("examID") String examID, @RequestParam("studentID") String studentID){
         return this.examService.getExamAnswer(examID, studentID);
+    }
+
+    public void sendNotificationRequest(String examID, List<String> studentIDs, String url){
+        // Create a RestTemplate instance
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Create headers with content type
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Create the request body object
+        NotificationsRequest requestObject = new NotificationsRequest(examID, studentIDs);
+
+        // Create an HttpEntity with headers and body
+        HttpEntity<NotificationsRequest> requestEntity = new HttpEntity<>(requestObject, headers);
+
+        // Make the POST request
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
     }
 
     // // Rota - GET /exams/getCorrection/{examName}/{numberStudent}/{questionNumber}
